@@ -1,0 +1,19 @@
+================================================================================
+			FCEU PS3
+================================================================================
+
+================================================================================
+			CHANGELOG	
+================================================================================
+
+Build 1.4 (11/01/2011)
+- PAL ROMs now run correctly - autodetection of PAL/NTSC for No-Intro set.
+- Automatic 576p PAL50/PAL60 switching.
+- Cheatfile (CHT) support.
+- Game Genie ROM support.
+- Added 'Sprite Limitation' option.
+- All paths (savestate directory/base directory/SRAM directory/default ROM
+directory) can now be changed.
+- RSound support.
+- Configurable controls.
+- Geohot 3.55 CFW build.
