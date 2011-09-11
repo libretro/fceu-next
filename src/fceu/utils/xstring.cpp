@@ -768,11 +768,7 @@ namespace UtfConverter
 //convert a std::string to std::wstring
 std::wstring mbstowcs(std::string str) // UTF8->UTF32
 {
-	try {
 		return UtfConverter::FromUtf8(str);
-	} catch(std::exception) {
-		return L"(failed UTF-8 conversion)";
-	}
 }
 
 //convert a std::wstring to std::string

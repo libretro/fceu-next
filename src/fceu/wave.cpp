@@ -60,6 +60,7 @@ void FCEU_WriteWaveData(int32 *Buffer, int Count)
 	#endif
 }
 
+#if 0
 int FCEUI_EndWaveRecord()
 {
  long s;
@@ -83,8 +84,10 @@ int FCEUI_EndWaveRecord()
  soundlog=0;
  return 1;
 }
+#endif
 
 
+#if 0
 bool FCEUI_BeginWaveRecord(const char *fn)
 {
  int r;
@@ -130,3 +133,4 @@ bool FCEUI_BeginWaveRecord(const char *fn)
 
  return true;
 }
+#endif
