@@ -13,9 +13,9 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "buffer.h"
 #include <stdlib.h>
 #include <string.h>
+#include "buffer.h"
 
 struct fifo_buffer
 {

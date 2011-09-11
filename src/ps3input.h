@@ -12,7 +12,6 @@ extern "C" {
 #endif
 
 #include <string.h>
-#include "menu.h"
 
 /* Input bitmasks */
 #define BTN_A				1 << 0

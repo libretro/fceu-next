@@ -20,6 +20,8 @@
 extern "C" {
 #endif
 
+#include <string.h>
+
 typedef uint32_t (*resampler_cb_t) (void *cb_data, float **data);
 
 typedef struct resampler resampler_t;

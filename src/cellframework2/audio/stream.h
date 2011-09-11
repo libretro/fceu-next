@@ -4,7 +4,7 @@
 #include <string.h>
 
 typedef void* cell_audio_handle_t;
-typedef uint32_t (*cell_audio_sample_cb_t)(s16 * out, uint32_t samples, void * userdata);
+typedef uint32_t (*cell_audio_sample_cb_t)(int16_t * out, uint32_t samples, void * userdata);
 
 struct cell_audio_params
 {
@@ -24,7 +24,7 @@ typedef struct cell_audio_driver
 {
    cell_audio_handle_t (*init)(const struct cell_audio_params *params);
 
-   int32_t (*write)(cell_audio_handle_t handle, const s16* data, uint32_t samples);
+   int32_t (*write)(cell_audio_handle_t handle, const int16_t* data, uint32_t samples);
    uint32_t (*write_avail)(cell_audio_handle_t handle);
 
    void (*pause)(cell_audio_handle_t handle);
