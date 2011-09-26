@@ -11,12 +11,12 @@
 #include <cell/sysmodule.h>
 #include <math.h>
 #include <sysutil/sysutil_sysparam.h>
-#if(CELL_SDK_VERSION == 0x340001)
+#if(CELL_SDK_VERSION > 0x340000)
 #include <sysutil/sysutil_screenshot.h>
 #endif
 #include <sysutil/sysutil_msgdialog.h>
 #include <sys/spu_initialize.h>
-#if(CELL_SDK_VERSION == 0x340001)
+#if(CELL_SDK_VERSION > 0x340000)
 #include <sysutil/sysutil_bgmplayback.h>
 #endif
 
@@ -2030,7 +2030,7 @@ int main (int argc, char **argv)
 
 	emulator_init_settings();
 
-#if(CELL_SDK_VERSION == 0x340001)
+#if(CELL_SDK_VERSION > 0x340000)
 	if (Settings.ScreenshotsEnabled)
 	{
 		cellSysmoduleLoadModule(CELL_SYSMODULE_SYSUTIL_SCREENSHOT);
@@ -2059,7 +2059,7 @@ int main (int argc, char **argv)
 	Graphics->LoadFragmentShader(DEFAULT_MENU_SHADER_FILE, 2);
 	emulator_implementation_set_texture(Settings.PS3CurrentBorder);
 
-#if(CELL_SDK_VERSION == 0x340001)
+#if(CELL_SDK_VERSION > 0x340000)
 	cellSysutilEnableBgmPlayback();
 #endif
 

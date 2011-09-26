@@ -74,14 +74,13 @@ static uint32 ppulut3[128];
 
 int test = 0;
 
-template<typename T, int BITS>
-struct BITREVLUT {
+typedef struct BITREVLUT {
 
-	T* lut;
+	uint8_t * lut;
 	BITREVLUT() {
-		int bits = BITS;
-		int n = 1<<BITS;
-		lut = new T[n];
+		int bits = 8;
+		int n = 256;
+		lut = new uint8_t[n];
 
 		int m = 1;
 		int a = n>>1;
@@ -99,15 +98,15 @@ struct BITREVLUT {
 		}while(bits);
 	}
 
-	T operator[](int index) { return lut[index]; }
-
+	uint8_t operator[](int index) { return lut[index]; }
 };
-BITREVLUT<uint8,8> bitrevlut;
+struct BITREVLUT bitrevlut;
 
 struct PPUSTATUS
 {
     int32 sl;
-    int32 cycle, end_cycle;
+    int32 cycle;
+    int32 end_cycle;
 };
 
 #define spr_reset() \
@@ -276,10 +275,14 @@ static void makeppulut(void)
 	{
 		ppulut1[x] = 0;
 
-		for(y=0;y<8;y++)
-		{
-			ppulut1[x] |= ((x>>(7-y))&1)<<(y*4);
-		}
+		ppulut1[x] |= ((x>>(7))&1);
+		ppulut1[x] |= ((x>>(6))&1) << 4;
+		ppulut1[x] |= ((x>>(5))&1) << 8;
+		ppulut1[x] |= ((x>>(4))&1) << 12;
+		ppulut1[x] |= ((x>>(3))&1) << 16;
+		ppulut1[x] |= ((x>>(2))&1) << 20;
+		ppulut1[x] |= ((x>>(1))&1) << 24;
+		ppulut1[x] |= ((x>>(0))&1) << 28;
 
 		ppulut2[x] = ppulut1[x] << 1;
 	}
@@ -297,7 +300,6 @@ static void makeppulut(void)
 				shiftr *= 2;
 				ppulut3[ xo | (cc<<3) ] |= ( ( cc >> shiftr ) & 3 ) << ( 2 + pixel * 4 );
 			}
-			//    printf("%08x\n",ppulut3[xo|(cc<<3)]);
 		}
 	}
 }
@@ -411,7 +413,8 @@ inline void FFCEUX_PPUWrite_Default(uint32 A, uint8 V)
 {
 	uint32 tmp = A;
 
-	if(PPU_hook) PPU_hook(A);
+	if(PPU_hook)
+		PPU_hook(A);
 
 	if(tmp<0x2000)
 	{
@@ -500,24 +503,15 @@ void ppu_getScroll(int &xpos, int &ypos)
 
 static DECLFR(A2002)
 {
-#if 0
-	if(newppu)
-	{
-		//once we thought we clear latches here, but that caused midframe glitches.
-		//i think we should only reset the state machine for 2005/2006
-		//ppur_clear_latches();
-	}
-#endif
-
 	uint8 ret;
 
 	FCEUPPU_LineUpdate();
 	ret = PPU_status;
 	ret|=PPUGenLatch&0x1F;
 
-		vtoggle=0;
-		PPU_status&=0x7F;
-		PPUGenLatch=ret;
+	vtoggle=0;
+	PPU_status&=0x7F;
+	PPUGenLatch=ret;
 
 	return ret;
 }
@@ -713,31 +707,6 @@ static DECLFR(A200x)  /* Not correct for $2004 reads. */
 	return PPUGenLatch;
 }
 
-/*
-static DECLFR(A2004)
-{
-uint8 ret;
-
-FCEUPPU_LineUpdate();
-ret = SPRAM[PPU[3]];
-
-if(PPUSPL>=8)
-{
-if(PPU[3]>=8)
-ret = SPRAM[PPU[3]];
-}
-else
-{
-//printf("$%02x:$%02x\n",PPUSPL,V);
-ret = SPRAM[PPUSPL];
-}
-PPU[3]++;
-PPUSPL++;
-PPUGenLatch = ret;
-printf("%d, %02x\n",scanline,ret);
-return(ret);
-}
-*/
 static DECLFR(A2007)
 {
 	uint8 ret;
@@ -821,13 +790,10 @@ static DECLFR(A2007)
 
 static DECLFW(B2000)
 {
-	//    FCEU_printf("%04x:%02x, (%d) %02x, %02x\n",A,V,scanline,PPU[0],PPU_status);
-
 	FCEUPPU_LineUpdate();
 	PPUGenLatch=V;
 	if(!(PPU[0]&0x80) && (V&0x80) && (PPU_status&0x80))
 	{
-		//     FCEU_printf("Trigger NMI, %d, %d\n",timestamp,ppudead);
 		TriggerNMI2();
 	}
 	PPU[0]=V;
@@ -841,7 +807,6 @@ static DECLFW(B2000)
 
 static DECLFW(B2001)
 {
-	//printf("%04x:$%02x, %d\n",A,V,scanline);
 	FCEUPPU_LineUpdate();
 	PPUGenLatch=V;
 	PPU[1]=V;
@@ -1048,38 +1013,6 @@ void FCEUI_GetRenderPlanes(bool& sprites, bool& bg)
 {
 }
 
-//mbg 6/21/08 - tileview is being ripped out since i dont know how long its been since it worked
-//static int tileview=1;
-//void FCEUI_ToggleTileView(void)
-//{
-//	tileview^=1;
-//}
-
-
-//mbg 6/21/08 - tileview is being ripped out since i dont know how long its been since it worked
-//static void TileView(void)
-//{
-//	uint8 *P=XBuf+16*256;
-//	int bgh;
-//	int y;
-//	int X1;
-//	for(bgh=0;bgh<2;bgh++)
-//		for(y=0;y<16*8;y++)
-//			for(P=XBuf+bgh*128+(16+y)*256,X1=16;X1;X1--,P+=8)
-//			{
-//				uint8 *C;
-//				register uint8 cc;
-//				uint32 vadr;
-//
-//				vadr=((((16-X1)|((y>>3)<<4))<<4)|(y&7))+bgh*0x1000;
-//				//C= ROM+vadr+turt*8192;
-//				C = VRAMADR(vadr);
-//				//if((vadr+turt*8192)>=524288)
-//				//printf("%d ",vadr+turt*8192);
-//				cc=0;
-//				//#include "pputile.inc"
-//			}
-//}
 
 static void CheckSpriteHit(int p);
 
@@ -1337,8 +1270,6 @@ static INLINE void Fixit2(void)
 		rad&=0xFBE0;
 		rad|=TempAddr&0x041f;
 		RefreshAddr=rad;
-		//PPU_hook(RefreshAddr);
-		//PPU_hook(RefreshAddr,-1);
 	}
 }
 
@@ -1425,22 +1356,10 @@ static void DoLine(void)
 			GameHBIRQHook();
 	}
 
-	//DEBUG(FCEUD_UpdateNTView(scanline,0));
-
 	if(SpriteON)
 		RefreshSprites();
 	if(GameHBIRQHook2 && (ScreenON || SpriteON) )
 		GameHBIRQHook2();
-	#if 0
-	//ORIGINAL COMMENT: scanline is incremented in  DoLine.  Evil. :/
-	//hose this out of the function iterated through
-	scanline++;
-	if(scanline<240)
-	{
-		ResetRL(XBuf+(scanline<<8));
-	}
-	X6502_Run(16);
-	#endif
 }
 
 #define V_FLIP  0x80
@@ -1448,7 +1367,10 @@ static void DoLine(void)
 #define SP_BACK 0x20
 
 typedef struct {
-	uint8 y,no,atr,x;
+	uint8_t y;
+	uint8_t no;
+	uint8_t atr;
+	uint8_t x;
 } SPR;
 
 typedef struct {
@@ -1983,7 +1905,6 @@ void FCEUPPU_Loop_NoNSF(int skip)
 	for(scanline=0; scanline < 240; scanline++)
 	{
 		deempcnt[deemp]++;
-		//DEBUG(FCEUD_UpdatePPUView(scanline, 1));
 		DoLine();
 		ResetRL(XBuf+(scanline<<8));
 		X6502_Run(16);
@@ -2004,8 +1925,6 @@ void FCEUPPU_Loop_NoNSF(int skip)
 	deempcnt[4]=0;
 	deempcnt[5]=0;
 	deempcnt[6]=0;
-	//FCEU_DispMessage("%2x:%2x:%2x:%2x:%2x:%2x:%2x:%2x %d",0,deempcnt[0],deempcnt[1],deempcnt[2],deempcnt[3],deempcnt[4],deempcnt[5],deempcnt[6],deempcnt[7],maxref);
-	//memset(deempcnt,0,sizeof(deempcnt));
 	SetNESDeemph(maxref,0);
 
 #ifdef FRAMESKIP

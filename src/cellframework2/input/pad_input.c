@@ -83,9 +83,9 @@ uint32_t cell_pad_input_pads_connected(void)
 
 #define M(x) (x & 0xFF)
 
-cell_input_state_t cell_pad_input_poll_device(uint32_t id)
+uint64_t cell_pad_input_poll_device(uint32_t id)
 {
-	static cell_input_state_t ret[MAX_PADS];
+	static uint64_t ret[MAX_PADS];
 	CellPadData pad_data;
 
 	// Get new pad data
