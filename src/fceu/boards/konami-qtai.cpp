@@ -203,10 +203,10 @@ static void M190Power(void)
 static void M190Close(void)
 {
   if(CHRRAM)
-    FCEU_gfree(CHRRAM);
+    free(CHRRAM);
   CHRRAM=NULL;
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

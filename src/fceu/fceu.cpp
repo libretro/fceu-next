@@ -29,7 +29,6 @@
 #include "fceu.h"
 #include "ppu.h"
 #include "sound.h"
-#include "netplay.h"
 #include "file.h"
 #include "utils/endian.h"
 #include "utils/memory.h"
@@ -69,7 +68,6 @@ int AFon = 1, AFoff = 1, AutoFireOffset = 0; //For keeping track of autofire set
 bool justLagged = false;
 bool frameAdvanceLagSkip = false; //If this is true, frame advance will skip over lag frame (i.e. it will emulate 2 frames instead of 1)
 bool AutoSS = false;		//Flagged true when the first auto-savestate is made while a game is loaded, flagged false on game close
-bool movieSubtitles = true; //Toggle for displaying movie subtitles
 bool DebuggerWasUpdated = false; //To prevent the debugger from updating things without being updated.
 
 FCEUGI::FCEUGI()
@@ -124,12 +122,6 @@ static void FCEU_CloseGame(void)
 	if(GameInfo)
 	{
 
-
-		if(FCEUnetplay)
-		{
-			FCEUD_NetworkClose();
-		}
-
 		if(GameInfo->name)
 		{
 			free(GameInfo->name);
@@ -154,7 +146,7 @@ static void FCEU_CloseGame(void)
 
 		delete GameInfo;
 		GameInfo = 0;
-				
+
 		//Reset flags for Undo/Redo/Auto Savestating //adelikat: TODO: maybe this stuff would be cleaner as a struct or class
 		lastSavestateMade[0] = 0;
 		undoSS = false;
@@ -324,8 +316,8 @@ static void FreeBuffers()
 	void win_FreeBuffers(uint8 *GameMemBlock, uint8 *RAM);
 	win_FreeBuffers(GameMemBlock, RAM);
 #else
-	FCEU_free(GameMemBlock);
-	FCEU_free(RAM);
+	free(GameMemBlock);
+	free(RAM);
 #endif
 }
 //------
@@ -381,9 +373,6 @@ int UNIFLoad(const char *name, FCEUFILE *fp);
 int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode);
 int FDSLoad(const char *name, FCEUFILE *fp);
 int NSFLoad(const char *name, FCEUFILE *fp);
-
-//char lastLoadedGameName [2048] = {0,}; // hack for movie WRAM clearing on record from poweron
-
 
 FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 {
@@ -508,12 +497,12 @@ bool FCEUI_Initialize()
 	//FSettings.UsrLastSLine[0]=231;
 	FSettings.UsrLastSLine[0]=239;
 	FSettings.UsrLastSLine[1]=239;
-	FSettings.SoundVolume=150;		//0-150 scale
+	FSettings.SoundVolume=150;	//0-150 scale
 	FSettings.TriangleVolume=256;	//0-256 scale (256 is max volume)
 	FSettings.Square1Volume=256;	//0-256 scale (256 is max volume)
 	FSettings.Square2Volume=256;	//0-256 scale (256 is max volume)
-	FSettings.NoiseVolume=256;		//0-256 scale (256 is max volume)
-	FSettings.PCMVolume=256;		//0-256 scale (256 is max volume)
+	FSettings.NoiseVolume=256;	//0-256 scale (256 is max volume)
+	FSettings.PCMVolume=256;	//0-256 scale (256 is max volume)
 
 	FCEUPPU_Init();
 
@@ -544,9 +533,6 @@ void FCEUI_Emulate(uint8 ** pXBuf, int32 ** SoundBuf, int32 * SoundBufSize)
 	//skip initiates frame skip if 1, or frame skip and sound skip if 2
 	int ssize;
 
-	//won't need this for now
-
-	//if (skip != 2) ssize=FlushEmulateSound(); //If skip = 2 we are skipping sound processing
 	if(timestamp)
 		ssize = FlushEmulateSound();
 	else
@@ -559,30 +545,9 @@ void FCEUI_Emulate(uint8 ** pXBuf, int32 ** SoundBuf, int32 * SoundBufSize)
 	timestampbase += timestamp;
 	timestamp = 0;
 
-	//*pXBuf=skip?0:XBuf;
 	*pXBuf=XBuf;
-#if 0
-	if (skip == 2) //If skip = 2, then bypass sound
-	{
-		*SoundBuf=0;
-		*SoundBufSize=0;
-	}
-	else
-	{
-#endif
-		*SoundBuf=WaveFinal;
-		*SoundBufSize=ssize;
-		//}
-
-#if 0
-		if (EmulationPaused&2 && ( !frameAdvanceLagSkip || !lagFlag) )
-			//Lots of conditions here.  EmulationPaused&2 must be true.  In addition frameAdvanceLagSkip or lagFlag must be false
-		{
-			EmulationPaused = 1;		   // restore paused flag
-			JustFrameAdvanced = true;
-
-		}
-#endif
+	*SoundBuf=WaveFinal;
+	*SoundBufSize=ssize;
 }
 
 void FCEUI_CloseGame(void)
@@ -592,7 +557,8 @@ void FCEUI_CloseGame(void)
 
 void ResetNES(void)
 {
-	if(!GameInfo) return;
+	if(!GameInfo)
+		return;
 	GameInterface(GI_RESETM2);
 	FCEUSND_Reset();
 	FCEUPPU_Reset();
@@ -800,19 +766,6 @@ void FCEUI_ToggleEmulationPause(void)
 	EmulationPaused = (EmulationPaused&1)^1;
 }
 
-#if 0
-void FCEUI_FrameAdvanceEnd(void)
-{
-	frameAdvanceRequested = false;
-}
-
-void FCEUI_FrameAdvance(void)
-{
-	frameAdvanceRequested = true;
-	frameAdvanceDelay = 0;
-}
-#endif
-
 static int AutosaveCounter = 0;
 
 void UpdateAutosave(void)
@@ -893,7 +846,7 @@ bool FCEU_IsValidUI(EFCEUI ui)
 //---------------------
 //experimental new mapper and ppu system follows
 
-class FCEUXCart {
+class FCEUXCart{
 public:
 	int mirroring;
 	int chrPages, prgPages;

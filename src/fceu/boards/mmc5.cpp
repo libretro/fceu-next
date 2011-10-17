@@ -774,7 +774,7 @@ void NSFMMC5_Init(void)
 
 void NSFMMC5_Close(void)
 {
- FCEU_gfree(ExRAM);
+ free(ExRAM);
  ExRAM=0;
 }
 

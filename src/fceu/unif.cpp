@@ -46,13 +46,13 @@ typedef struct {
 } UNIF_HEADER;
 
 typedef struct {
-	char *name;
+	const char *name;
 	void (*init)(CartInfo *);
 	int flags;
 } BMAPPING;
 
 typedef struct {
-	char *name;
+	const char *name;
 	int (*init)(FCEUFILE *fp);
 } BFMAPPING;
 
@@ -132,7 +132,7 @@ static int DoMirroring(FCEUFILE *fp)
 	mirrortodo=t;
 
 	{
-		static char *stuffo[6]={"Horizontal","Vertical","$2000","$2400","\"Four-screen\"","Controlled by Mapper Hardware"};
+		static const char *stuffo[6]={"Horizontal","Vertical","$2000","$2400","\"Four-screen\"","Controlled by Mapper Hardware"};
 		if(t<6)
 			FCEU_printf(" Name/Attribute Table Mirroring: %s\n",stuffo[t]);
 	}
@@ -185,7 +185,7 @@ static int DINF(FCEUFILE *fp)
 	FCEU_printf(" Dumped by: %s\n",name);
 	FCEU_printf(" Dumped with: %s\n",method);
 	{
-		char *months[12]={"January","February","March","April","May","June","July",
+		const char *months[12]={"January","February","March","April","May","June","July",
 			"August","September","October","November","December"};
 		FCEU_printf(" Dumped on: %s %d, %d\n",months[(m-1)%12],d,y);
 	}

@@ -157,7 +157,11 @@ void iNESGI(GI h) //bbit edited: removed static keyword
 			if(VROM) {free(VROM); VROM = NULL;}
 #endif
 			if(MapClose) MapClose();
-			if(trainerpoo) {FCEU_gfree(trainerpoo);trainerpoo=0;}
+			if(trainerpoo)
+			{
+				free(trainerpoo);
+				trainerpoo=0;
+			}
 		}
 		break;
 	}

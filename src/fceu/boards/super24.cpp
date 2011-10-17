@@ -81,7 +81,7 @@ static void Super24Reset(void)
 static void Super24Close(void)
 {
   if(CHRRAM)
-    FCEU_gfree(CHRRAM);
+    free(CHRRAM);
   CHRRAM = NULL;
 }
 

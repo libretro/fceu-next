@@ -28,7 +28,6 @@
 
 #include "fceu.h"
 #include "sound.h"
-#include "netplay.h"
 #include "state.h"
 #include "input/zapper.h"
 #ifdef _S9XLUA_H
@@ -38,6 +37,22 @@
 #include "vsuni.h"
 #include "fds.h"
 #include "driver.h"
+
+#define FCEUNPCMD_RESET 	0x01
+#define FCEUNPCMD_POWER 	0x02
+
+#define FCEUNPCMD_VSUNICOIN     0x07
+#define FCEUNPCMD_VSUNIDIP0	0x08
+#define FCEUNPCMD_FDSINSERTx	0x10
+#define FCEUNPCMD_FDSINSERT	0x18
+#define FCEUNPCMD_FDSEJECT	0x19
+#define FCEUNPCMD_FDSSELECT	0x1A
+
+#define FCEUNPCMD_LOADSTATE     0x80
+
+#define FCEUNPCMD_SAVESTATE     0x81 /* Sent from server to client. */
+#define FCEUNPCMD_LOADCHEATS	0x82
+#define FCEUNPCMD_TEXT		0x90
 
 //it is easier to declare these input drivers extern here than include a bunch of files
 //-------------
@@ -282,11 +297,6 @@ void FCEU_UpdateInput(void)
 	if(GameInfo->type==GIT_VSUNI)
 		if(coinon) coinon--;
 
-#if 0
-	if(FCEUnetplay)
-		NetplayUpdate(joy);
-#endif
-
 	//TODO - should this apply to the movie data? should this be displayed in the input hud?
 	if(GameInfo->type==GIT_VSUNI)
 		FCEU_VSUniSwap(&joy[0],&joy[1]);
@@ -477,30 +487,26 @@ void FCEU_DoSimpleCommand(int cmd)
 {
 	switch(cmd)
 	{
-	case FCEUNPCMD_FDSINSERT: FCEU_FDSInsert();break;
-	case FCEUNPCMD_FDSSELECT: FCEU_FDSSelect();break;
-	case FCEUNPCMD_VSUNICOIN: FCEU_VSUniCoin(); break;
-	case FCEUNPCMD_VSUNIDIP0: 
-	case FCEUNPCMD_VSUNIDIP0+1:
-	case FCEUNPCMD_VSUNIDIP0+2:
-	case FCEUNPCMD_VSUNIDIP0+3:
-	case FCEUNPCMD_VSUNIDIP0+4:
-	case FCEUNPCMD_VSUNIDIP0+5:
-	case FCEUNPCMD_VSUNIDIP0+6:
-	case FCEUNPCMD_VSUNIDIP0+7:	FCEU_VSUniToggleDIP(cmd - FCEUNPCMD_VSUNIDIP0);break;
-	case FCEUNPCMD_POWER: PowerNES();break;
-	case FCEUNPCMD_RESET: ResetNES();break;
+		case FCEUNPCMD_FDSINSERT:
+			FCEU_FDSInsert();break;
+		case FCEUNPCMD_FDSSELECT: FCEU_FDSSelect();break;
+		case FCEUNPCMD_VSUNICOIN: FCEU_VSUniCoin(); break;
+		case FCEUNPCMD_VSUNIDIP0: 
+		case FCEUNPCMD_VSUNIDIP0+1:
+		case FCEUNPCMD_VSUNIDIP0+2:
+		case FCEUNPCMD_VSUNIDIP0+3:
+		case FCEUNPCMD_VSUNIDIP0+4:
+		case FCEUNPCMD_VSUNIDIP0+5:
+		case FCEUNPCMD_VSUNIDIP0+6:
+		case FCEUNPCMD_VSUNIDIP0+7:	FCEU_VSUniToggleDIP(cmd - FCEUNPCMD_VSUNIDIP0);break;
+		case FCEUNPCMD_POWER: PowerNES();break;
+		case FCEUNPCMD_RESET: ResetNES();break;
 	}
 }
 
 void FCEU_QSimpleCommand(int cmd)
 {
-	if(FCEUnetplay)
-		FCEUNET_SendCommand(cmd, 0);
-	else
-	{
-		FCEU_DoSimpleCommand(cmd);
-	}
+	FCEU_DoSimpleCommand(cmd);
 }
 
 void FCEUI_FDSSelect(void)

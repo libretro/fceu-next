@@ -118,7 +118,7 @@ static void MCopyFamiMMC3Reset(void)
 static void MCopyFamiMMC3Close(void)
 {
   if(CHRRAM)
-    FCEU_gfree(CHRRAM);
+    free(CHRRAM);
   CHRRAM=NULL;
 }
 

@@ -25,7 +25,6 @@
 #include "x6502.h"
 #include "fceu.h"
 #include "input.h"
-#include "netplay.h"
 #include "vsuni.h"
 #include "state.h"
 #include "driver.h"
@@ -36,7 +35,7 @@
 #define IOPTION_PREDIP    0x10
 typedef struct
 {
-        char *name;
+        const char *name;
         uint64 md5partial;
         int mapper;
         int mirroring;

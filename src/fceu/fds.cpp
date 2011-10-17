@@ -33,7 +33,6 @@
 #include "state.h"
 #include "file.h"
 #include "cart.h"
-#include "netplay.h"
 #include "driver.h"
 
 //  TODO:  Add code to put a delay in between the time a disk is inserted

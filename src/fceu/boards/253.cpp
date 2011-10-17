@@ -119,9 +119,9 @@ static void M253Power(void)
 static void M253Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   if(CHRRAM)
-    FCEU_gfree(CHRRAM);
+    free(CHRRAM);
   WRAM=CHRRAM=NULL;
 }
 

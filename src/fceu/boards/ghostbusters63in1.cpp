@@ -86,7 +86,7 @@ static void StateRestore(int version)
 static void BMCGhostbusters63in1Close(void)
 {
   if(CHRROM)
-    FCEU_gfree(CHRROM);
+    free(CHRROM);
   CHRROM=NULL;
 }
 

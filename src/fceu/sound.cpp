@@ -30,8 +30,6 @@
 #include "sound.h"
 #include "filter.h"
 #include "state.h"
-#include "wave.h"
-#include "debug.h"
 
 static uint32 wlookup1[32];
 static uint32 wlookup2[203];
@@ -170,26 +168,6 @@ static void PrepDPCM()
 	DMCAddress=0x4000+(DMCAddressLatch<<6);
 	DMCSize=(DMCSizeLatch<<4)+1;
 }
-
-#if 0
-void LogDPCM(int romaddress, int dpcmsize){
-	int i = GetPRGAddress(romaddress);
-
-	if(i == -1)return;
-
-	for (int dpcmstart = i; dpcmstart < (i + dpcmsize); dpcmstart++) {
-		if(!(cdloggerdata[dpcmstart] & 0x40)) {
-			cdloggerdata[dpcmstart] |= 0x40;
-
-			if(!(cdloggerdata[dpcmstart] & 2)){
-				datacount++;
-				cdloggerdata[dpcmstart] |= 2;
-				if(!(cdloggerdata[dpcmstart] & 1))undefinedcount--;
-			}
-		}
-	}
-}
-#endif
 
 /* Instantaneous?  Maybe the new freq value is being calculated all of the time... */
 
@@ -1098,8 +1076,6 @@ nosoundo:
 #endif
 	inbuf=end;
 
-	FCEU_WriteWaveData(WaveFinal, end); /* This function will just return
-					       if sound recording is off. */
 	return(end);
 }
 

@@ -22,7 +22,6 @@
 #include "types.h"
 #include "x6502.h"
 #include "fceu.h"
-#include "debug.h"
 #include "sound.h"
 #ifdef _S9XLUA_H
 #include "fceulua.h"

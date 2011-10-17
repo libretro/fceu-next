@@ -41,7 +41,6 @@
 #include "fds.h"
 #include "state.h"
 #include "ppu.h"
-#include "netplay.h"
 #include "video.h"
 #include "input.h"
 #include "zlib.h"

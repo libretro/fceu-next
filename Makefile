@@ -93,7 +93,6 @@ PPU_CXXFLAGS   += -DMULTIMAN_SUPPORT=1
 endif
 
 PPU_SRCS = $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c)) \
-$(FCEU_API_DIR)/asm.cpp \
 $(FCEU_API_DIR)/cart.cpp \
 $(FCEU_API_DIR)/cheat.cpp \
 $(FCEU_API_DIR)/config.cpp \
@@ -105,7 +104,6 @@ $(FCEU_API_DIR)/file.cpp \
 $(FCEU_API_DIR)/filter.cpp \
 $(FCEU_API_DIR)/ines.cpp \
 $(FCEU_API_DIR)/input.cpp \
-$(FCEU_API_DIR)/netplay.cpp \
 $(FCEU_API_DIR)/nsf.cpp \
 $(FCEU_API_DIR)/palette.cpp \
 $(FCEU_API_DIR)/ppu.cpp \
@@ -114,7 +112,6 @@ $(FCEU_API_DIR)/state.cpp \
 $(FCEU_API_DIR)/unif.cpp \
 $(FCEU_API_DIR)/video.cpp \
 $(FCEU_API_DIR)/vsuni.cpp \
-$(FCEU_API_DIR)/wave.cpp \
 $(FCEU_API_DIR)/x6502.cpp \
 $(FCEU_API_DIR)/utils/ConvertUTF.c \
 $(FCEU_API_DIR)/utils/crc32-fceu.cpp \

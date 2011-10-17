@@ -80,7 +80,7 @@ static void M106Reset(void)
 static void M106Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 
