@@ -69,8 +69,3 @@ void *FCEU_dmalloc(uint32 size)
 {
 	return malloc(size);
 }
-
-void FCEU_dfree(void *ptr)
-{
-	free(ptr);
-}

@@ -217,20 +217,7 @@ void FCEU_PutImage(void)
 }
 #endif
 
-void FCEU_DispMessageOnMovie(char *format, ...)
-{
-	va_list ap;
-
-	va_start(ap,format);
-	vsnprintf(guiMessage.errmsg,sizeof(guiMessage.errmsg),format,ap);
-	va_end(ap);
-
-	guiMessage.howlong = 180;
-	guiMessage.isMovieMessage = true;
-	guiMessage.linesFromBottom = 0;
-}
-
-void FCEU_DispMessage(char *format, int disppos=0, ...)
+void FCEU_DispMessage(const char *format, int disppos=0, ...)
 {
 	va_list ap;
 

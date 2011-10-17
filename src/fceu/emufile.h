@@ -40,11 +40,12 @@ THE SOFTWARE.
 #include <io.h>
 #endif
 
-class EMUFILE {
-protected:
+class EMUFILE
+{
+	protected:
 	bool failbit;
 
-public:
+	public:
 	EMUFILE()
 		: failbit(false)
 	{}
@@ -54,7 +55,7 @@ public:
 	virtual EMUFILE* memwrap() = 0;
 
 	virtual ~EMUFILE() {}
-	
+
 	static bool readAllBytes(std::vector<u8>* buf, const std::string& fname);
 
 	bool fail(bool unset=false) { bool ret = failbit; if(unset) unfail(); return ret; }
@@ -69,7 +70,7 @@ public:
 	void unget() { fseek(-1,SEEK_CUR); }
 
 	//virtuals
-public:
+	public:
 
 	virtual FILE *get_fp() = 0;
 
@@ -119,8 +120,9 @@ public:
 };
 
 //todo - handle read-only specially?
-class EMUFILE_MEMORY : public EMUFILE { 
-protected:
+class EMUFILE_MEMORY : public EMUFILE
+{ 
+	protected:
 	std::vector<u8> *vec;
 	bool ownvec;
 	s32 pos, len;
@@ -130,7 +132,7 @@ protected:
 			vec->resize(amt);
 	}
 
-public:
+	public:
 
 	EMUFILE_MEMORY(std::vector<u8> *underlying) : vec(underlying), ownvec(false), pos(0), len((s32)underlying->size()) { }
 	EMUFILE_MEMORY(u32 preallocate) : vec(new std::vector<u8>()), ownvec(true), pos(0), len(0) { 
@@ -177,11 +179,11 @@ public:
 		va_end(argptr);
 		va_start(argptr, format);
 		vsprintf(tempbuf,format,argptr);
-		
-        fwrite(tempbuf,amt);
+
+		fwrite(tempbuf,amt);
 		delete[] tempbuf;
-		
-        va_end(argptr);
+
+		va_end(argptr);
 		return amt;
 	};
 
@@ -253,13 +255,14 @@ public:
 	virtual int size() { return (int)len; }
 };
 
-class EMUFILE_FILE : public EMUFILE { 
-protected:
+class EMUFILE_FILE : public EMUFILE
+{
+	protected:
 	FILE* fp;
 	std::string fname;
 	char mode[16];
 
-private:
+	private:
 	void open(const char* fname, const char* mode)
 	{
 		fp = fopen(fname,mode);
@@ -269,7 +272,7 @@ private:
 		strcpy(this->mode,mode);
 	}
 
-public:
+	public:
 
 	EMUFILE_FILE(const std::string& fname, const char* mode) { open(fname.c_str(),mode); }
 	EMUFILE_FILE(const char* fname, const char* mode) { open(fname,mode); }

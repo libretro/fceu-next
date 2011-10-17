@@ -647,7 +647,7 @@ void FCEU_ResetVidSys(void)
 
 FCEUS FSettings;
 
-void FCEU_printf(char *format, ...)
+void FCEU_printf(const char *format, ...)
 {
 #if 0
 	char temp[2048];
@@ -662,7 +662,7 @@ void FCEU_printf(char *format, ...)
 #endif
 }
 
-void FCEU_PrintError(char *format, ...)
+void FCEU_PrintError(const char *format, ...)
 {
 	char temp[2048];
 

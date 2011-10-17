@@ -778,7 +778,7 @@ void FCEUD_PrintError(const char *c)
 #ifdef CELL_DEBUG_PRINTF
 	//CELL_PRINTF("%s", c);
 #endif
-	FCEU_DispMessage((char*)c, 20);
+	FCEU_DispMessage(c, 20);
 }
 
 void FCEUD_Message(const char *text)
@@ -786,7 +786,7 @@ void FCEUD_Message(const char *text)
 #ifdef CELL_DEBUG_PRINTF
 	//CELL_PRINTF("%s", text);
 #endif
-	FCEU_DispMessage((char*)text, 20);
+	FCEU_DispMessage(text, 20);
 }
 
 void FCEUD_VideoChanged()

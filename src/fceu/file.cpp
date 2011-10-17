@@ -60,7 +60,7 @@ void ApplyIPS(FILE *ips, FCEUFILE* fp)
 
 	if(!ips) return;
 
-	char* buf = (char*)FCEU_dmalloc(fp->size);
+	char* buf = (char*)malloc(fp->size);
 	memcpy(buf,fp->EnsureMemorystream()->buf(),fp->size);
 
 

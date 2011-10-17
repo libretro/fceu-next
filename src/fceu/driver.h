@@ -174,8 +174,7 @@ void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC
 void FCEUD_LuaRunFrom(void);
 
 int32 FCEUI_GetDesiredFPS(void);
-void FCEU_DispMessage(char *format, int disppos, ...);
-#define FCEUI_DispMessage FCEU_DispMessage
+void FCEU_DispMessage(const char *format, int disppos, ...);
 
 int FCEUI_DecodePAR(const char *code, int *a, int *v, int *c, int *type);
 int FCEUI_DecodeGG(const char *str, int *a, int *v, int *c);
@@ -222,7 +221,7 @@ void FCEUI_IRQ(void);
 uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo);
 void FCEUI_GetIVectors(uint16 *reset, uint16 *irq, uint16 *nmi);
 
-uint32 FCEUI_CRC32(uint32 crc, uint8 *buf, uint32 len);
+//uint32 FCEUI_CRC32(uint32 crc, uint8 *buf, uint32 len);
 
 void FCEUI_ToggleTileView(void);
 void FCEUI_SetLowPass(int q);

@@ -29,7 +29,7 @@ void AutoFire(void);
 void FCEUI_Autosave(void);
 
 //mbg 7/23/06
-char *FCEUI_GetAboutString();
+const char *FCEUI_GetAboutString();
 
 extern uint64 timestampbase;
 extern uint32 MMC5HackVROMMask;
@@ -110,10 +110,9 @@ extern FCEUS FSettings;
 
 bool CheckFileExists(const char* filename);	//Receives a filename (fullpath) and checks to see if that file exists
 
-void FCEU_PrintError(char *format, ...);
-void FCEU_printf(char *format, ...);
-void FCEU_DispMessage(char *format, int disppos, ...);
-void FCEU_DispMessageOnMovie(char *format, ...);
+void FCEU_PrintError(const char *format, ...);
+void FCEU_printf(const char *format, ...);
+void FCEU_DispMessage(const char *format, int disppos, ...);
 void FCEU_TogglePPU();
 
 void SetNESDeemph(uint8 d, int force);
@@ -127,17 +126,14 @@ extern uint8 Exit;
 extern uint8 pale;
 extern uint8 vsdip;
 
-//#define FCEUDEF_DEBUGGER //mbg merge 7/17/06 - cleaning out conditional compiles
-
-#define JOY_A   1
-#define JOY_B   2
+#define JOY_A		1
+#define JOY_B		2
 #define JOY_SELECT      4
 #define JOY_START       8
-#define JOY_UP  0x10
+#define JOY_UP		0x10
 #define JOY_DOWN        0x20
 #define JOY_LEFT        0x40
 #define JOY_RIGHT       0x80
 #endif
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
-

@@ -113,14 +113,13 @@ $(FCEU_API_DIR)/unif.cpp \
 $(FCEU_API_DIR)/video.cpp \
 $(FCEU_API_DIR)/vsuni.cpp \
 $(FCEU_API_DIR)/x6502.cpp \
-$(FCEU_API_DIR)/utils/ConvertUTF.c \
 $(FCEU_API_DIR)/utils/crc32-fceu.cpp \
 $(FCEU_API_DIR)/utils/endian.cpp \
 $(FCEU_API_DIR)/utils/general.cpp \
-$(FCEU_API_DIR)/utils/guid.cpp \
 $(FCEU_API_DIR)/utils/md5.cpp \
 $(FCEU_API_DIR)/utils/memory.cpp \
 $(FCEU_API_DIR)/utils/xstring.cpp
+
 PPU_SRCS += $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.c))
 
 PPU_TARGET		=	fceu-ps3.ppu.elf
