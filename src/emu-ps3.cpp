@@ -15,6 +15,7 @@
 #include <sysutil/sysutil_screenshot.h>
 #endif
 #include <sysutil/sysutil_msgdialog.h>
+#include <cell/cell_fs.h>
 #include <sys/spu_initialize.h>
 #if(CELL_SDK_VERSION > 0x340000)
 #include <sysutil/sysutil_bgmplayback.h>
@@ -462,9 +463,25 @@ void emulator_implementation_save_custom_controls(bool showdialog)
 
 /* PS3 frontend - settings-related functions */
 
+static bool file_exists(const char * filename)
+{
+	CellFsStat sb;
+	if(cellFsStat(filename,&sb) == CELL_FS_SUCCEEDED)
+		return true;
+	else
+		return false;
+}
+
 static void emulator_init_settings(void)
 {
 	memset((&Settings), 0, (sizeof(Settings)));
+	
+	if(!file_exists(SYS_CONFIG_FILE))
+	{
+		FILE * f;
+		f = fopen(SYS_CONFIG_FILE, "w");
+		fclose(f);
+	}
 
 	config_file_t * currentconfig = config_file_new(SYS_CONFIG_FILE);
 
@@ -720,20 +737,6 @@ void emulator_toggle_sound(uint64_t soundmode)
          audio_handle =  audio_driver->init(&params);
       }
 }
-
-// Emulator-specific. FCEU only outputs mono sound - copy left channel over to right channel here for pseudo-stereo.
-// this is deprecated and has been integrated in cellframework2 audioport for FCEU specifically.
-#if 0
-static void Emulator_Convert_Samples(float * __restrict__ out, unsigned, const int16_t * __restrict__ in, size_t frames)
-{
-   // Dupe right channel over to left.
-   for (size_t i = 0; i < frames; i++)
-   {
-      out[2 * i] = (float)in[2 * i + 1] / 0x7FFF;
-      out[2 * i + 1] = (float)in[2 * i + 1] / 0x7FFF;
-   }
-}
-#endif
 
 /* Emulator-specific functions - implementations needed by emulator API */
 

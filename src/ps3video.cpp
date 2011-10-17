@@ -290,7 +290,6 @@ int32_t PS3Graphics::PSGLInit(uint32_t scaleEnable, uint32_t scaleFactor)
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	psglSwap();
-	glFlush();
 
 	glBufferData(GL_TEXTURE_REFERENCE_BUFFER_SCE, SCREEN_RENDER_TEXTURE_WIDTH * SCREEN_RENDER_TEXTURE_HEIGHT * 4, NULL, GL_STREAM_DRAW);
 
@@ -473,7 +472,6 @@ void PS3Graphics::Draw(uint8_t *XBuf, int nesw, int nesh)
 		fbo_tex_coord[6] = xamt;
 		glBufferSubData(GL_ARRAY_BUFFER, 256, sizeof(fbo_tex_coord), fbo_tex_coord);
 		glDrawArrays(GL_QUADS, 0, 4);
-		glFlush();
 		glTexCoordPointer(2, GL_FLOAT, 0, (void*)128);
 
 		cgGLBindProgram(_vertexProgram[0]);
@@ -505,7 +503,6 @@ void PS3Graphics::Draw(uint8_t *XBuf, int nesw, int nesh)
 
 		glDrawArrays(GL_QUADS, 0, 4);
 		write_fps();
-		glFlush();
 	}
 }
 
