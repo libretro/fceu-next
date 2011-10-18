@@ -61,25 +61,24 @@
 
 using namespace std;
 
-bool AutoSS = false;		//Flagged true when the first auto-savestate is made while a game is loaded, flagged false on game close
-
-FCEUGI::FCEUGI()
-: filename(0)
-, archiveFilename(0)
+FCEUGI::FCEUGI() : filename(0), archiveFilename(0)
 {
 	//printf("%08x",opsize);
 }
 
 FCEUGI::~FCEUGI()
 {
-	if(filename) delete filename;
-	if(archiveFilename) delete archiveFilename;
+	if(filename)
+		delete filename;
+	if(archiveFilename)
+		delete archiveFilename;
 }
 
 bool CheckFileExists(const char* filename)
 {
 	//This function simply checks to see if the given filename exists
-	if (!filename) return false;
+	if (!filename)
+		return false;
 	fstream test;
 	test.open(filename,fstream::in);
 		
@@ -122,9 +121,7 @@ static void FCEU_CloseGame(void)
 		}
 
 		if(GameInfo->type!=GIT_NSF)
-		{
 			FCEU_FlushGameCheats(0,0);
-		}
 
 		GameInterface(GI_CLOSE);
 
@@ -147,7 +144,6 @@ static void FCEU_CloseGame(void)
 		lastLoadstateMade[0] = 0;
 		undoLS = false;
 		redoLS = false;
-		AutoSS = false;
 	}
 }
 
@@ -170,22 +166,10 @@ static int RWWrap=0;
 //bit0 indicates whether emulation is paused
 //bit1 indicates whether emulation is in frame step mode
 int EmulationPaused=0;
-//bool frameAdvanceRequested=false;
-//int frameAdvanceDelay;
-
-//indicates that the emulation core just frame advanced (consumed the frame advance state and paused)
-//bool JustFrameAdvanced=false;
 
 static int *AutosaveStatus; //is it safe to load Auto-savestate
 static int AutosaveIndex = 0; //which Auto-savestate we're on
 int AutosaveQty = 4; // Number of Autosaves to store
-int AutosaveFrequency = 256; // Number of frames between autosaves
-
-// Flag that indicates whether the Auto-save option is enabled or not
-int EnableAutosave = 0;
-
-///a wrapper for unzip.c
-//extern "C" FILE *FCEUI_UTF8fopen_C(const char *n, const char *m) { return ::FCEUD_UTF8fopen(n,m); }
 
 static DECLFW(BNull)
 {
@@ -396,7 +380,7 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 	ResetGameLoaded();
 
 	if (!AutosaveStatus)
-		AutosaveStatus = (int*)FCEU_dmalloc(sizeof(int)*AutosaveQty);
+		AutosaveStatus = (int*)malloc(sizeof(int)*AutosaveQty);
 	for (AutosaveIndex=0; AutosaveIndex<AutosaveQty; ++AutosaveIndex)
 		AutosaveStatus[AutosaveIndex] = 0;
 
@@ -511,10 +495,6 @@ void FCEUI_Kill(void)
 	FCEU_KillGenie();
 	FreeBuffers();
 }
-
-
-
-void UpdateAutosave(void);
 
 ///Emulates a single frame.
 
@@ -757,31 +737,8 @@ void FCEUI_ToggleEmulationPause(void)
 	EmulationPaused = (EmulationPaused&1)^1;
 }
 
-static int AutosaveCounter = 0;
-
-void UpdateAutosave(void)
-{
-	if(!EnableAutosave || turbo)
-		return;
-
-	char * f;
-	if(++AutosaveCounter >= AutosaveFrequency)
-	{
-		AutosaveCounter = 0;
-		AutosaveIndex = (AutosaveIndex + 1) % AutosaveQty;
-		f = strdup(FCEU_MakeFName(FCEUMKF_AUTOSTATE,AutosaveIndex,0).c_str());
-		FCEUSS_Save(f);
-		AutoSS = true;	//Flag that an auto-savestate was made
-		free(f);
-		AutosaveStatus[AutosaveIndex] = 1;
-	}
-}
-
 void FCEUI_Autosave(void)
 {
-	if(!EnableAutosave || !AutoSS)
-		return;
-
 	if(AutosaveStatus[AutosaveIndex] == 1)
 	{
 		char * f;
@@ -794,9 +751,6 @@ void FCEUI_Autosave(void)
 		{
 			AutosaveIndex = (AutosaveIndex + AutosaveQty-1)%AutosaveQty;
 		}
-
-		//Reset time to next Auto-save
-		AutosaveCounter = 0;
 	}
 }
 
@@ -947,9 +901,12 @@ bool FCEUXLoad(const char *name, FCEUFILE *fp)
 
 uint8 FCEU_ReadRomByte(uint32 i) {
 	extern iNES_HEADER head;
-	if(i < 16) return *((unsigned char *)&head+i);
-	if(i < 16+PRGsize[0])return PRGptr[0][i-16];
-	if(i < 16+PRGsize[0]+CHRsize[0])return CHRptr[0][i-16-PRGsize[0]];
+	if(i < 16)
+		return *((unsigned char *)&head+i);
+	if(i < 16+PRGsize[0])
+		return PRGptr[0][i-16];
+	if(i < 16+PRGsize[0]+CHRsize[0])
+		return CHRptr[0][i-16-PRGsize[0]];
 	return 0;
 }
 

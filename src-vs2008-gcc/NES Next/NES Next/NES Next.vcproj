@@ -441,27 +441,11 @@
 				Name="emu"
 				>
 				<File
-					RelativePath="..\..\..\src\fceu\asm.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\src\fceu\cart.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\..\src\fceu\cheat.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\fceu\conddebug.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\fceu\config.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\fceu\debug.cpp"
 					>
 				</File>
 				<File
@@ -497,19 +481,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\movie.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\fceu\netplay.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\src\fceu\nsf.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\fceu\oldmovie.cpp"
 					>
 				</File>
 				<File
@@ -538,10 +510,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\src\fceu\vsuni.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\fceu\wave.cpp"
 					>
 				</File>
 				<File
@@ -903,10 +871,6 @@
 						RelativePath="..\..\..\src\fceu\boards\tf-1201.cpp"
 						>
 					</File>
-				</Filter>
-				<Filter
-					Name="drivers"
-					>
 				</Filter>
 				<Filter
 					Name="input"
@@ -1272,18 +1236,6 @@
 					Name="utils"
 					>
 					<File
-						RelativePath="..\..\..\src\fceu\utils\ConvertUTF.c"
-						>
-						<FileConfiguration
-							Name="PS3 Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\..\..\src\fceu\utils\crc32-fceu.cpp"
 						>
 					</File>
@@ -1293,10 +1245,6 @@
 					</File>
 					<File
 						RelativePath="..\..\..\src\fceu\utils\general.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\guid.cpp"
 						>
 					</File>
 					<File
@@ -1826,18 +1774,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\conddebug.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\fceu\config.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\fceu\debug.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\src\fceu\drawing.h"
 					>
 				</File>
@@ -1898,19 +1834,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\movie.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\fceu\netplay.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\src\fceu\nsf.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\fceu\oldmovie.h"
 					>
 				</File>
 				<File
@@ -1954,10 +1878,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\wave.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\src\fceu\x6502.h"
 					>
 				</File>
@@ -1971,10 +1891,6 @@
 				</File>
 				<Filter
 					Name="boards"
-					>
-				</Filter>
-				<Filter
-					Name="drivers"
 					>
 				</Filter>
 				<Filter

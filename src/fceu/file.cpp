@@ -251,7 +251,7 @@ zpfail:
 	return 0;
 }
 
-FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext, int index, const char** extensions)
+FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, const char *ext, int index, const char** extensions)
 {
 	FILE *ipsfile=0;
 	FCEUFILE *fceufp=0;
@@ -454,7 +454,8 @@ void FCEUI_SetDirOverride(int which, char *n)
 		int ret;
 
 		va_start(ap,fmt);
-		if(!(*strp=(char*)FCEU_dmalloc(2048))) //mbg merge 7/17/06 cast to char*
+		*strp = (char*)malloc(2048);
+		if(!strp) //mbg merge 7/17/06 cast to char*
 			return(0);
 		ret=vsnprintf(*strp,2048,fmt,ap);
 		va_end(ap);

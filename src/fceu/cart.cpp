@@ -652,12 +652,9 @@ void FCEU_SaveGameSave(CartInfo *LocalHWInfo)
 		{
 			for(int x=0;x<4;x++)
 				if(LocalHWInfo->SaveGame[x])
-				{
-					fwrite(LocalHWInfo->SaveGame[x],1,
-						LocalHWInfo->SaveGameLen[x],sp);
-				}
+					fwrite(LocalHWInfo->SaveGame[x],1, LocalHWInfo->SaveGameLen[x],sp);
 
-            fclose(sp);
+			fclose(sp);
 		}
 	}
 }
@@ -676,7 +673,7 @@ void FCEU_LoadGameSave(CartInfo *LocalHWInfo)
 				if(LocalHWInfo->SaveGame[x])
 					fread(LocalHWInfo->SaveGame[x],1,LocalHWInfo->SaveGameLen[x],sp);
 
-            fclose(sp);
+			fclose(sp);
 		}
 	}
 }
@@ -686,7 +683,7 @@ void FCEU_ClearGameSave(CartInfo *LocalHWInfo)
 {
 	if(LocalHWInfo->battery && LocalHWInfo->SaveGame[0])
 	{
-		for(int x=0;x<4;x++)
+		for(int x = 0; x < 4; x++)
 			if(LocalHWInfo->SaveGame[x])
 				memset(LocalHWInfo->SaveGame[x],0,LocalHWInfo->SaveGameLen[x]);
 	}

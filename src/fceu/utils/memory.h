@@ -26,7 +26,3 @@
 
 void *FCEU_malloc(uint32 size);
 void *FCEU_gmalloc(uint32 size);
-
-// wrapper for debugging when its needed, otherwise act like
-// normal malloc/free
-void *FCEU_dmalloc(uint32 size);

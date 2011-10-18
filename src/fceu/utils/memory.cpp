@@ -64,8 +64,3 @@ void *FCEU_malloc(uint32 size)
 	memset(ret,0,size);
 	return ret;
 }
-
-void *FCEU_dmalloc(uint32 size)
-{
-	return malloc(size);
-}

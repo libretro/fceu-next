@@ -175,8 +175,8 @@ static void CheatMemErr(void)
 /* This function doesn't allocate any memory for "name" */
 int AddCheatEntry(char *name, uint32 addr, uint8 val, int compare, int status, int type)
 {
-	struct CHEATF *temp;
-	if(!(temp=(struct CHEATF *)FCEU_dmalloc(sizeof(struct CHEATF))))
+	struct CHEATF *temp = (struct CHEATF *)malloc(sizeof(struct CHEATF));
+	if(!(temp))
 	{
 		CheatMemErr();
 		return(0);
@@ -261,8 +261,9 @@ void FCEU_LoadGameCheats(FILE *override)
 			char *neo=&tbuf[4+2+2+1+1+1];
 			if(sscanf(tbuf,"%04x%*[:]%02x%*[:]%02x",&addr,&val,&compare)!=3)
 				continue;
-			if (!(namebuf=(char *)FCEU_dmalloc(strlen(neo)+1)))
-                return;
+			namebuf = (char *)malloc(strlen(neo)+1);
+			if (!namebuf)
+				return;
 			strcpy(namebuf,neo);
 		}
 		else
@@ -270,8 +271,9 @@ void FCEU_LoadGameCheats(FILE *override)
 			char *neo=&tbuf[4+2+1+1];
 			if(sscanf(tbuf,"%04x%*[:]%02x",&addr,&val)!=2)
 				continue;
-			if (!(namebuf=(char *)FCEU_dmalloc(strlen(neo)+1)))
-                return;
+			namebuf = (char *)malloc(strlen(neo)+1);
+			if (!namebuf)
+				return;
 			strcpy(namebuf,neo);
 		}
 
@@ -378,8 +380,8 @@ void FCEU_FlushGameCheats(FILE *override, int nosave)
 int FCEUI_AddCheat(const char *name, uint32 addr, uint8 val, int compare, int type)
 {
 	char *t;
-
-	if(!(t=(char *)FCEU_dmalloc(strlen(name)+1)))
+	t = (char *)malloc(strlen(name)+1);
+	if(!t)
 	{
 		CheatMemErr();
 		return(0);
@@ -692,7 +694,7 @@ static int InitCheatComp(void)
 {
 	uint32 x;
 
-	CheatComp=(uint16*)FCEU_dmalloc(65536*sizeof(uint16));
+	CheatComp = (uint16*)malloc(65536*sizeof(uint16));
 	if(!CheatComp)
 	{
 		CheatMemErr();
