@@ -23,13 +23,7 @@ void ResetMapping(void);
 void ResetNES(void);
 void PowerNES(void);
 
-void SetAutoFireOffset(int offset);
-void SetAutoFirePattern(int onframes, int offframes);
-void AutoFire(void);
 void FCEUI_Autosave(void);
-
-//mbg 7/23/06
-const char *FCEUI_GetAboutString();
 
 extern uint64 timestampbase;
 extern uint32 MMC5HackVROMMask;

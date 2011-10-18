@@ -95,7 +95,6 @@ endif
 PPU_SRCS = $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c)) \
 $(FCEU_API_DIR)/cart.cpp \
 $(FCEU_API_DIR)/cheat.cpp \
-$(FCEU_API_DIR)/config.cpp \
 $(FCEU_API_DIR)/drawing.cpp \
 $(FCEU_API_DIR)/emufile.cpp \
 $(FCEU_API_DIR)/fceu.cpp \

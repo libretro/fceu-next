@@ -221,8 +221,6 @@ void FCEUI_IRQ(void);
 uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo);
 void FCEUI_GetIVectors(uint16 *reset, uint16 *irq, uint16 *nmi);
 
-//uint32 FCEUI_CRC32(uint32 crc, uint8 *buf, uint32 len);
-
 void FCEUI_ToggleTileView(void);
 void FCEUI_SetLowPass(int q);
 
@@ -259,9 +257,6 @@ bool FCEUD_ShouldDrawInputAids();
 ///called when the emulator closes a game
 void FCEUD_OnCloseGame(void);
 
-//void FCEUI_FrameAdvance(void);
-//void FCEUI_FrameAdvanceEnd(void);
-
 ///A callback that the emu core uses to poll the state of a given emulator command key
 typedef int TestCommandState(int cmd);
 ///Signals the emu core to poll for emulator commands and take actions
@@ -291,18 +286,6 @@ void FCEUD_CmdOpen(void);
 
 //new merge-era driver routines here:
 
-///signals that the cpu core hit a breakpoint. this function should not return until the core is ready for the next cycle
-//void FCEUD_DebugBreakpoint();
-
-///the driver should log the current instruction, if it wants (we should move the code in the win driver that does this to the shared area)
-//void FCEUD_TraceInstruction();
-
-///the driver might should update its NTView (only used if debugging support is compiled in)
-//void FCEUD_UpdateNTView(int scanline, bool drawall);
-
-///the driver might should update its PPUView (only used if debugging support is compiled in)
-//void FCEUD_UpdatePPUView(int scanline, int drawall);
-
 ///I am dissatisfied with this method of getting an option from the driver to the core. but that is what we're using for now
 bool FCEUD_PauseAfterPlayback();
 
@@ -319,9 +302,11 @@ enum EFCEUI
 //checks whether an EFCEUI is valid right now
 bool FCEU_IsValidUI(EFCEUI ui);
 
+#if 0
 #ifdef __cplusplus
 extern "C"
 #endif
 FILE *FCEUI_UTF8fopen_C(const char *n, const char *m);
+#endif
 
 #endif //__DRIVER_H_

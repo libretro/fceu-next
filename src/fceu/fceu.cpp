@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <time.h>
+#include <fstream>
 #include "types.h"
 #include "x6502.h"
 #include "fceu.h"
@@ -48,10 +49,6 @@
 #include "vsuni.h"
 #include "ines.h"
 
-
-#include <fstream>
-#include <sstream>
-
 #ifdef _S9XLUA_H
 #include "fceulua.h"
 #endif
@@ -64,11 +61,7 @@
 
 using namespace std;
 
-int AFon = 1, AFoff = 1, AutoFireOffset = 0; //For keeping track of autofire settings
-bool justLagged = false;
-bool frameAdvanceLagSkip = false; //If this is true, frame advance will skip over lag frame (i.e. it will emulate 2 frames instead of 1)
 bool AutoSS = false;		//Flagged true when the first auto-savestate is made while a game is loaded, flagged false on game close
-bool DebuggerWasUpdated = false; //To prevent the debugger from updating things without being updated.
 
 FCEUGI::FCEUGI()
 : filename(0)
@@ -192,7 +185,7 @@ int AutosaveFrequency = 256; // Number of frames between autosaves
 int EnableAutosave = 0;
 
 ///a wrapper for unzip.c
-extern "C" FILE *FCEUI_UTF8fopen_C(const char *n, const char *m) { return ::FCEUD_UTF8fopen(n,m); }
+//extern "C" FILE *FCEUI_UTF8fopen_C(const char *n, const char *m) { return ::FCEUD_UTF8fopen(n,m); }
 
 static DECLFW(BNull)
 {
@@ -353,7 +346,8 @@ static DECLFR(ARAMH)
 
 void ResetGameLoaded(void)
 {
-	if(GameInfo) FCEU_CloseGame();
+	if(GameInfo)
+		FCEU_CloseGame();
 	EmulationPaused = 0; //mbg 5/8/08 - loading games while paused was bad news. maybe this fixes it
 	GameStateRestore=0;
 	PPU_hook=0;
@@ -391,11 +385,11 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 
 	GetFileBase(fp->filename.c_str());
 
-	if(!fp) {
+	if(!fp)
+	{
 		FCEU_PrintError("Error opening \"%s\"!",name);
 		return 0;
 	}
-	//---------
 
 	//file opened ok. start loading.
 
@@ -414,7 +408,6 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 	if(fp->archiveFilename != "") GameInfo->archiveFilename = strdup(fp->archiveFilename.c_str());
 	GameInfo->archiveCount = fp->archiveCount;
 
-	GameInfo->soundchan = 2;
 	GameInfo->soundrate = 48200;
 	GameInfo->name=0;
 	GameInfo->type=GIT_CART;
@@ -481,9 +474,7 @@ bool FCEUI_Initialize()
 	srand(time(0));
 
 	if(!FCEU_InitVirtualVideo())
-	{
 		return false;
-	}
 
 	AllocBuffers();
 
@@ -583,7 +574,6 @@ void FCEU_MemoryRand(uint8 *ptr, uint32 size)
 
 void hand(X6502 *X, int type, unsigned int A)
 {
-
 }
 
 int suppressAddPowerCommand=0; // hack... yeah, I know...
@@ -592,7 +582,8 @@ void PowerNES(void)
 	//void MapperInit();
 	//MapperInit();
 
-	if(!GameInfo) return;
+	if(!GameInfo)
+		return;
 
 	FCEU_CheatResetRAM();
 	FCEU_CheatAddRAM(2,0,RAM);
@@ -830,14 +821,10 @@ bool FCEU_IsValidUI(EFCEUI ui)
 		case FCEUI_NEXTSAVESTATE:
 		case FCEUI_PREVIOUSSAVESTATE:
 		case FCEUI_VIEWSLOTS:
-			if(!GameInfo) return false;
-			break;
 		case FCEUI_RESET:
-			if(!GameInfo) return false;
-			break;
-
 		case FCEUI_POWER:
-			if(!GameInfo) return false;
+			if(!GameInfo)
+				return false;
 			break;
 	}
 	return true;
@@ -863,25 +850,10 @@ public:
 		if(PRG) delete[] PRG;
 	}
 
-	void Power() {
-	}
-
-protected:
-	//void SetReadHandler(int32 start, int32 end, readfunc func) {
+	void Power(){}
 };
 
 FCEUXCart* cart = 0;
-
-//uint8 Read_ByteFromRom(uint32 A) {
-//	if(A>=cart->prgSize) return 0xFF;
-//	return cart->PRG[A];
-//}
-//
-//uint8 Read_Unmapped(uint32 A) {
-//	return 0xFF;
-//}
-
-
 
 class NROM {
 public:
@@ -914,14 +886,11 @@ public:
 	}
 };
 
-void FCEUXGameInterface(GI command) {
-	switch(command) {
-		case GI_POWER:
-			cart->Power();
-	}
+void FCEUXGameInterface(GI command)
+{
+	if(command == GI_POWER)
+		cart->Power();
 }
-
-
 
 bool FCEUXLoad(const char *name, FCEUFILE *fp)
 {

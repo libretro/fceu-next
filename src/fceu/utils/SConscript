@@ -2,10 +2,8 @@ my_list =   Split("""
 crc32.cpp
 endian.cpp
 general.cpp
-guid.cpp
 md5.cpp
 memory.cpp
-unzip.cpp
 xstring.cpp
 """)
 

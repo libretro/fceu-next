@@ -360,7 +360,6 @@ void DrawTextTransWH(uint8 *dest, uint32 width, uint8 *textmsg, uint8 fgcolor, i
 
 	char target[64][256] = {{0}};
 
-	assert(width==256);
 	if (max_w > 256) max_w = 256;
 	if (max_h >  64) max_h =  64;
 

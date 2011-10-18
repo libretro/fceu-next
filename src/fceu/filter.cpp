@@ -20,17 +20,6 @@ static uint32 mrratio;
 
 void SexyFilter2(int32 *in, int32 count)
 {
-#ifdef moo
-	static int64 acc=0;
-	double x,p;
-	int64 c;
-
-	x=2*M_PI*6000/FSettings.SndRate;
-	p=((double)2-cos(x)) - sqrt(pow((double)2-cos(x),2) -1 );
-
-	c=p*0x100000;
-	//printf("%f\n",(double)c/0x100000);
-#endif
 	static int64 acc=0;
 
 	while(count--)
@@ -56,7 +45,6 @@ void SexyFilter(int32 *in, int32 *out, int32 count)
 	mul2=(24<<16)/FSettings.SndRate;
 	vmul=(FSettings.SoundVolume<<16)*3/4/100;
 
-	//FCEU_DispMessage("SoundVolume %d, vmul %d",0,FSettings.SoundVolume,vmul);
 	/* if(FSettings.soundq) vmul/=4; */
 	/* else */ vmul <<= 1;			/* TODO:  Increase volume in low quality sound rendering code itself */
 
@@ -70,8 +58,10 @@ void SexyFilter(int32 *in, int32 *out, int32 count)
 		{   
 			int32 t=(acc1-ino+acc2)>>16;
 			//if(t>32767 || t<-32768) printf("Flow: %d\n",t);
-			if(t>32767) t=32767;
-			if(t<-32768) t=-32768;   
+			if(t>32767)
+				t=32767;
+			if(t<-32768)
+				t=-32768;   
 			*out=t;
 		}  
 		in++;  
@@ -200,15 +190,4 @@ void MakeFilters(int32 rate)
 #endif
 		for(x=0;x<NCOEFFS>>1;x++)
 			coeffs[x]=coeffs[NCOEFFS-1-x]=tmp[x];
-
-#ifdef MOO
-	/* Some tests involving precision and error. */
-	{
-		static int64 acc=0;
-		int x;
-		for(x=0;x<SQ2NCOEFFS;x++)
-			acc+=(int64)32767*sq2coeffs[x];
-		printf("Foo: %lld\n",acc);
-	}
-#endif
 }

@@ -127,10 +127,9 @@ struct FCEUGI
 
 	//mbg 6/8/08 - ???
 	int soundrate;  //For Ogg Vorbis expansion sound wacky support.  0 for default.
-	int soundchan;  //Number of sound channels.
 
-	char* filename;
-	char* archiveFilename;
+	const char* filename;
+	const char* archiveFilename;
 	int archiveCount;
 };
 

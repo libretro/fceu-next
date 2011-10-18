@@ -25,7 +25,6 @@ THE SOFTWARE.
 #ifndef EMUFILE_H
 #define EMUFILE_H
 
-#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <vector>
@@ -237,7 +236,7 @@ class EMUFILE_MEMORY : public EMUFILE
 				pos = size()+offset;
 				break;
 			default:
-				assert(false);
+				break;
 		}
 		reserve(pos);
 		return 0;

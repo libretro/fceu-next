@@ -7,28 +7,6 @@
 
 //MBG TODO - COMBINE THESE INPUTC AND INPUTCFC
 
-/* straight implementation - no interface */
-#if 0
-struct INPUTC
-{
-	//these methods call the function pointers (or not, if they are null)
-	uint8 Read(int w) { if(_Read) return _Read(w); else return 0; }
-	void Write(uint8 w) { if(_Write) _Write(w); }
-	void Strobe(int w) { if(_Strobe) _Strobe(w); }
-	void Update(int w, void *data, int arg) { if(_Update) _Update(w,data,arg); }
-	void SLHook(int w, uint8 *bg, uint8 *spr, uint32 linets, int final) { if(_SLHook) _SLHook(w,bg,spr,linets,final); }
-	void Draw(int w, uint8 *buf, int arg) { if(_Draw) _Draw(w,buf,arg); }
-
-	uint8 (*_Read)(int w);
-	void (*_Write)(uint8 v);
-	void (*_Strobe)(int w);
-	//update will be called if input is coming from the user. refresh your logical state from user input devices
-	void (*_Update)(int w, void *data, int arg);
-	void (*_SLHook)(int w, uint8 *bg, uint8 *spr, uint32 linets, int final);
-	void (*_Draw)(int w, uint8 *buf, int arg);
-};
-#endif
-
 //The interface for standard joystick port device drivers
 struct INPUTC
 {
