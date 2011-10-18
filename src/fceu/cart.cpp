@@ -449,7 +449,7 @@ void OpenGenie(void)
 	{
 		char *fn;
 
-		if(!(GENIEROM=(uint8 *)FCEU_malloc(4096+1024))) return;
+		if(!(GENIEROM=(uint8 *)malloc(4096+1024))) return;
 
 		fn=strdup(FCEU_MakeFName(FCEUMKF_GGROM,0,0).c_str());
 		fp=FCEUD_UTF8fopen(fn,"rb");

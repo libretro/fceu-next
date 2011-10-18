@@ -166,7 +166,7 @@ void Mapper68_Init(CartInfo *info)
   info->Close=M68Close;
   GameStateRestore=StateRestore;
   WRAMSIZE=8192;
-  WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
+  WRAM=(uint8*)malloc(WRAMSIZE);
   SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
   if(info->battery)
   {

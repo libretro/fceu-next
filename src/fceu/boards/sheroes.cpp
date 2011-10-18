@@ -81,7 +81,7 @@ void UNLSHeroes_Init(CartInfo *info)
   info->Power=MSHPower;
   info->Reset=MSHReset;
   info->Close=MSHClose;
-  CHRRAM = (uint8*)FCEU_gmalloc(8192);
+  CHRRAM = (uint8*)malloc(8192);
   SetupCartCHRMapping(0x10, CHRRAM, 8192, 1);
   AddExState(EXPREGS, 4, 0, "EXPR");
   AddExState(&tekker, 1, 0, "DIPSW");

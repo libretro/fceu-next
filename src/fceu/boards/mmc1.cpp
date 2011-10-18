@@ -322,7 +322,7 @@ static void GenMMC1Init(CartInfo *info, int prg, int chr, int wram, int battery)
 
   if(wram)
   {
-    WRAM=(uint8*)FCEU_gmalloc(wram*1024);
+    WRAM=(uint8*)malloc(wram*1024);
 	//mbg 17-jun-08 - this shouldve been cleared to re-initialize save ram
 	//ch4 10-dec-08 - nope, this souldn't
 	//mbg 29-mar-09 - no time to debate this, we need to keep from breaking some old stuff.
@@ -341,7 +341,7 @@ static void GenMMC1Init(CartInfo *info, int prg, int chr, int wram, int battery)
   }
   if(!chr)
   {
-    CHRRAM=(uint8*)FCEU_gmalloc(8192);
+    CHRRAM=(uint8*)malloc(8192);
     SetupCartCHRMapping(0, CHRRAM, 8192, 1);
     AddExState(CHRRAM, 8192, 0, "CHRR");
   }

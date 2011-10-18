@@ -774,7 +774,7 @@ void AddExState(void *v, uint32 s, int type, char *desc)
 {
 	if(desc)
 	{
-		SFMDATA[SFEXINDEX].desc=(char *)FCEU_malloc(5);
+		SFMDATA[SFEXINDEX].desc=(char *)malloc(5);
 		strcpy(SFMDATA[SFEXINDEX].desc,desc);
 	}
 	else

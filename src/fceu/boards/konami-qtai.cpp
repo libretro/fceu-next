@@ -224,11 +224,11 @@ void Mapper190_Init(CartInfo *info)
   MapIRQHook=VRC5IRQ;
   //PPU_hook=Mapper190_PPU;
 
-  CHRRAM=(uint8*)FCEU_gmalloc(CHRSIZE);
+  CHRRAM=(uint8*)malloc(CHRSIZE);
   SetupCartCHRMapping(0x10,CHRRAM,CHRSIZE,1);
   AddExState(CHRRAM, CHRSIZE, 0, "CHRRAM");
 
-  WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
+  WRAM=(uint8*)malloc(WRAMSIZE);
   SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
   AddExState(WRAM, WRAMSIZE, 0, "WRAM");
 

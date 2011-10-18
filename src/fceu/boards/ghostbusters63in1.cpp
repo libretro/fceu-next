@@ -97,7 +97,7 @@ void BMCGhostbusters63in1_Init(CartInfo *info)
   info->Close=BMCGhostbusters63in1Close;
 
   CHRROMSIZE=8192; // dummy CHRROM, VRAM disable
-  CHRROM=(uint8*)FCEU_gmalloc(CHRROMSIZE);
+  CHRROM=(uint8*)malloc(CHRROMSIZE);
   SetupCartPRGMapping(0x10,CHRROM,CHRROMSIZE,0);
   AddExState(CHRROM, CHRROMSIZE, 0, "CHRROM");
 

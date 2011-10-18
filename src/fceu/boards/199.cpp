@@ -90,7 +90,7 @@ void Mapper199_Init(CartInfo *info)
   pwrap=M199PW;
   mwrap=M199MW;
   info->Power=M199Power;
-  CHRRAM=(uint8*)FCEU_gmalloc(CHRRAMSize);
+  CHRRAM=(uint8*)malloc(CHRRAMSize);
   SetupCartCHRMapping(0x10, CHRRAM, CHRRAMSize, 1);
   AddExState(CHRRAM, CHRRAMSize, 0, "CHRR");
   AddExState(EXPREGS, 4, 0, "EXPR");

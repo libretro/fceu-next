@@ -193,7 +193,7 @@ int NSFLoad(const char *name, FCEUFILE *fp)
 	NSFMaxBank=((NSFSize+(LoadAddr&0xfff)+4095)/4096);
 	NSFMaxBank=PRGsize[0]=uppow2(NSFMaxBank);
 
-	if(!(NSFDATA=(uint8 *)FCEU_malloc(NSFMaxBank*4096)))
+	if(!(NSFDATA=(uint8 *)malloc(NSFMaxBank*4096)))
 		return 0;
 
 	FCEU_fseek(fp,0x80,SEEK_SET);
@@ -276,9 +276,9 @@ int NSFLoad(const char *name, FCEUFILE *fp)
 	FCEU_printf(" Starting song:  %d / %d\n\n",NSFHeader.StartingSong,NSFHeader.TotalSongs);
 
 	if(NSFHeader.SoundChip&4)
-		ExWRAM=(uint8*)FCEU_gmalloc(32768+8192); //mbg merge 7/17/06 added cast
+		ExWRAM=(uint8*)malloc(32768+8192); //mbg merge 7/17/06 added cast
 	else
-		ExWRAM=(uint8*)FCEU_gmalloc(8192); //mbg merge 7/17/06 added cast
+		ExWRAM=(uint8*)malloc(8192); //mbg merge 7/17/06 added cast
 
 	FCEUI_SetVidSystem(NSFHeader.VideoSystem);
 

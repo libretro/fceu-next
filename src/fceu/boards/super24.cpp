@@ -93,7 +93,7 @@ void Super24_Init(CartInfo *info)
   info->Close=Super24Close;
   cwrap=Super24CW;
   pwrap=Super24PW;
-  CHRRAM=(uint8*)FCEU_gmalloc(8192);
+  CHRRAM=(uint8*)malloc(8192);
   SetupCartCHRMapping(0x10, CHRRAM, 8192, 1);
   AddExState(CHRRAM, 8192, 0, "CHRR");
   AddExState(EXPREGS, 3, 0, "BIG2");

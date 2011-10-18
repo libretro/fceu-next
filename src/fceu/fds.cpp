@@ -729,7 +729,7 @@ static int SubLoad(FCEUFILE *fp)
 
 	for(x=0;x<TotalSides;x++)
 	{
-		diskdata[x]=(uint8 *)FCEU_malloc(65500);
+		diskdata[x]=(uint8 *)malloc(65500);
 		if(!diskdata[x])
 		{
 			int zol;
@@ -821,7 +821,7 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 
 	for(x = 0; x < TotalSides; x++)
 	{
-		diskdatao[x]=(uint8 *)FCEU_malloc(65500);
+		diskdatao[x]=(uint8 *)malloc(65500);
 		memcpy(diskdatao[x],diskdata[x],65500);
 	}
 #ifndef GEKKO

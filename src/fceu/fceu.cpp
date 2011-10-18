@@ -183,9 +183,9 @@ static DECLFR(ANull)
 
 int AllocGenieRW(void)
 {
-	if(!(AReadG=(readfunc *)FCEU_malloc(0x8000*sizeof(readfunc))))
+	if(!(AReadG=(readfunc *)malloc(0x8000*sizeof(readfunc))))
 		return 0;
-	if(!(BWriteG=(writefunc *)FCEU_malloc(0x8000*sizeof(writefunc))))
+	if(!(BWriteG=(writefunc *)malloc(0x8000*sizeof(writefunc))))
 		return 0;
 	RWWrap=1;
 	return 1;
@@ -281,8 +281,8 @@ static void AllocBuffers()
 
 #else
 
-	GameMemBlock = (uint8*)FCEU_gmalloc(GAME_MEM_BLOCK_SIZE);
-	RAM = (uint8*)FCEU_gmalloc(0x800);
+	GameMemBlock = (uint8*)malloc(GAME_MEM_BLOCK_SIZE);
+	RAM = (uint8*)malloc(0x800);
 
 #endif
 }

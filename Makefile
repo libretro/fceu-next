@@ -116,7 +116,6 @@ $(FCEU_API_DIR)/utils/crc32-fceu.cpp \
 $(FCEU_API_DIR)/utils/endian.cpp \
 $(FCEU_API_DIR)/utils/general.cpp \
 $(FCEU_API_DIR)/utils/md5.cpp \
-$(FCEU_API_DIR)/utils/memory.cpp \
 $(FCEU_API_DIR)/utils/xstring.cpp
 
 PPU_SRCS += $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.c))

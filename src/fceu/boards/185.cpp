@@ -93,7 +93,7 @@ void Mapper185_Init(CartInfo *info)
   info->Power=MPower;
   info->Close=MClose;
   GameStateRestore=MRestore;
-  DummyCHR=(uint8*)FCEU_gmalloc(8192);
+  DummyCHR=(uint8*)malloc(8192);
   for(x=0;x<8192;x++)
      DummyCHR[x]=0xff;
   SetupCartCHRMapping(0x10,DummyCHR,8192,0);
@@ -107,7 +107,7 @@ void Mapper181_Init(CartInfo *info)
   info->Power=MPower;
   info->Close=MClose;
   GameStateRestore=MRestore;
-  DummyCHR=(uint8*)FCEU_gmalloc(8192);
+  DummyCHR=(uint8*)malloc(8192);
   for(x=0;x<8192;x++)
      DummyCHR[x]=0xff;
   SetupCartCHRMapping(0x10,DummyCHR,8192,0);

@@ -109,13 +109,13 @@ int FCEU_InitVirtualVideo(void)
 	{
 		CloseHandle(mapXBuf);
 		mapXBuf = NULL;
-		XBuf = (uint8*) (FCEU_malloc(256 * 256 + 16));
-		XBackBuf = (uint8*) (FCEU_malloc(256 * 256 + 16));
+		XBuf = (uint8*) (malloc(256 * 256 + 16));
+		XBackBuf = (uint8*) (malloc(256 * 256 + 16));
 	}
 	else
 	{
 		XBuf = (uint8 *)MapViewOfFile(mapXBuf, FILE_MAP_WRITE, 0, 0, 0);
-		XBackBuf = (uint8*) (FCEU_malloc(256 * 256 + 16));
+		XBackBuf = (uint8*) (malloc(256 * 256 + 16));
 	}
 
 	if (!XBuf || !XBackBuf )
@@ -125,8 +125,8 @@ int FCEU_InitVirtualVideo(void)
 
 #else
 
-		if(!(XBuf= (uint8*) (FCEU_malloc(256 * 256 + 16))) ||
-			!(XBackBuf= (uint8*) (FCEU_malloc(256 * 256 + 16))))
+		if(!(XBuf= (uint8*) (malloc(256 * 256 + 16))) ||
+			!(XBackBuf= (uint8*) (malloc(256 * 256 + 16))))
 		{
 			return 0;
 		}

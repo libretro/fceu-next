@@ -254,7 +254,7 @@ static int LoadPRG(FCEUFILE *fp)
 	if(malloced[z])
 		free(malloced[z]);
 	t=FixRomSize(uchead.info,2048);
-	if(!(malloced[z]=(uint8 *)FCEU_malloc(t)))
+	if(!(malloced[z]=(uint8 *)malloc(t)))
 		return(0);
 	mallocedsizes[z]=t;
 	memset(malloced[z]+uchead.info,0xFF,t-uchead.info);
@@ -272,7 +272,7 @@ static int LoadPRG(FCEUFILE *fp)
 
 static int SetBoardName(FCEUFILE *fp)
 {
-	if(!(boardname=(uint8 *)FCEU_malloc(uchead.info+1)))
+	if(!(boardname=(uint8 *)malloc(uchead.info+1)))
 		return(0);
 	FCEU_fread(boardname,1,uchead.info,fp);
 	boardname[uchead.info]=0;
@@ -293,7 +293,7 @@ static int LoadCHR(FCEUFILE *fp)
 	if(malloced[16+z])
 		free(malloced[16+z]);
 	t=FixRomSize(uchead.info,8192);
-	if(!(malloced[16+z]=(uint8 *)FCEU_malloc(t)))
+	if(!(malloced[16+z]=(uint8 *)malloc(t)))
 		return(0);
 	mallocedsizes[16+z]=t;
 	memset(malloced[16+z]+uchead.info,0xFF,t-uchead.info);
@@ -508,7 +508,7 @@ static int InitializeBoard(void)
 					CHRRAMSize = 16384;
 				else
 					CHRRAMSize = 8192;
-				if((UNIFchrrama=(uint8 *)FCEU_malloc(CHRRAMSize)))
+				if((UNIFchrrama=(uint8 *)malloc(CHRRAMSize)))
 				{
 					SetupCartCHRMapping(0,UNIFchrrama,CHRRAMSize,1);
 					AddExState(UNIFchrrama, CHRRAMSize, 0,"CHRR");

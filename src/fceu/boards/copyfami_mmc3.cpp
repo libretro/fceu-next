@@ -140,7 +140,7 @@ void MapperCopyFamiMMC3_Init(CartInfo *info)
   GameStateRestore=StateRestore;
 
   CHRRAMSIZE=8192;
-  CHRRAM=(uint8*)FCEU_gmalloc(CHRRAMSIZE);
+  CHRRAM=(uint8*)malloc(CHRRAMSIZE);
   SetupCartPRGMapping(0x10,CHRRAM,CHRRAMSIZE,1);
   AddExState(CHRRAM, CHRRAMSIZE, 0, "SRAM");
 

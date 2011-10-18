@@ -149,7 +149,7 @@ void Mapper153_Init(CartInfo *info)
   MapIRQHook=BandaiIRQHook;
 
   WRAMSIZE=8192;
-  WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
+  WRAM=(uint8*)malloc(WRAMSIZE);
   SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
   AddExState(WRAM, WRAMSIZE, 0, "WRAM");
 

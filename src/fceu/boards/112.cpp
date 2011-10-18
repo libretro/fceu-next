@@ -87,7 +87,7 @@ void Mapper112_Init(CartInfo *info)
   info->Power=M112Power;
   info->Close=M112Close;
   GameStateRestore=StateRestore;
-  WRAM=(uint8*)FCEU_gmalloc(8192);
+  WRAM=(uint8*)malloc(8192);
   SetupCartPRGMapping(0x10,WRAM,8192,1);
   AddExState(WRAM, 8192, 0, "WRAM");
   AddExState(&StateRegs, ~0, 0, 0);

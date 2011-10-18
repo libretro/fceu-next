@@ -70,7 +70,7 @@ static void Latch_Init(CartInfo *info, void (*proc)(void), uint8 init, uint16 ad
   if(wram)
   {
     WRAMSIZE=8192;
-    WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
+    WRAM=(uint8*)malloc(WRAMSIZE);
     SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
     if(info->battery)
     {
@@ -429,7 +429,7 @@ void NROM_Init(CartInfo *info)
   info->Close=LatchClose;
 
   WRAMSIZE=8192;
-  WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
+  WRAM=(uint8*)malloc(WRAMSIZE);
   SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
   if(info->battery)
   {
