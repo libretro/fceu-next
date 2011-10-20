@@ -69,7 +69,6 @@ extern uint8 PAL;
 
 typedef struct {
 	int PAL;
-	int NetworkPlay;
 	int SoundVolume;		//Master volume
 	int TriangleVolume;
 	int Square1Volume;

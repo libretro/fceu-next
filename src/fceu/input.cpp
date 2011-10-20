@@ -77,10 +77,6 @@ extern INPUTCFC *FCEU_InitFamicom3D(void);
 //---------------
 
 //global lag variables
-unsigned int lagCounter;
-bool lagCounterDisplay;
-char lagFlag;
-extern bool frameAdvanceLagSkip;
 //-------------
 
 static uint8 joy_readbit[2];
@@ -109,7 +105,6 @@ FCPORT portFC;
 
 static DECLFR(JPRead)
 {
-	lagFlag = 0;
 	uint8 ret=0;
 	static bool microphone = false;
 
@@ -304,7 +299,6 @@ void FCEU_UpdateInput(void)
 
 static DECLFR(VSUNIRead0)
 {
-	lagFlag = 0;
 	uint8 ret=0;
 
 	ret|=(joyports[0].driver->Read(0))&1;
@@ -317,7 +311,6 @@ static DECLFR(VSUNIRead0)
 
 static DECLFR(VSUNIRead1)
 {
-	lagFlag = 0;
 	uint8 ret=0;
 
 	ret|=(joyports[1].driver->Read(1))&1;
@@ -477,8 +470,6 @@ SFORMAT FCEUCTRL_STATEINFO[]={
 	{ &LastStrobe,	1, "LSTS"},
 	{ &ZD[0].bogo,	1, "ZBG0"},
 	{ &ZD[1].bogo,	1, "ZBG1"},
-	{ &lagFlag,		1, "LAGF"},
-	{ &lagCounter,	4, "LAGC"},
 	{ 0, 4, "FRAM"},
 	{ 0 }
 };
@@ -576,7 +567,6 @@ struct EMUCMDTABLE FCEUI_CommandTable[]=
 {
 	{ EMUCMD_POWER,							EMUCMDTYPE_MISC,	FCEUI_PowerNES,		  0, 0, "Power", 0 },
 	{ EMUCMD_RESET,							EMUCMDTYPE_MISC,	FCEUI_ResetNES,		  0, 0, "Reset", 0 },
-	{ EMUCMD_PAUSE,							EMUCMDTYPE_MISC,	FCEUI_ToggleEmulationPause, 0, 0, "Pause", 0 },
 	{ EMUCMD_HIDE_MENU_TOGGLE,				EMUCMDTYPE_MISC,	FCEUD_HideMenuToggle, 0, 0, "Hide Menu Toggle", 0},
 	{ EMUCMD_SPEED_SLOWEST,					EMUCMDTYPE_SPEED,	CommandEmulationSpeed, 0, 0, "Slowest Speed", 0 },
 	{ EMUCMD_SPEED_SLOWER,					EMUCMDTYPE_SPEED,	CommandEmulationSpeed, 0, 0, "Speed Down", 0 },

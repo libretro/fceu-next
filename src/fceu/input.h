@@ -49,10 +49,7 @@ struct INPUTCFC
 
 extern struct JOYPORT
 {
-	JOYPORT(int _w)
-		: w(_w) 
-	{}
-
+	JOYPORT(int _w) : w(_w) {}
 	int w;
 	int attrib;
 	ESI type;
@@ -84,7 +81,6 @@ enum EMUCMD
 {
 	EMUCMD_POWER=0,
 	EMUCMD_RESET,
-	EMUCMD_PAUSE,
 	EMUCMD_SCREENSHOT,
 	EMUCMD_HIDE_MENU_TOGGLE,
 	//fixed: current command key handling handle only command table record index with
@@ -166,9 +162,6 @@ enum EMUCMD
 	EMUCMD_MISC_USE_INPUT_PRESET_3,
 	EMUCMD_MISC_DISPLAY_BG_TOGGLE,
 	EMUCMD_MISC_DISPLAY_OBJ_TOGGLE,
-	EMUCMD_MISC_DISPLAY_LAGCOUNTER_TOGGLE,
-	
-	EMUCMD_MISC_LAGCOUNTER_RESET,
 	EMUCMD_MISC_UNDOREDOSAVESTATE,
 	EMUCMD_MAX
 };
@@ -211,10 +204,6 @@ struct EMUCMDTABLE
 
 extern struct EMUCMDTABLE FCEUI_CommandTable[];
 
-extern unsigned int lagCounter;
-extern bool lagCounterDisplay;
-extern char lagFlag;
 extern bool turbo;
-void LagCounterReset();
 
 #endif //_INPUT_H_

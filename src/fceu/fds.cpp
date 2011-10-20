@@ -151,8 +151,6 @@ static void FDSInit(void)
 
 void FCEU_FDSInsert(void)
 {
-	if(FCEUI_EmulationPaused()) EmulationPaused |= 2;
-
 	if(TotalSides==0)
 	{
 		FCEU_DispMessage("Not FDS; can't eject disk.",0);  
@@ -177,8 +175,6 @@ InDisk=255;
 */
 void FCEU_FDSSelect(void)
 {
-	if(FCEUI_EmulationPaused()) EmulationPaused |= 2;
-
 	if(TotalSides==0)
 	{
 		FCEU_DispMessage("Not FDS; can't select disk.",0);

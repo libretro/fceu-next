@@ -65,6 +65,4 @@ void FCEUSND_LoadState(int version);
 void FCEU_SoundCPUHook(int);
 void Write_IRQFM (uint32 A, uint8 V); //mbg merge 7/17/06 brought over from latest mmbuild
 
-void LogDPCM(int romaddress, int dpcmsize);
-
 #endif

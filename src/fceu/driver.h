@@ -17,9 +17,6 @@ FCEUFILE* FCEUD_OpenArchiveIndex(ArchiveScanRecord& asr, std::string& fname, int
 FCEUFILE* FCEUD_OpenArchive(ArchiveScanRecord& asr, std::string& fname, std::string* innerFilename);
 ArchiveScanRecord FCEUD_ScanArchive(std::string fname);
 
-//mbg 7/23/06
-const char *FCEUD_GetCompilerString();
-
 //This makes me feel dirty for some reason.
 void FCEU_printf(char *format, ...);
 #define FCEUI_printf FCEU_printf
@@ -31,34 +28,6 @@ void FCEUD_GetPalette(uint8 i,uint8 *r, uint8 *g, uint8 *b);
 //Displays an error.  Can block or not.
 void FCEUD_PrintError(const char *s);
 void FCEUD_Message(const char *s);
-
-//Network interface
-
-//Call only when a game is loaded.
-int FCEUI_NetplayStart(int nlocal, int divisor);
-
-// Call when network play needs to stop.
-void FCEUI_NetplayStop(void);
-
-//Note:  YOU MUST NOT CALL ANY FCEUI_* FUNCTIONS WHILE IN FCEUD_SendData() or FCEUD_RecvData().
-
-//Return 0 on failure, 1 on success.
-int FCEUD_SendData(void *data, uint32 len);
-int FCEUD_RecvData(void *data, uint32 len);
-
-//Display text received over the network.
-void FCEUD_NetplayText(uint8 *text);
-
-//Encode and send text over the network.
-void FCEUI_NetplayText(uint8 *text);
-
-//Called when a fatal error occurred and network play can't continue.  This function
-//should call FCEUI_NetplayStop() after it has deinitialized the network on the driver
-//side.
-void FCEUD_NetworkClose(void);
-
-bool FCEUI_BeginWaveRecord(const char *fn);
-int FCEUI_EndWaveRecord(void);
 
 void FCEUI_ResetNES(void);
 void FCEUI_PowerNES(void);
@@ -82,12 +51,7 @@ bool FCEUI_GetInputMicrophone();
 
 void FCEUI_UseInputPreset(int preset);
 
-
 //New interface functions
-
-//0 to order screen snapshots numerically(0.png), 1 to order them file base-numerically(smb3-0.png).
-//this variable isn't used at all, snap is always name-based
-//void FCEUI_SetSnapName(bool a);
 
 //0 to keep 8-sprites limitation, 1 to remove it
 void FCEUI_DisableSpriteLimitation(int a);
@@ -124,10 +88,6 @@ void FCEUI_SetVidSystem(int a);
 int FCEUI_GetCurrentVidSystem(int *slstart, int *slend);
 
 #ifdef FRAMESKIP
-/* Should be called from FCEUD_BlitScreen().  Specifies how many frames
-   to skip until FCEUD_BlitScreen() is called.  FCEUD_BlitScreenDummy()
-   will be called instead of FCEUD_BlitScreen() when when a frame is skipped.
-*/
 void FCEUI_FrameSkip(int x);
 #endif
 
@@ -213,12 +173,8 @@ void FCEUI_CheatSearchSetCurrentAsOriginal(void);
 
 void FCEUI_SetDirOverride(int which, char *n);
 
-void FCEUI_MemDump(uint16 a, int32 len, void (*callb)(uint16 a, uint8 v));
-uint8 FCEUI_MemSafePeek(uint16 A);
-void FCEUI_MemPoke(uint16 a, uint8 v, int hl);
 void FCEUI_NMI(void);
 void FCEUI_IRQ(void);
-uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo);
 void FCEUI_GetIVectors(uint16 *reset, uint16 *irq, uint16 *nmi);
 
 void FCEUI_ToggleTileView(void);
@@ -239,17 +195,6 @@ void FCEUI_FDSInsert(void); //mbg merge 7/17/06 changed to void fn(void) to make
 void FCEUI_FDSSelect(void);
 
 int FCEUI_DatachSet(const uint8 *rcode);
-
-///returns a flag indicating whether emulation is paused
-int FCEUI_EmulationPaused();
-///returns a flag indicating whether a one frame step has been requested
-int FCEUI_EmulationFrameStepped();
-///clears the framestepped flag. use it after youve stepped your one frame
-void FCEUI_ClearEmulationFrameStepped();
-///sets the EmulationPaused flags
-void FCEUI_SetEmulationPaused(int val);
-///toggles the paused bit (bit0) for EmulationPaused. caused FCEUD_DebugUpdate() to fire if the emulation pauses
-void FCEUI_ToggleEmulationPause();
 
 //indicates whether input aids should be drawn (such as crosshairs, etc; usually in fullscreen mode)
 bool FCEUD_ShouldDrawInputAids();
@@ -301,12 +246,5 @@ enum EFCEUI
 
 //checks whether an EFCEUI is valid right now
 bool FCEU_IsValidUI(EFCEUI ui);
-
-#if 0
-#ifdef __cplusplus
-extern "C"
-#endif
-FILE *FCEUI_UTF8fopen_C(const char *n, const char *m);
-#endif
 
 #endif //__DRIVER_H_

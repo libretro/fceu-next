@@ -13,9 +13,7 @@ file.cpp
 filter.cpp 
 ines.cpp
 input.cpp
-netplay.cpp
 nsf.cpp
-oldmovie.cpp
 palette.cpp
 ppu.cpp
 sound.cpp
@@ -25,7 +23,6 @@ video.cpp
 vsuni.cpp
 wave.cpp
 x6502.cpp
-movie.cpp
 """)
 
 subdirs = Split("""

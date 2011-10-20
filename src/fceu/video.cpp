@@ -69,27 +69,6 @@ std::string AsSnapshotName ="";			//adelikat:this will set the snapshot name whe
 void FCEUI_SetSnapshotAsName(std::string name) { AsSnapshotName = name; }
 std::string FCEUI_GetSnapshotAsName() { return AsSnapshotName; }
 
-void FCEU_KillVirtualVideo(void)
-{
-	//mbg merge TODO 7/17/06 temporarily removed
-	//if(xbsave)
-	//{
-	// free(xbsave);
-	// xbsave=0;
-	//}
-	//if(XBuf)
-	//{
-	//UnmapViewOfFile(XBuf);
-	//CloseHandle(mapXBuf);
-	//mapXBuf=NULL;
-	//}
-	//if(XBackBuf)
-	//{
-	// free(XBackBuf);
-	// XBackBuf=0;
-	//}
-}
-
 /**
 * Return: Flag that indicates whether the function was succesful or not.
 *
@@ -153,20 +132,6 @@ int FCEU_InitVirtualVideo(void)
 
 //#define SHOWFPS
 void ShowFPS(void);
-#if 0
-void FCEU_PutImageDummy(void)
-{
-	#if 0
-	if(GameInfo->type!=GIT_NSF)
-	{
-	#endif
-		FCEU_DrawNTSCControlBars(XBuf);
-		FCEU_DrawSaveStates(XBuf);
-		//FCEU_DrawMovies(XBuf);
-	//}
-	if(guiMessage.howlong) guiMessage.howlong--; /* DrawMessage() */
-}
-#endif
 #endif
 
 #if 0
@@ -188,7 +153,6 @@ void FCEU_PutImage(void)
 	{
    #endif
 		//Save backbuffer before overlay stuff is written.
-		//if(!FCEUI_EmulationPaused())
 		memcpy(XBackBuf, XBuf, 256*256);
 
 		//Some messages need to be displayed before the avi is dumped

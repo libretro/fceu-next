@@ -24,7 +24,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <unistd.h> //mbg merge 7/17/06 removed
 
 #include <vector>
 #include <fstream>
@@ -227,8 +226,6 @@ static bool ReadStateChunk(EMUFILE* is, SFORMAT *sf, int size)
 
 static int read_sfcpuc=0, read_snd=0;
 
-void FCEUD_BlitScreen(uint8 *XBuf); //mbg merge 7/17/06 YUCKY had to add
-void UpdateFCEUWindow(void);  //mbg merge 7/17/06 YUCKY had to add
 static bool ReadStateChunks(EMUFILE* is, int32 totalsize)
 {
 	int t;
@@ -238,11 +235,6 @@ static bool ReadStateChunks(EMUFILE* is, int32 totalsize)
 
 	read_sfcpuc=0;
 	read_snd=0;
-
-	//mbg 6/16/08 - wtf
-	//// int moo=X.mooPI;
-	// if(!scan_chunks)
-	//   X.mooPI=/*X.P*/0xFF;
 
 	while(totalsize > 0)
 	{
@@ -862,29 +854,6 @@ uint32_t FCEUI_LoadState(const char *fname)
 	}
 	if(FCEUSS_Load(fname))
 	{
-		//mbg todo netplay
-		/*if(FCEUnetplay)
-		  {
-		  char *fn = strdup(FCEU_MakeFName(FCEUMKF_NPTEMP, 0, 0).c_str());
-		  FILE *fp;
-
-		  if((fp = fopen(fn," wb")))
-		  {
-		  if(FCEUSS_SaveFP(fp,0))
-		  {
-		  fclose(fp);
-		  FCEUNET_SendFile(FCEUNPCMD_LOADSTATE, fn);
-		  }
-		  else
-		  {
-		  fclose(fp);
-		  }
-
-		  unlink(fn);
-		  }
-
-		  free(fn);
-		  }*/
 		  return true;
 	}
 	else

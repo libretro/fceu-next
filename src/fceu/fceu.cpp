@@ -162,10 +162,6 @@ static readfunc *AReadG;
 static writefunc *BWriteG;
 static int RWWrap=0;
 
-//mbg merge 7/18/06 docs
-//bit0 indicates whether emulation is paused
-//bit1 indicates whether emulation is in frame step mode
-int EmulationPaused=0;
 
 static int *AutosaveStatus; //is it safe to load Auto-savestate
 static int AutosaveIndex = 0; //which Auto-savestate we're on
@@ -332,7 +328,6 @@ void ResetGameLoaded(void)
 {
 	if(GameInfo)
 		FCEU_CloseGame();
-	EmulationPaused = 0; //mbg 5/8/08 - loading games while paused was bad news. maybe this fixes it
 	GameStateRestore=0;
 	PPU_hook=0;
 	GameHBIRQHook=0;
@@ -491,7 +486,6 @@ void FCEUI_Kill(void)
 	#ifdef _S9XLUA_H
 	FCEU_LuaStop();
 	#endif
-	FCEU_KillVirtualVideo();
 	FCEU_KillGenie();
 	FreeBuffers();
 }
@@ -552,11 +546,6 @@ void FCEU_MemoryRand(uint8 *ptr, uint32 size)
 	}while(size);
 }
 
-void hand(X6502 *X, int type, unsigned int A)
-{
-}
-
-int suppressAddPowerCommand=0; // hack... yeah, I know...
 void PowerNES(void)
 {
 	//void MapperInit();
@@ -696,45 +685,12 @@ void FCEUI_SetGameGenie(bool a)
 	FSettings.GameGenie = a;
 }
 
-//this variable isn't used at all, snap is always name-based
-//void FCEUI_SetSnapName(bool a)
-//{
-//	FSettings.SnapName = a;
-//}
-
 int32 FCEUI_GetDesiredFPS(void)
 {
 	if(PAL)
 		return(838977920); // ~50.007
 	else
 		return(1008307711);	// ~60.1
-}
-
-int FCEUI_EmulationPaused(void)
-{
-	return (EmulationPaused&1);
-}
-
-int FCEUI_EmulationFrameStepped()
-{
-	return (EmulationPaused&2);
-}
-
-void FCEUI_ClearEmulationFrameStepped()
-{
-	EmulationPaused &=~2;
-}
-
-//mbg merge 7/18/06 added
-//ideally maybe we shouldnt be using this, but i need it for quick merging
-void FCEUI_SetEmulationPaused(int val)
-{
-	EmulationPaused = val;
-}
-
-void FCEUI_ToggleEmulationPause(void)
-{
-	EmulationPaused = (EmulationPaused&1)^1;
 }
 
 void FCEUI_Autosave(void)

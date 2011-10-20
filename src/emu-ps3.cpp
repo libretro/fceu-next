@@ -836,12 +836,7 @@ DUMMY(FCEUD_TurboToggle)
 DUMMY(FCEUD_SaveStateAs)
 DUMMY(FCEUD_LoadStateFrom)
 DUMMY(FCEUD_ToggleStatusIcon)
-DUMMY(FCEUD_NetworkClose)
-int FCEUD_SendData(void *data, uint32 len) { return 1; }
-int FCEUD_RecvData(void *data, uint32 len) { return 0; }
 int FCEUD_ShowStatusIcon(void) { return 0; }
-const char *FCEUD_GetCompilerString() { return NULL; }
-void FCEUD_NetplayText(uint8_t * text) { }
 void FCEUI_UseInputPreset(int preset) { }
 void FCEUD_SoundVolumeAdjust(int n) { }
 void FCEUD_SetEmulationSpeed(int cmd) { }
