@@ -32,22 +32,8 @@ extern const uint8 opsize[256];
 //the optype table is a quick way to grab the addressing mode for any 6502 opcode
 extern const uint8 optype[256];
 
-//-----------
-//mbg 6/30/06 - some of this was removed to mimic XD
-//#ifdef FCEUDEF_DEBUGGER
-#if 0
-void X6502_Debug(void (*CPUHook)(X6502 *),
-    uint8 (*ReadHook)(X6502 *, unsigned int),
-    void (*WriteHook)(X6502 *, unsigned int, uint8));
-#endif
 
-//extern void (*X6502_Run)(int32 cycles);
-//#else
 void X6502_Run(int32 cycles);
-//#endif
-//void X6502_RunDebug(int32 cycles);
-//#define X6502_Run(x) X6502_RunDebug(x)
-//------------
 
 extern uint32 timestamp;
 

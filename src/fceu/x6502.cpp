@@ -406,7 +406,6 @@ void X6502_Run(int32 cycles)
 #endif
 
 	_count+=cycles;
-	extern int test; test++;
 	while(_count>0)
 	{
 		int32 temp;
@@ -416,7 +415,6 @@ void X6502_Run(int32 cycles)
 		{
 			if(_IRQlow & FCEU_IQRESET)
 			{
-				//DEBUG( if(debug_loggingCD) LogCDVectors(0xFFFC); )
 				_PC=RdMem(0xFFFC);
 				_PC|=RdMem(0xFFFD)<<8;
 				_jammed=0;
@@ -437,7 +435,6 @@ void X6502_Run(int32 cycles)
 					PUSH(_PC);
 					PUSH((_P&~B_FLAG)|(U_FLAG));
 					_P|=I_FLAG;
-					//DEBUG( if(debug_loggingCD) LogCDVectors(0xFFFA) );
 					_PC=RdMem(0xFFFA);
 					_PC|=RdMem(0xFFFB)<<8;
 					_IRQlow&=~FCEU_IQNMI;
@@ -452,7 +449,6 @@ void X6502_Run(int32 cycles)
 					PUSH(_PC);
 					PUSH((_P&~B_FLAG)|(U_FLAG));
 					_P|=I_FLAG;
-					//DEBUG( if(debug_loggingCD) LogCDVectors(0xFFFE) );
 					_PC=RdMem(0xFFFE);
 					_PC|=RdMem(0xFFFF)<<8;
 				}
@@ -465,9 +461,6 @@ void X6502_Run(int32 cycles)
 			} //Should increase accuracy without a
 			//major speed hit.
 		}
-
-		//will probably cause a major speed decrease on low-end systems
-		//DEBUG( DebugCycle() );
 
 		_PI=_P;
 		b1=RdMem(_PC);
@@ -489,34 +482,6 @@ void X6502_Run(int32 cycles)
 	}
 }
 
-//--------------------------
-//---Called from debuggers
-#if 0
-void FCEUI_NMI(void)
-{
-	_IRQlow|=FCEU_IQNMI;
-}
-
-void FCEUI_IRQ(void)
-{
-	_IRQlow|=FCEU_IQTEMP;
-}
-#endif
-
-#if 0
-void FCEUI_GetIVectors(uint16 *reset, uint16 *irq, uint16 *nmi)
-{
- fceuindbg=1;
-
- *reset=RdMem(0xFFFC);
- *reset|=RdMem(0xFFFD)<<8;
- *nmi=RdMem(0xFFFA);
- *nmi|=RdMem(0xFFFB)<<8;
- *irq=RdMem(0xFFFE);
- *irq|=RdMem(0xFFFF)<<8;
- fceuindbg=0;
-}
-#endif
 
 //the opsize table is used to quickly grab the instruction sizes (in bytes)
 const uint8 opsize[256] = {

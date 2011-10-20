@@ -62,17 +62,13 @@
 
 #define Pal     (PALRAM)
 
-static void FetchSpriteData(void);
 static void RefreshLine(int lastpixel);
 static void RefreshSprites(void);
 static void CopySprites(uint8 *target);
 
-static void Fixit1(void);
 static uint32 ppulut1[256];
 static uint32 ppulut2[256];
 static uint32 ppulut3[128];
-
-int test = 0;
 
 typedef struct BITREVLUT {
 
@@ -109,23 +105,6 @@ struct PPUSTATUS
     int32 end_cycle;
 };
 
-#define spr_reset() \
-	__dcbt(&spr_read); \
-	spr_read.num = spr_read.count = spr_read.fetch = spr_read.found = spr_read.ret = spr_read.last = spr_read.mode = 0; \
-	spr_read.found_pos[0] = spr_read.found_pos[1] = spr_read.found_pos[2] = spr_read.found_pos[3] = 0; \
-	spr_read.found_pos[4] = spr_read.found_pos[5] = spr_read.found_pos[6] = spr_read.found_pos[7] = 0;
-
-#define spr_start_scanline() \
-	__dcbt(&spr_read); \
-	spr_read.num = 1; \
-	spr_read.found = 0; \
-	spr_read.fetch = 1; \
-	spr_read.count = 0; \
-	spr_read.last = 64; \
-	spr_read.mode = 0; \
-	spr_read.found_pos[0] = spr_read.found_pos[1] = spr_read.found_pos[2] = spr_read.found_pos[3] = 0; \
-	spr_read.found_pos[4] = spr_read.found_pos[5] = spr_read.found_pos[6] = spr_read.found_pos[7] = 0;
-
 struct SPRITE_READ
 {
     int32 num;
@@ -146,6 +125,89 @@ SPRITE_READ spr_read;
 
 //definitely needs to be savestated
 uint8 idleSynch = 1;
+
+//cached state data. these are always reset at the beginning of a frame and don't need saving
+//but just to be safe, we're gonna save it
+PPUSTATUS ppur_status;
+
+//uses the internal counters concept at http://nesdev.icequake.net/PPU%20addressing.txt
+struct PPUREGS {
+	//normal clocked regs. as the game can interfere with these at any time, they need to be savestated
+	uint32 fv;//3
+	uint32 v;//1
+	uint32 h;//1
+	uint32 vt;//5
+	uint32 ht;//5
+
+	//temp unlatched regs (need savestating, can be written to at any time)
+	uint32 _fv, _v, _h, _vt, _ht;
+
+	//other regs that need savestating
+	uint32 fh;//3 (horz scroll)
+	uint32 s;//1 ($2000 bit 4: "Background pattern table address (0: $0000; 1: $1000)")
+
+	//other regs that don't need saving
+	uint32 par;//8 (sort of a hack, just stored in here, but not managed by this system)
+
+} ppur;
+
+#define V_FLIP  0x80
+#define H_FLIP  0x40
+#define SP_BACK 0x20
+
+typedef struct {
+	uint8_t y;
+	uint8_t no;
+	uint8_t atr;
+	uint8_t x;
+} SPR;
+
+typedef struct {
+	uint8 ca[2],atr,x;
+} SPRB;
+
+uint32 TempAddr=0,RefreshAddr=0;
+
+static void Fixit1(void)
+{
+	if(ScreenON || SpriteON)
+	{
+		uint32 rad=RefreshAddr;
+
+		if((rad & 0x7000) == 0x7000)
+		{
+			rad ^= 0x7000;
+			if((rad & 0x3E0) == 0x3A0)
+				rad ^= 0xBA0;
+			else if((rad & 0x3E0) == 0x3e0)
+				rad ^= 0x3e0;
+			else
+				rad += 0x20;
+		}
+		else
+			rad += 0x1000;
+		RefreshAddr = rad;
+	}
+}
+
+#define spr_reset() \
+	__dcbt(&spr_read); \
+	spr_read.num = spr_read.count = spr_read.fetch = spr_read.found = spr_read.ret = spr_read.last = spr_read.mode = 0; \
+	spr_read.found_pos[0] = spr_read.found_pos[1] = spr_read.found_pos[2] = spr_read.found_pos[3] = 0; \
+	spr_read.found_pos[4] = spr_read.found_pos[5] = spr_read.found_pos[6] = spr_read.found_pos[7] = 0;
+
+#define spr_start_scanline() \
+	__dcbt(&spr_read); \
+	spr_read.num = 1; \
+	spr_read.found = 0; \
+	spr_read.fetch = 1; \
+	spr_read.count = 0; \
+	spr_read.last = 64; \
+	spr_read.mode = 0; \
+	spr_read.found_pos[0] = spr_read.found_pos[1] = spr_read.found_pos[2] = spr_read.found_pos[3] = 0; \
+	spr_read.found_pos[4] = spr_read.found_pos[5] = spr_read.found_pos[6] = spr_read.found_pos[7] = 0;
+
+
 
 #define ppur_get_ntread() 0x2000 | (ppur.v << 0xB) | (ppur.h << 0xA) | (ppur.vt << 5) | ppur.ht
 
@@ -238,30 +300,6 @@ uint8 idleSynch = 1;
 	ppur._fv = ppur._v = ppur._h = ppur._vt = ppur._ht = 0; \
 	ppur.fh = 0;
 
-//cached state data. these are always reset at the beginning of a frame and don't need saving
-//but just to be safe, we're gonna save it
-PPUSTATUS ppur_status;
-
-//uses the internal counters concept at http://nesdev.icequake.net/PPU%20addressing.txt
-struct PPUREGS {
-	//normal clocked regs. as the game can interfere with these at any time, they need to be savestated
-	uint32 fv;//3
-	uint32 v;//1
-	uint32 h;//1
-	uint32 vt;//5
-	uint32 ht;//5
-
-	//temp unlatched regs (need savestating, can be written to at any time)
-	uint32 _fv, _v, _h, _vt, _ht;
-
-	//other regs that need savestating
-	uint32 fh;//3 (horz scroll)
-	uint32 s;//1 ($2000 bit 4: "Background pattern table address (0: $0000; 1: $1000)")
-
-	//other regs that don't need saving
-	uint32 par;//8 (sort of a hack, just stored in here, but not managed by this system)
-
-} ppur;
 
 
 static void makeppulut(void)
@@ -338,7 +376,6 @@ void (*PPU_hook)(uint32 A);
 uint8 vtoggle=0;
 uint8 XOffset=0;
 
-uint32 TempAddr=0,RefreshAddr=0;
 
 static int maxsprites=8;
 
@@ -1273,115 +1310,6 @@ static INLINE void Fixit2(void)
 	}
 }
 
-static void Fixit1(void)
-{
-	if(ScreenON || SpriteON)
-	{
-		uint32 rad=RefreshAddr;
-
-		if((rad & 0x7000) == 0x7000)
-		{
-			rad ^= 0x7000;
-			if((rad & 0x3E0) == 0x3A0)
-				rad ^= 0xBA0;
-			else if((rad & 0x3E0) == 0x3e0)
-				rad ^= 0x3e0;
-			else
-				rad += 0x20;
-		}
-		else
-			rad += 0x1000;
-		RefreshAddr = rad;
-	}
-}
-
-void MMC5_hb(int);     //Ugh ugh ugh.
-static void DoLine(void)
-{
-	int x;
-	uint8 *target=XBuf+(scanline<<8);
-
-	if(MMC5Hack && (ScreenON || SpriteON) )
-		MMC5_hb(scanline);
-
-	X6502_Run(256);
-	EndRL();
-
-	if(SpriteON && spork)
-		CopySprites(target);
-
-	if(ScreenON || SpriteON)  // Yes, very el-cheapo.
-	{
-		if(PPU[1]&0x01)
-		{
-			for(x=63;x>=0;x--)
-				*(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2]) & 0x30303030;
-		}
-	}
-	if((PPU[1]>>5)==0x7)
-	{
-		for(x=63;x>=0;x--)
-			*(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2]) & 0x3f3f3f3f) | 0xc0c0c0c0;
-	}
-	else if(PPU[1]&0xE0)
-		for(x=63;x>=0;x--)
-			*(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2]) | 0x40404040;
-	else
-		for(x=63;x>=0;x--)
-			*(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2]) & 0x3f3f3f3f) | 0x80808080;
-
-	sphitx=0x100;
-
-	if(ScreenON || SpriteON)
-		FetchSpriteData();
-
-	X6502_Run(6);
-	Fixit2();
-	if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
-	{
-		//X6502_Run(6); loop-invariant code motion
-		//Fixit2();
-		X6502_Run(4);
-		GameHBIRQHook();
-		X6502_Run(85-16-10);
-	}
-	else
-	{
-		//X6502_Run(6);  // Tried 65, caused problems with Slalom(maybe others)
-		//Fixit2();	// loop-invariant code motion
-		X6502_Run(85-6-16);
-
-		// A semi-hack for Star Trek: 25th Anniversary
-		if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
-			GameHBIRQHook();
-	}
-
-	if(SpriteON)
-		RefreshSprites();
-	if(GameHBIRQHook2 && (ScreenON || SpriteON) )
-		GameHBIRQHook2();
-}
-
-#define V_FLIP  0x80
-#define H_FLIP  0x40
-#define SP_BACK 0x20
-
-typedef struct {
-	uint8_t y;
-	uint8_t no;
-	uint8_t atr;
-	uint8_t x;
-} SPR;
-
-typedef struct {
-	uint8 ca[2],atr,x;
-} SPRB;
-
-void FCEUI_DisableSpriteLimitation(int a)
-{
-	maxsprites=a?64:8;
-}
-
 static uint8 numsprites,SpriteBlurp;
 static void FetchSpriteData(void)
 {
@@ -1542,6 +1470,80 @@ static void FetchSpriteData(void)
 		numsprites=ns;
 		SpriteBlurp=sb;
 }
+
+void MMC5_hb(int);     //Ugh ugh ugh.
+static void DoLine(void)
+{
+	int x;
+	uint8 *target=XBuf+(scanline<<8);
+
+	if(MMC5Hack && (ScreenON || SpriteON) )
+		MMC5_hb(scanline);
+
+	X6502_Run(256);
+	EndRL();
+
+	if(SpriteON && spork)
+		CopySprites(target);
+
+	if(ScreenON || SpriteON)  // Yes, very el-cheapo.
+	{
+		if(PPU[1]&0x01)
+		{
+			for(x=63;x>=0;x--)
+				*(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2]) & 0x30303030;
+		}
+	}
+	if((PPU[1]>>5)==0x7)
+	{
+		for(x=63;x>=0;x--)
+			*(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2]) & 0x3f3f3f3f) | 0xc0c0c0c0;
+	}
+	else if(PPU[1]&0xE0)
+		for(x=63;x>=0;x--)
+			*(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2]) | 0x40404040;
+	else
+		for(x=63;x>=0;x--)
+			*(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2]) & 0x3f3f3f3f) | 0x80808080;
+
+	sphitx=0x100;
+
+	if(ScreenON || SpriteON)
+		FetchSpriteData();
+
+	X6502_Run(6);
+	Fixit2();
+	if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
+	{
+		//X6502_Run(6); loop-invariant code motion
+		//Fixit2();
+		X6502_Run(4);
+		GameHBIRQHook();
+		X6502_Run(85-16-10);
+	}
+	else
+	{
+		//X6502_Run(6);  // Tried 65, caused problems with Slalom(maybe others)
+		//Fixit2();	// loop-invariant code motion
+		X6502_Run(85-6-16);
+
+		// A semi-hack for Star Trek: 25th Anniversary
+		if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
+			GameHBIRQHook();
+	}
+
+	if(SpriteON)
+		RefreshSprites();
+	if(GameHBIRQHook2 && (ScreenON || SpriteON) )
+		GameHBIRQHook2();
+}
+
+
+void FCEUI_DisableSpriteLimitation(int a)
+{
+	maxsprites=a?64:8;
+}
+
 
 static void RefreshSprites(void)
 {
