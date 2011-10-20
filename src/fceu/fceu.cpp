@@ -49,9 +49,6 @@
 #include "vsuni.h"
 #include "ines.h"
 
-#ifdef _S9XLUA_H
-#include "fceulua.h"
-#endif
 
 #ifdef GEKKO
 #include "driver.h"
@@ -285,17 +282,11 @@ uint8 PAL=0;
 static DECLFW(BRAML)
 {
 	RAM[A]=V;
-	#ifdef _S9XLUA_H
-	CallRegisteredLuaMemHook(A, 1, V, LUAMEMHOOK_WRITE);
-	#endif
 }
 
 static DECLFW(BRAMH)
 {
 	RAM[A&0x7FF]=V;
-	#ifdef _S9XLUA_H
-	CallRegisteredLuaMemHook(A&0x7FF, 1, V, LUAMEMHOOK_WRITE);
-	#endif
 }
 
 static DECLFR(ARAML)
@@ -468,9 +459,6 @@ bool FCEUI_Initialize()
 
 void FCEUI_Kill(void)
 {
-	#ifdef _S9XLUA_H
-	FCEU_LuaStop();
-	#endif
 	FCEU_KillGenie();
 	FreeBuffers();
 }
@@ -487,10 +475,6 @@ void FCEUI_Emulate(uint8 ** pXBuf, int32 ** SoundBuf, int32 * SoundBufSize)
 		ssize = FlushEmulateSound();
 	else
 		ssize = 0;
-
-#ifdef _S9XLUA_H
-	CallRegisteredLuaFunctions(LUACALL_AFTEREMULATION);
-#endif
 
 	timestampbase += timestamp;
 	timestamp = 0;

@@ -23,9 +23,6 @@
 #include "x6502.h"
 #include "fceu.h"
 #include "sound.h"
-#ifdef _S9XLUA_H
-#include "fceulua.h"
-#endif
 
 #include "x6502abbrev.h"
 X6502 X;
@@ -45,14 +42,8 @@ void (*MapIRQHook)(int a);
  (_DB=ARead[A](A))
 
 //normal memory write
-#ifdef S9XLUA_H
-#define WrMem(A, V) \
-	BWrite[A](A,V); \
-	CallRegisteredLuaMemHook(A, 1, V, LUAMEMHOOK_WRITE);
-#else
 #define WrMem(A, V) \
 	BWrite[A](A,V);
-#endif
 
 static INLINE uint8 RdRAM(unsigned int A) 
 {
@@ -61,14 +52,8 @@ static INLINE uint8 RdRAM(unsigned int A)
 	// return(_DB=RAM[A]); 
 }
 
-#ifdef S9XLUA_H
-#define WrRAM(A, V) \
-	RAM[A]=V; \
-	CallRegisteredLuaMemHook(A, 1, V, LUAMEMHOOK_WRITE);
-#else
 #define WrRAM(A, V) \
 	RAM[A]=V;
-#endif
 
 uint8 X6502_DMR(uint32 A)
 {
@@ -80,9 +65,6 @@ void X6502_DMW(uint32 A, uint8 V)
 {
 	ADDCYC(1);
 	BWrite[A](A,V);
-#ifdef _S9XLUA_H
-	CallRegisteredLuaMemHook(A, 1, V, LUAMEMHOOK_WRITE);
-#endif
 }
 
 #define PUSH(V) \
@@ -471,9 +453,6 @@ void X6502_Run(int32 cycles)
 		_tcount=0;
 		if(MapIRQHook) MapIRQHook(temp);
 		FCEU_SoundCPUHook(temp);
-#ifdef _S9XLUA_H
-		CallRegisteredLuaMemHook(_PC, 1, 0, LUAMEMHOOK_EXEC);
-#endif
 		_PC++;
 		switch(b1)
 		{

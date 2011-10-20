@@ -1735,30 +1735,6 @@ static  void ingame_menu(void)
 
 // Emulator-specific - core emulation loop functions
 
-#ifdef _S9XLUA_H
-#define emulation_loop(loop) \
-	if(geniestage != 1) \
-		FCEU_ApplyPeriodicCheats(); \
-	\
-	loop(fskip); \
-	\
-	FCEUI_Emulate(&gfx, &sound, &ssize); \
-	\
-	Graphics->Draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT); \
-	cellDbgFontDraw(); \
-	psglSwap(); \
-	\
-	if(Settings.Throttled) \
-		audio_driver->write(audio_handle, (int16_t*)sound, ssize << 1); \
-	\
-	EMULATOR_INPUT_LOOP(); \
-	\
-	FCEU_LuaFrameBoundary(); \
-	FCEU_UpdateInput(); \
-	CallRegisteredLuaFunctions(LUACALL_BEFOREEMULATION); \
-	cell_console_poll(); \
-	cellSysutilCheckCallback();
-#else
 #define emulation_loop(loop) \
 	if(geniestage != 1) \
 		FCEU_ApplyPeriodicCheats(); \
@@ -1785,7 +1761,6 @@ static  void ingame_menu(void)
 	FCEU_UpdateInput(); \
 	cell_console_poll(); \
 	cellSysutilCheckCallback();
-#endif
 
 // emulator-specific - FCEU functionality hosed out of main emulation loop because it was a reset/poweron specific quirk
 // no big if then else block this way for every frame

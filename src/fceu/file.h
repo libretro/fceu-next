@@ -157,5 +157,4 @@ void FCEU_SplitArchiveFilename(std::string src, std::string& archive, std::strin
 #define FCEUMKF_BBOT         13
 #define FCEUMKF_ROMS         14
 #define FCEUMKF_INPUT        15
-#define FCEUMKF_LUA          16
 #endif

@@ -167,12 +167,12 @@ static DECLFR(XevRead)
 
 void FCEU_VSUniSwap(uint8 *j0, uint8 *j1)
 {
- if(curvs->ioption & IOPTION_SWAPDIRAB)
- {
-  uint16 t=*j0;
-  *j0=(*j0&0xC)|(*j1&0xF3);
-  *j1=(*j1&0xC)|(t&0xF3);
- }
+	if(curvs->ioption & IOPTION_SWAPDIRAB)
+	{
+		uint16 t=*j0;
+		*j0=(*j0&0xC)|(*j1&0xF3);
+		*j1=(*j1&0xC)|(t&0xF3);
+	}
 }
 
 void FCEU_VSUniPower(void)

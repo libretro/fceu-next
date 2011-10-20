@@ -500,12 +500,6 @@ std::string  FCEU_GetPath(int type)
 			else
 				return BaseDirectory + PSS + "tools";
 			break;
-		case FCEUMKF_LUA:
-			if(odirs[FCEUIOD_LUA])
-				return (odirs[FCEUIOD_LUA]);
-			else
-				return "";	//adelikat: 03/02/09 - return null so it defaults to last directory used //return BaseDirectory + PSS + "tools";
-			break;
 	}
 
 	return ret;

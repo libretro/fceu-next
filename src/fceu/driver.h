@@ -167,7 +167,6 @@ void FCEUI_CheatSearchSetCurrentAsOriginal(void);
 #define FCEUIOD_BBOT    8	//basicbot, obsolete
 #define FCEUIOD_MACRO   9	//macro files - tasedit, currently not implemented
 #define FCEUIOD_INPUT   10	//input presets
-#define FCEUIOD_LUA     11	//lua scripts
 #define FCEUIOD_AVI		12	//default file for avi output
 #define FCEUIOD__COUNT  13	//base directory override?
 

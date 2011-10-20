@@ -44,9 +44,6 @@
 #include "input.h"
 #include "zlib.h"
 #include "driver.h"
-#ifdef _S9XLUA_H
-#include "fceulua.h"
-#endif
 
 using namespace std;
 
@@ -439,32 +436,6 @@ void FCEUSS_Save(const char *fname)
 		return;
 	}
 
-	#ifdef _S9XLUA_H
-	if (!internalSaveLoad)
-	{
-		LuaSaveData saveData;
-		CallRegisteredLuaSaveFunctions(CurrentState, saveData);
-
-		char luaSaveFilename [512];
-		strncpy(luaSaveFilename, fn, 512);
-		luaSaveFilename[512-(1+7/*strlen(".luasav")*/)] = '\0';
-		strcat(luaSaveFilename, ".luasav");
-		if(saveData.recordList)
-		{
-			FILE* luaSaveFile = fopen(luaSaveFilename, "wb");
-			if(luaSaveFile)
-			{
-				saveData.ExportRecords(luaSaveFile);
-				fclose(luaSaveFile);
-			}
-		}
-		else
-		{
-			unlink(luaSaveFilename);
-		}
-	}
-	#endif
-
 	FCEUSS_SaveMS(st,-1);
 
 	delete st;
@@ -691,26 +662,6 @@ bool FCEUSS_Load(const char *fname)
 			SaveStateStatus[CurrentState]=1;
 		}
 		delete st;
-
-		#ifdef _S9XLUA_H
-		if (!internalSaveLoad)
-		{
-			LuaSaveData saveData;
-
-			char luaSaveFilename [512];
-			strncpy(luaSaveFilename, fn, 512);
-			luaSaveFilename[512-(1+7/*strlen(".luasav")*/)] = '\0';
-			strcat(luaSaveFilename, ".luasav");
-			FILE* luaSaveFile = fopen(luaSaveFilename, "rb");
-			if(luaSaveFile)
-			{
-				saveData.ImportRecords(luaSaveFile);
-				fclose(luaSaveFile);
-			}
-
-			CallRegisteredLuaLoadFunctions(CurrentState, saveData);
-		}
-		#endif
 
 		return true;
 	}

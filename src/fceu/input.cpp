@@ -30,9 +30,6 @@
 #include "sound.h"
 #include "state.h"
 #include "input/zapper.h"
-#ifdef _S9XLUA_H
-#include "fceulua.h"
-#endif
 #include "input.h"
 #include "vsuni.h"
 #include "fds.h"
@@ -119,15 +116,16 @@ static DECLFR(JPRead)
 		ret = portFC.driver->Read(A&1,ret);
 
 	// Not verified against hardware.
-	if (replaceP2StartWithMicrophone) {
-		if (joy[1]&8) {
+	if (replaceP2StartWithMicrophone)
+	{
+		if (joy[1]&8)
+		{
 			microphone = !microphone;
-			if (microphone) {
+			if (microphone)
 				ret|=4;
-			}
-		} else {
-			microphone = false;
 		}
+		else
+			microphone = false;
 	}
 
 	ret|=X.DB&0xC0;
@@ -140,8 +138,8 @@ static DECLFW(B4016)
 	if(portFC.driver)
 		portFC.driver->Write(V&7);
 
-	for(int i=0;i<2;i++)
-		joyports[i].driver->Write(V&1);
+	joyports[0].driver->Write(V&1);
+	joyports[1].driver->Write(V&1);
 
 	if((LastStrobe&1) && (!(V&1)))
 	{
@@ -154,8 +152,9 @@ static DECLFW(B4016)
 		
 		//mbg 6/7/08 - I guess he means that the input drivers could track the strobing themselves
 		//I dont see why it is unreasonable here.
-		for(int i=0;i<2;i++)
-			joyports[i].driver->Strobe(i);
+		joyports[0].driver->Strobe(0);
+		joyports[1].driver->Strobe(1);
+
 		if(portFC.driver)
 			portFC.driver->Strobe();
 	}
@@ -210,27 +209,13 @@ static void UpdateGP(int w, void *data, int arg)
 {
 	if(w==0)	//adelikat, 3/14/09: Changing the joypads to inclusive OR the user's joypad + the Lua joypad, this way lua only takes over the buttons it explicity says to
 	{			//FatRatKnight: Assume lua is always good. If it's doing nothing in particular using my logic, it'll pass-through the values anyway.
-		#ifdef _S9XLUA_H
-		joy[0]= *(uint32 *)joyports[0].ptr;
-		joy[0]= FCEU_LuaReadJoypad(0,joy[0]);
-		joy[2]= *(uint32 *)joyports[0].ptr >> 16;
-		joy[2]= FCEU_LuaReadJoypad(2,joy[2]);
-		#else // without this, there seems to be no input at all without Lua
-		joy[0] = *(uint32 *)joyports[0].ptr;;
+		joy[0] = *(uint32 *)joyports[0].ptr;
 		joy[2] = *(uint32 *)joyports[0].ptr >> 16;
-		#endif
 	}
 	else
 	{
-		#ifdef _S9XLUA_H
-		joy[1]= *(uint32 *)joyports[1].ptr >> 8;
-		joy[1]= FCEU_LuaReadJoypad(1,joy[1]);
-		joy[3]= *(uint32 *)joyports[1].ptr >> 24;
-		joy[3]= FCEU_LuaReadJoypad(3,joy[3]);
-		#else // same goes for the other two pads
 		joy[1] = *(uint32 *)joyports[1].ptr >> 8;
 		joy[3] = *(uint32 *)joyports[1].ptr >> 24;
-		#endif
 	}
 
 }
@@ -288,7 +273,6 @@ void FCEU_UpdateInput(void)
 	if(GameInfo->type==GIT_VSUNI)
 		if(coinon) coinon--;
 
-	//TODO - should this apply to the movie data? should this be displayed in the input hud?
 	if(GameInfo->type==GIT_VSUNI)
 		FCEU_VSUniSwap(&joy[0],&joy[1]);
 }
@@ -320,8 +304,8 @@ static DECLFR(VSUNIRead1)
 //calls the SLHook for any driver that needs it
 void InputScanlineHook(uint8 *bg, uint8 *spr, uint32 linets, int final)
 {
-	for(int port=0;port<2;port++)
-		joyports[port].driver->SLHook(port,bg,spr,linets,final);
+	joyports[0].driver->SLHook(0,bg,spr,linets,final);
+	joyports[1].driver->SLHook(1,bg,spr,linets,final);
 	portFC.driver->SLHook(bg,spr,linets,final);
 }
 
@@ -330,27 +314,27 @@ static void SetInputStuff(int port)
 {
 	switch(joyports[port].type)
 	{
-	case SI_GAMEPAD:
-		if(GameInfo->type==GIT_VSUNI)
-			joyports[port].driver = &GPCVS;
-		else
-			joyports[port].driver= &GPC;
-		break;
-	case SI_ARKANOID:
-		joyports[port].driver=FCEU_InitArkanoid(port);
-		break;
-	case SI_ZAPPER:
-		joyports[port].driver=FCEU_InitZapper(port);
-		break;
-	case SI_POWERPADA:
-		joyports[port].driver=FCEU_InitPowerpadA(port);
-		break;
-	case SI_POWERPADB:
-		joyports[port].driver=FCEU_InitPowerpadB(port);
-		break;
-	case SI_NONE:
-		joyports[port].driver=&DummyJPort;
-		break;
+		case SI_GAMEPAD:
+			if(GameInfo->type==GIT_VSUNI)
+				joyports[port].driver = &GPCVS;
+			else
+				joyports[port].driver= &GPC;
+			break;
+		case SI_ARKANOID:
+			joyports[port].driver=FCEU_InitArkanoid(port);
+			break;
+		case SI_ZAPPER:
+			joyports[port].driver=FCEU_InitZapper(port);
+			break;
+		case SI_POWERPADA:
+			joyports[port].driver=FCEU_InitPowerpadA(port);
+			break;
+		case SI_POWERPADB:
+			joyports[port].driver=FCEU_InitPowerpadB(port);
+			break;
+		case SI_NONE:
+			joyports[port].driver=&DummyJPort;
+			break;
 	}
 }
 
@@ -358,49 +342,49 @@ static void SetInputStuffFC()
 {
 	switch(portFC.type)
 	{
-	case SIFC_NONE: 
-		portFC.driver=FCEU_InitFamicom3D(); //CAK: originally this used &DummyPortFC;
-		break;
-	case SIFC_ARKANOID:
-		portFC.driver=FCEU_InitArkanoidFC();
-		break;
-	case SIFC_SHADOW:
-		portFC.driver=FCEU_InitSpaceShadow();
-		break;
-	case SIFC_OEKAKIDS:
-		portFC.driver=FCEU_InitOekaKids();
-		break;
-	case SIFC_4PLAYER:
-		portFC.driver=&FAMI4C;
-		memset(&F4ReadBit,0,sizeof(F4ReadBit));
-		break;
-	case SIFC_FKB:
-		portFC.driver=FCEU_InitFKB();
-		break;
-	case SIFC_SUBORKB:
-		portFC.driver=FCEU_InitSuborKB();
-		break;
-	case SIFC_HYPERSHOT:
-		portFC.driver=FCEU_InitHS();
-		break;
-	case SIFC_MAHJONG:
-		portFC.driver=FCEU_InitMahjong();
-		break;
-	case SIFC_QUIZKING:
-		portFC.driver=FCEU_InitQuizKing();
-		break;
-	case SIFC_FTRAINERA:
-		portFC.driver=FCEU_InitFamilyTrainerA();
-		break;
-	case SIFC_FTRAINERB:
-		portFC.driver=FCEU_InitFamilyTrainerB();
-		break;
-	case SIFC_BWORLD:
-		portFC.driver=FCEU_InitBarcodeWorld();
-		break;
-	case SIFC_TOPRIDER:
-		portFC.driver=FCEU_InitTopRider();
-		break;
+		case SIFC_NONE: 
+			portFC.driver=FCEU_InitFamicom3D(); //CAK: originally this used &DummyPortFC;
+			break;
+		case SIFC_ARKANOID:
+			portFC.driver=FCEU_InitArkanoidFC();
+			break;
+		case SIFC_SHADOW:
+			portFC.driver=FCEU_InitSpaceShadow();
+			break;
+		case SIFC_OEKAKIDS:
+			portFC.driver=FCEU_InitOekaKids();
+			break;
+		case SIFC_4PLAYER:
+			portFC.driver=&FAMI4C;
+			memset(&F4ReadBit,0,sizeof(F4ReadBit));
+			break;
+		case SIFC_FKB:
+			portFC.driver=FCEU_InitFKB();
+			break;
+		case SIFC_SUBORKB:
+			portFC.driver=FCEU_InitSuborKB();
+			break;
+		case SIFC_HYPERSHOT:
+			portFC.driver=FCEU_InitHS();
+			break;
+		case SIFC_MAHJONG:
+			portFC.driver=FCEU_InitMahjong();
+			break;
+		case SIFC_QUIZKING:
+			portFC.driver=FCEU_InitQuizKing();
+			break;
+		case SIFC_FTRAINERA:
+			portFC.driver=FCEU_InitFamilyTrainerA();
+			break;
+		case SIFC_FTRAINERB:
+			portFC.driver=FCEU_InitFamilyTrainerB();
+			break;
+		case SIFC_BWORLD:
+			portFC.driver=FCEU_InitBarcodeWorld();
+			break;
+		case SIFC_TOPRIDER:
+			portFC.driver=FCEU_InitTopRider();
+			break;
 	}
 }
 
@@ -475,9 +459,14 @@ void FCEU_DoSimpleCommand(int cmd)
 	switch(cmd)
 	{
 		case FCEUNPCMD_FDSINSERT:
-			FCEU_FDSInsert();break;
-		case FCEUNPCMD_FDSSELECT: FCEU_FDSSelect();break;
-		case FCEUNPCMD_VSUNICOIN: FCEU_VSUniCoin(); break;
+			FCEU_FDSInsert();
+			break;
+		case FCEUNPCMD_FDSSELECT:
+			FCEU_FDSSelect();
+			break;
+		case FCEUNPCMD_VSUNICOIN:
+			FCEU_VSUniCoin();
+			break;
 		case FCEUNPCMD_VSUNIDIP0: 
 		case FCEUNPCMD_VSUNIDIP0+1:
 		case FCEUNPCMD_VSUNIDIP0+2:
@@ -485,9 +474,15 @@ void FCEU_DoSimpleCommand(int cmd)
 		case FCEUNPCMD_VSUNIDIP0+4:
 		case FCEUNPCMD_VSUNIDIP0+5:
 		case FCEUNPCMD_VSUNIDIP0+6:
-		case FCEUNPCMD_VSUNIDIP0+7:	FCEU_VSUniToggleDIP(cmd - FCEUNPCMD_VSUNIDIP0);break;
-		case FCEUNPCMD_POWER: PowerNES();break;
-		case FCEUNPCMD_RESET: ResetNES();break;
+		case FCEUNPCMD_VSUNIDIP0+7:
+			FCEU_VSUniToggleDIP(cmd - FCEUNPCMD_VSUNIDIP0);
+			break;
+		case FCEUNPCMD_POWER:
+			PowerNES();
+			break;
+		case FCEUNPCMD_RESET:
+			ResetNES();
+			break;
 	}
 }
 
@@ -608,9 +603,6 @@ struct EMUCMDTABLE FCEUI_CommandTable[]=
 	{ EMUCMD_LOAD_STATE_SLOT_7,				EMUCMDTYPE_STATE,	CommandStateLoad, 0, 0, "Load State from Slot 7", 0 },
 	{ EMUCMD_LOAD_STATE_SLOT_8,				EMUCMDTYPE_STATE,	CommandStateLoad, 0, 0, "Load State from Slot 8", 0 },
 	{ EMUCMD_LOAD_STATE_SLOT_9,				EMUCMDTYPE_STATE,	CommandStateLoad, 0, 0, "Load State from Slot 9", 0 },
-	#ifdef _S9XLUA_H
-	{ EMUCMD_SCRIPT_RELOAD,					EMUCMDTYPE_MISC,	FCEU_ReloadLuaCode, 0, 0, "Reload current Lua script", },
-	#endif
 
 	{ EMUCMD_SOUND_TOGGLE,					EMUCMDTYPE_SOUND,	FCEUD_SoundToggle, 0, 0, "Sound Mute Toggle", 0},
 	{ EMUCMD_SOUND_VOLUME_UP,				EMUCMDTYPE_SOUND,	CommandSoundAdjust, 0, 0, "Sound Volume Up", 0},
@@ -697,7 +689,6 @@ static void CommandSelectSaveSlot(void)
 
 static void CommandStateSave(void)
 {
-	//	FCEU_PrintError("execcmd=%d, EMUCMD_SAVE_STATE_SLOT_0=%d, EMUCMD_SAVE_STATE_SLOT_9=%d", execcmd,EMUCMD_SAVE_STATE_SLOT_0,EMUCMD_SAVE_STATE_SLOT_9);
 	if(execcmd >= EMUCMD_SAVE_STATE_SLOT_0 && execcmd <= EMUCMD_SAVE_STATE_SLOT_9)
 	{
 		int oldslot=FCEUI_SelectState(execcmd-EMUCMD_SAVE_STATE_SLOT_0, 0);
@@ -725,9 +716,15 @@ static void CommandSoundAdjust(void)
 	int n=0;
 	switch(execcmd)
 	{
-	case EMUCMD_SOUND_VOLUME_UP:		n=1;  break;
-	case EMUCMD_SOUND_VOLUME_DOWN:		n=-1;  break;
-	case EMUCMD_SOUND_VOLUME_NORMAL:	n=0;  break;
+		case EMUCMD_SOUND_VOLUME_UP:
+			n=1;
+			break;
+		case EMUCMD_SOUND_VOLUME_DOWN:
+			n=-1; 
+			break;
+		case EMUCMD_SOUND_VOLUME_NORMAL:
+			n=0;
+			break;
 	}
 
 	FCEUD_SoundVolumeAdjust(n);
