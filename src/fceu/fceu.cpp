@@ -269,29 +269,14 @@ uint8 *RAM;
 
 static void AllocBuffers()
 {
-
-#ifdef _USE_SHARED_MEMORY_
-
-	void win_AllocBuffers(uint8 **GameMemBlock, uint8 **RAM);
-	win_AllocBuffers(&GameMemBlock, &RAM);
-
-#else
-
 	GameMemBlock = (uint8*)malloc(GAME_MEM_BLOCK_SIZE);
 	RAM = (uint8*)malloc(0x800);
-
-#endif
 }
 
 static void FreeBuffers()
 {
-#ifdef _USE_SHARED_MEMORY_
-	void win_FreeBuffers(uint8 *GameMemBlock, uint8 *RAM);
-	win_FreeBuffers(GameMemBlock, RAM);
-#else
 	free(GameMemBlock);
 	free(RAM);
-#endif
 }
 //------
 

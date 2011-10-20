@@ -25,10 +25,6 @@
 #include <stdarg.h>
 #include <zlib.h>
 
-#ifdef _USE_SHARED_MEMORY_
-#include <windows.h>
-#endif
-
 #include "types.h"
 #include "video.h"
 #include "fceu.h"
@@ -60,9 +56,6 @@ extern uint32 cur_input_display;
 
 bool oldInputDisplay = false;
 
-#ifdef _USE_SHARED_MEMORY_
-HANDLE mapXBuf;
-#endif
 
 std::string AsSnapshotName ="";			//adelikat:this will set the snapshot name when for s savesnapshot as function
 
@@ -80,37 +73,12 @@ int FCEU_InitVirtualVideo(void)
 		/* 256 bytes per scanline, * 240 scanline maximum, +16 for alignment,
 		*/
 
-#ifdef _USE_SHARED_MEMORY_
 
-		mapXBuf  = CreateFileMapping((HANDLE)0xFFFFFFFF,NULL,PAGE_READWRITE, 0, 256 * 256 + 16, "fceu.XBuf");
-
-	if(mapXBuf == NULL || GetLastError() == ERROR_ALREADY_EXISTS)
-	{
-		CloseHandle(mapXBuf);
-		mapXBuf = NULL;
-		XBuf = (uint8*) (malloc(256 * 256 + 16));
-		XBackBuf = (uint8*) (malloc(256 * 256 + 16));
-	}
-	else
-	{
-		XBuf = (uint8 *)MapViewOfFile(mapXBuf, FILE_MAP_WRITE, 0, 0, 0);
-		XBackBuf = (uint8*) (malloc(256 * 256 + 16));
-	}
-
-	if (!XBuf || !XBackBuf )
-	{
-		return 0;
-	}
-
-#else
-
-		if(!(XBuf= (uint8*) (malloc(256 * 256 + 16))) ||
-			!(XBackBuf= (uint8*) (malloc(256 * 256 + 16))))
+		if(!(XBuf= (uint8*) (malloc(256 * 256 + 16))) || !(XBackBuf= (uint8*) (malloc(256 * 256 + 16))))
 		{
 			return 0;
 		}
 
-#endif //_USE_SHARED_MEMORY_
 
 		xbsave = XBuf;
 

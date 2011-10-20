@@ -23,10 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _USE_SHARED_MEMORY_
-#include <windows.h>
-#endif
-
 #include "types.h"
 #include "x6502.h"
 #include "fceu.h"
@@ -53,11 +49,6 @@ uint8 *trainerpoo=0;
 uint8 *ROM = NULL;
 uint8 *VROM = NULL;
 iNES_HEADER head ;
-
-
-#ifdef _USE_SHARED_MEMORY_
-HANDLE mapROM = NULL, mapVROM = NULL;
-#endif
 
 CartInfo iNESCart;
 
@@ -127,35 +118,18 @@ void iNESGI(GI h) //bbit edited: removed static keyword
 
 			if(iNESCart.Close)
 				iNESCart.Close();
-#ifdef _USE_SHARED_MEMORY_
+
 			if(ROM)
-		 	{
-			 if(mapROM)
-			 {
-				 CloseHandle(mapROM);
-				 mapROM = NULL;
-				 UnmapViewOfFile(ROM);
-			 }
-			 else
-				 free(ROM);
-			 ROM = NULL;
-		 	}
-			if(VROM)
-		 	{
-			 if(mapVROM)
-			 {
-				 CloseHandle(mapVROM);
-				 mapVROM = NULL;
-				 UnmapViewOfFile(VROM);
-			 }
-			 else
-				 free(VROM);
-			 VROM = NULL;
+			{
+				free(ROM);
+				ROM = NULL;
 			}
-#else
-			if(ROM) {free(ROM); ROM = NULL;}
-			if(VROM) {free(VROM); VROM = NULL;}
-#endif
+			if(VROM)
+			{
+				free(VROM);
+				VROM = NULL;
+			}
+
 			if(MapClose) MapClose();
 			if(trainerpoo)
 			{
@@ -423,20 +397,7 @@ static void CheckHInfo(void)
 				if(moo[x].mapper&0x800 && VROM_size)
 				{
 					VROM_size=0;
-#ifdef _USE_SHARED_MEMORY_
-					if(mapVROM)
-					{
-						CloseHandle(mapVROM);
-						UnmapViewOfFile(VROM);
-						mapVROM = NULL;
-					}
-					else
-					{
-						free(VROM);
-					}
-#else
 					free(VROM);
-#endif
 					VROM = NULL;
 					tofix|=8;
 				}
@@ -551,14 +512,14 @@ static BMAPPINGLocal bmap[] = {
 	{"Color Dreams",		11,  Mapper11_Init},
 	{"",					12,  Mapper12_Init},
 	{"CPROM",				13,  CPROM_Init},
-    {"100-in1",				15,  Mapper15_Init},
-    {"Bandai",				16,  Mapper16_Init},
+	{"100-in1",				15,  Mapper15_Init},
+	{"Bandai",				16,  Mapper16_Init},
 	{"Namcot 106",			19,  Mapper19_Init},
-    {"Konami VRC2 type B",	23,  Mapper23_Init},
-    {"Wario Land 2", 		35,  UNLSC127_Init}, // Wario Land 2
-    {"TXC Policeman",		36,  Mapper36_Init}, // TXC Policeman
+	{"Konami VRC2 type B",	23,  Mapper23_Init},
+	{"Wario Land 2", 		35,  UNLSC127_Init}, // Wario Land 2
+	{"TXC Policeman",		36,  Mapper36_Init}, // TXC Policeman
 	{"",					37,  Mapper37_Init},
-    {"Bit Corp. Crime Busters",	38,  Mapper38_Init}, // Bit Corp. Crime Busters
+	{"Bit Corp. Crime Busters",	38,  Mapper38_Init}, // Bit Corp. Crime Busters
 	{"",					43,  Mapper43_Init},
 	{"",					44,  Mapper44_Init},
 	{"",					45,  Mapper45_Init},
@@ -569,7 +530,7 @@ static BMAPPINGLocal bmap[] = {
 	{"",					58,  BMCGK192_Init},
 	{"",					60,  BMCD1038_Init},
 	{"MHROM",				66,  MHROM_Init},
-    {"Sunsoft Mapper #4",	68,  Mapper68_Init},
+	{"Sunsoft Mapper #4",	68,  Mapper68_Init},
 	{"",					70,  Mapper70_Init},
 	{"",					74,  Mapper74_Init},
 	{"Irem 74HC161/32",		78,  Mapper78_Init},
@@ -579,34 +540,34 @@ static BMAPPINGLocal bmap[] = {
 	{"Sunsoft UNROM",		93,  SUNSOFT_UNROM_Init},
 	{"",					94,  Mapper94_Init},
 	{"",					95,  Mapper95_Init},
-    {"",					101, Mapper101_Init},
-    {"",					103, Mapper103_Init},
+	{"",					101, Mapper101_Init},
+	{"",					103, Mapper103_Init},
 	{"",					105, Mapper105_Init},
-    {"",					106, Mapper106_Init},
+	{"",					106, Mapper106_Init},
 	{"",					107, Mapper107_Init},
-    {"",					108, Mapper108_Init},
+	{"",					108, Mapper108_Init},
 	{"",					112, Mapper112_Init},
 	{"",					113, Mapper113_Init},
 	{"",					114, Mapper114_Init},
 	{"",					115, Mapper115_Init},
 	{"",					116, Mapper116_Init},
-//    {116, UNLSL1632_Init},
+	//    {116, UNLSL1632_Init},
 	{"",					117, Mapper117_Init},
 	{"TSKROM",				118, TKSROM_Init},
 	{"",					119, Mapper119_Init},
-    {"",					120, Mapper120_Init},
-    {"",					121, Mapper121_Init},
-    {"UNLH2288",			123, UNLH2288_Init},
+	{"",					120, Mapper120_Init},
+	{"",					121, Mapper121_Init},
+	{"UNLH2288",			123, UNLH2288_Init},
 	{"UNL22211",			132, UNL22211_Init},
 	{"SA72008",				133, SA72008_Init},
-    {"",					134, Mapper134_Init},
-    {"TCU02",				136, TCU02_Init},
+	{"",					134, Mapper134_Init},
+	{"TCU02",				136, TCU02_Init},
 	{"S8259D",				137, S8259D_Init},
 	{"S8259B",				138, S8259B_Init},
 	{"S8259C",				139, S8259C_Init},
 	{"",					140, Mapper140_Init},
 	{"S8259A",				141, S8259A_Init},
-    {"UNLKS7032",			142, UNLKS7032_Init},
+	{"UNLKS7032",			142, UNLKS7032_Init},
 	{"TCA01",				143, TCA01_Init},
 	{"",					144, Mapper144_Init},
 	{"SA72007",				145, SA72007_Init},
@@ -616,21 +577,21 @@ static BMAPPINGLocal bmap[] = {
 	{"SA0036",				149, SA0036_Init},
 	{"S74LS374N",			150, S74LS374N_Init},
 	{"",					152, Mapper152_Init},
-    {"",					153, Mapper153_Init},
+	{"",					153, Mapper153_Init},
 	{"",					154, Mapper154_Init},
 	{"",					155, Mapper155_Init},
-    {"SA009",				160, SA009_Init},
+	{"SA009",				160, SA009_Init},
 	{"",					163, Mapper163_Init},
 	{"",					164, Mapper164_Init},
 	{"",					165, Mapper165_Init},
-//    {169, Mapper169_Init},
-    {"",					171, Mapper171_Init},
-    {"",					172, Mapper172_Init},
-    {"",					173, Mapper173_Init},
-    {"",					175, Mapper175_Init},
-    {"BMCFK23C",			176, BMCFK23C_Init},
-    {"",					177, Mapper177_Init},
-    {"",					178, Mapper178_Init},
+	//    {169, Mapper169_Init},
+	{"",					171, Mapper171_Init},
+	{"",					172, Mapper172_Init},
+	{"",					173, Mapper173_Init},
+	{"",					175, Mapper175_Init},
+	{"BMCFK23C",			176, BMCFK23C_Init},
+	{"",					177, Mapper177_Init},
+	{"",					178, Mapper178_Init},
 	{"",					180, Mapper180_Init},
 	{"",					181, Mapper181_Init},
 	{"",					182, Mapper182_Init},
@@ -645,8 +606,8 @@ static BMAPPINGLocal bmap[] = {
 	{"",					192, Mapper192_Init},
 	{"",					194, Mapper194_Init},
 	{"",					195, Mapper195_Init},
-    {"",					196, Mapper196_Init},
-    {"",					197, Mapper197_Init},
+	{"",					196, Mapper196_Init},
+	{"",					197, Mapper197_Init},
 	{"",					198, Mapper198_Init},
 	{"",					199, Mapper199_Init},
 	{"",					200, Mapper200_Init},
@@ -662,25 +623,25 @@ static BMAPPINGLocal bmap[] = {
 	{"UNLA9746",			219, UNLA9746_Init},
 	{"OneBus",	 		    220, UNLOneBus_Init},
 
-//    {220, BMCFK23C_Init},
-//    {220, UNL3DBlock_Init},
-//    {220, UNLTF1201_Init},
-//    {220, TCU02_Init},
-//    {220, UNLCN22M_Init},
-//    {220, BMCT2271_Init},
-//	  {220, UNLDANCE_Init},
+	//    {220, BMCFK23C_Init},
+	//    {220, UNL3DBlock_Init},
+	//    {220, UNLTF1201_Init},
+	//    {220, TCU02_Init},
+	//    {220, UNLCN22M_Init},
+	//    {220, BMCT2271_Init},
+	//	  {220, UNLDANCE_Init},
 
-    {"UNLN625092",			221, UNLN625092_Init},
+	{"UNLN625092",			221, UNLN625092_Init},
 	{"",					222, Mapper222_Init},
 	{"",					226, Mapper226_Init},
 	{"",					235, Mapper235_Init},
-    {"UNL6035052",			238, UNL6035052_Init},
+	{"UNL6035052",			238, UNL6035052_Init},
 	{"",					240, Mapper240_Init},
 	{"S74LS374NA",			243, S74LS374NA_Init},
 	{"",					245, Mapper245_Init},
 	{"",					249, Mapper249_Init},
 	{"",					250, Mapper250_Init},
-    {"",					253, Mapper253_Init},
+	{"",					253, Mapper253_Init},
 	{"",					254, Mapper254_Init},
 	{"",  0,        0}
 };
@@ -719,90 +680,27 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 	//    ROM_size = head.ROM_size;
 	VROM_size = head.VROM_size;
 
-    int round = true;
-    for (int i = 0; i != sizeof(not_power2)/sizeof(not_power2[0]); ++i)
-    {
-        //for games not to the power of 2, so we just read enough
-        //prg rom from it, but we have to keep ROM_size to the power of 2
-        //since PRGCartMapping wants ROM_size to be to the power of 2
-        //so instead if not to power of 2, we just use head.ROM_size when
-        //we use FCEU_read
-        if (not_power2[i] == MapperNo)
-        {
-            round = false;
-            break;
-        }
-    }
+	int round = true;
+	for (int i = 0; i != sizeof(not_power2)/sizeof(not_power2[0]); ++i)
+	{
+		//for games not to the power of 2, so we just read enough
+		//prg rom from it, but we have to keep ROM_size to the power of 2
+		//since PRGCartMapping wants ROM_size to be to the power of 2
+		//so instead if not to power of 2, we just use head.ROM_size when
+		//we use FCEU_read
+		if (not_power2[i] == MapperNo)
+		{
+			round = false;
+			break;
+		}
+	}
 
-    if(VROM_size)
+	if(VROM_size)
 		VROM_size=uppow2(VROM_size);
 
 
 	if(head.ROM_type&8) Mirroring=2;
 
-#ifdef _USE_SHARED_MEMORY_
-	mapROM = CreateFileMapping((HANDLE)0xFFFFFFFF,NULL,PAGE_READWRITE, 0, ROM_size<<14,"fceu.ROM");
-	if(mapROM == NULL || GetLastError() == ERROR_ALREADY_EXISTS)
-	{
-		ROM = (uint8 *)malloc(ROM_size<<14);
-		if(ROM == NULL)
-			return 0;
-	}
-	else
-	{
-		if((ROM = (uint8 *)MapViewOfFile(mapROM, FILE_MAP_WRITE, 0, 0, 0)) == NULL)
-		{
-			CloseHandle(mapROM);
-			mapROM = NULL;
-			ROM = (uint8 *)malloc(ROM_size<<14);
-			if(ROM == NULL)
-				return 0;
-		}
-	}
-	if(VROM_size)
-	{
-		mapVROM = CreateFileMapping((HANDLE)0xFFFFFFFF,NULL,PAGE_READWRITE, 0, VROM_size<<13,"fceu.VROM");
-		if(mapVROM == NULL || GetLastError() == ERROR_ALREADY_EXISTS)
-		{
-			VROM = (uint8 *)malloc(VROM_size<<13);
-			if(VROM == NULL)
-			{
-				if(mapROM)
-				{
-					UnmapViewOfFile(mapROM);
-					mapROM = NULL;
-					CloseHandle(ROM);
-				}
-				else
-					free(ROM);
-				ROM = NULL;
-				return 0;
-			}
-		}
-		else
-		{
-			if((VROM = (uint8 *)MapViewOfFile(mapVROM, FILE_MAP_WRITE, 0, 0, 0)) == NULL)
-			{
-				CloseHandle(mapVROM);
-				mapVROM = NULL;
-				VROM = (uint8 *)malloc(VROM_size<<13);
-				if(VROM == NULL)
-				{
-					if(mapROM)
-					{
-						UnmapViewOfFile(mapROM);
-						mapROM = NULL;
-						CloseHandle(ROM);
-					}
-					else
-						free(ROM);
-					ROM = NULL;
-					return 0;
-				}
-			}
-		}
-	}
-#else
 	ROM = (uint8 *)malloc(ROM_size<<14);
 	if(ROM == NULL)
 		return 0;
@@ -817,7 +715,7 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 			return 0;
 		}
 	}
-#endif
+
 	memset(ROM,0xFF,ROM_size<<14);
 	if(VROM_size) memset(VROM,0xFF,VROM_size<<13);
 	if(head.ROM_type&4)   /* Trainer */
@@ -830,9 +728,9 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 	ResetExState(0,0);
 
 	SetupCartPRGMapping(0,ROM,ROM_size*0x4000,0);
-   // SetupCartPRGMapping(1,WRAM,8192,1);
+	// SetupCartPRGMapping(1,WRAM,8192,1);
 
-    FCEU_fread(ROM,0x4000,(round) ? ROM_size : head.ROM_size,fp);
+	FCEU_fread(ROM,0x4000,(round) ? ROM_size : head.ROM_size,fp);
 
 	if(VROM_size)
 		FCEU_fread(VROM,0x2000,head.VROM_size,fp);
@@ -853,7 +751,7 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 	iNESCart.CRC32=iNESGameCRC32;
 
 	FCEU_printf(" PRG ROM:  %3d x 16KiB\n CHR ROM:  %3d x  8KiB\n ROM CRC32:  0x%08lx\n",
-                (round) ? ROM_size : head.ROM_size, head.VROM_size,iNESGameCRC32);
+			(round) ? ROM_size : head.ROM_size, head.VROM_size,iNESGameCRC32);
 
 	{
 		int x;
@@ -874,7 +772,7 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 	}
 
 	FCEU_printf(" Mapper #:  %d\n Mapper name: %s\n Mirroring: %s\n",
-		MapperNo, mappername, Mirroring==2?"None (Four-screen)":Mirroring?"Vertical":"Horizontal");
+			MapperNo, mappername, Mirroring==2?"None (Four-screen)":Mirroring?"Vertical":"Horizontal");
 
 	FCEU_printf(" Battery-backed: %s\n", (head.ROM_type&2)?"Yes":"No");
 	FCEU_printf(" Trained: %s\n", (head.ROM_type&4)?"Yes":"No");
@@ -894,8 +792,8 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 		FCEU_VSUniCheck(partialmd5, &MapperNo, &Mirroring);
 	}
 	/* Must remain here because above functions might change value of
-	VROM_size and free(VROM).
-	*/
+	   VROM_size and free(VROM).
+	 */
 	if(VROM_size)
 		SetupCartCHRMapping(0,VROM,VROM_size*0x2000,0);
 
@@ -919,21 +817,20 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 
 	GameInfo->mappernum = MapperNo;
 	MapperInit();
-	#ifndef GEKKO
+#ifndef GEKKO
 	FCEU_LoadGameSave(&iNESCart);
-	#endif
+#endif
 
 	strcpy(LoadedRomFName,name); //bbit edited: line added
 
 	// Extract Filename only. Should account for Windows/Unix this way.
 	if (strrchr(name, '/')) {
-	name = strrchr(name, '/') + 1;
+		name = strrchr(name, '/') + 1;
 	} else if(strrchr(name, '\\')) {
-	name = strrchr(name, '\\') + 1;
+		name = strrchr(name, '\\') + 1;
 	}
 
 	GameInterface=iNESGI;
-	FCEU_printf("\n");
 
 	// since apparently the iNES format doesn't store this information,
 	// guess if the settings should be PAL or NTSC from the ROM name
@@ -941,13 +838,13 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 	if(OverwriteVidMode)
 	{
 		if(strstr(name,"(E)") || strstr(name,"(e)")
-			|| strstr(name,"(F)") || strstr(name,"(f)")
-			|| strstr(name,"(G)") || strstr(name,"(g)")
-			|| strstr(name,"(I)") || strstr(name,"(i)")
-         || strstr(name, "(Europe)") || strstr(name, "(Australia)")
-         || strstr(name, "(France)") || strstr(name, "(Germany)")
-         || strstr(name, "(Sweden)") || strstr(name, "(En, Fr, De)")
-         || strstr(name, "(Italy)"))
+				|| strstr(name,"(F)") || strstr(name,"(f)")
+				|| strstr(name,"(G)") || strstr(name,"(g)")
+				|| strstr(name,"(I)") || strstr(name,"(i)")
+				|| strstr(name, "(Europe)") || strstr(name, "(Australia)")
+				|| strstr(name, "(France)") || strstr(name, "(Germany)")
+				|| strstr(name, "(Sweden)") || strstr(name, "(En, Fr, De)")
+				|| strstr(name, "(Italy)"))
 			FCEUI_SetVidSystem(1);
 		else
 			FCEUI_SetVidSystem(0);
@@ -1520,32 +1417,10 @@ static int NewiNES_Init(int num)
 				{
 					CHRRAMSize=8192;
 				}
-#ifdef _USE_SHARED_MEMORY_
-				mapVROM = CreateFileMapping((HANDLE)0xFFFFFFFF,NULL,PAGE_READWRITE, 0, CHRRAMSize,"fceu.VROM");
-				if(mapVROM == NULL || GetLastError() == ERROR_ALREADY_EXISTS)
-				{
-					CloseHandle(mapVROM);
-					mapVROM = NULL;
-					VROM = (uint8 *)malloc(CHRRAMSize);
-					if(VROM == NULL)
-						return 0;
-				}
-				else
-				{
-					if((VROM = (uint8 *)MapViewOfFile(mapVROM, FILE_MAP_WRITE, 0, 0, 0)) == NULL)
-					{
-						CloseHandle(mapVROM);
-						mapVROM = NULL;
-						VROM = (uint8 *)malloc(CHRRAMSize);
-						if(VROM == NULL)
-							return 0;
-					}
-				}
-#else
 				VROM = (uint8 *)malloc(CHRRAMSize);
 				if(VROM == NULL)
 					return 0;
-#endif
+
 				UNIFchrrama=VROM;
 				SetupCartCHRMapping(0,VROM,CHRRAMSize,1);
 				AddExState(VROM,CHRRAMSize, 0, "CHRR");
