@@ -264,8 +264,8 @@ uint8 *RAM;
 
 static void AllocBuffers()
 {
-	GameMemBlock = (uint8*)malloc(GAME_MEM_BLOCK_SIZE);
-	RAM = (uint8*)malloc(0x800);
+	GameMemBlock = (uint8*)realloc(GameMemBlock, GAME_MEM_BLOCK_SIZE);
+	RAM = (uint8*)realloc(RAM, 0x800);
 }
 
 static void FreeBuffers()
@@ -348,7 +348,7 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 	ResetGameLoaded();
 
 	if (!AutosaveStatus)
-		AutosaveStatus = (int*)malloc(sizeof(int)*AutosaveQty);
+		AutosaveStatus = (int*)realloc(AutosaveStatus, sizeof(int)*AutosaveQty);
 	for (AutosaveIndex=0; AutosaveIndex<AutosaveQty; ++AutosaveIndex)
 		AutosaveStatus[AutosaveIndex] = 0;
 

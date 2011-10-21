@@ -701,13 +701,13 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 
 	if(head.ROM_type&8) Mirroring=2;
 
-	ROM = (uint8 *)malloc(ROM_size<<14);
+	ROM = (uint8 *)realloc(ROM, ROM_size << 14);
 	if(ROM == NULL)
 		return 0;
 
 	if(VROM_size)
 	{
-		VROM = (uint8 *)malloc(VROM_size<<13);
+		VROM = (uint8 *)realloc(VROM, VROM_size << 13);
 		if(VROM == NULL)
 		{
 			free(ROM);
@@ -720,7 +720,7 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 	if(VROM_size) memset(VROM,0xFF,VROM_size<<13);
 	if(head.ROM_type&4)   /* Trainer */
 	{
-		trainerpoo = (uint8 *)malloc(512);
+		trainerpoo = (uint8 *)realloc(trainerpoo, 512);
 		FCEU_fread(trainerpoo,512,1,fp);
 	}
 
@@ -1417,7 +1417,7 @@ static int NewiNES_Init(int num)
 				{
 					CHRRAMSize=8192;
 				}
-				VROM = (uint8 *)malloc(CHRRAMSize);
+				VROM = (uint8 *)realloc(VROM, CHRRAMSize);
 				if(VROM == NULL)
 					return 0;
 

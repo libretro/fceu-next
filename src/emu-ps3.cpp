@@ -815,31 +815,24 @@ void FCEUD_VideoChanged()
 	}
 }
 
-
-ArchiveScanRecord FCEUD_ScanArchive(std::string fname)
-{
-	return ArchiveScanRecord();
-}
-
 // dummy functions
 
-#define DUMMY(f) void f(void) { }
-DUMMY(FCEUD_HideMenuToggle)
-DUMMY(FCEUD_TurboOn)
-DUMMY(FCEUD_TurboOff)
-DUMMY(FCEUD_TurboToggle)
-DUMMY(FCEUD_SaveStateAs)
-DUMMY(FCEUD_LoadStateFrom)
-DUMMY(FCEUD_ToggleStatusIcon)
+void FCEUD_HideMenuToggle(void) {}
+void FCEUD_TurboOn(void) {}
+void FCEUD_TurboOff(void) {}
+void FCEUD_TurboToggle(void) {}
+void FCEUD_LoadStateFrom(void) {}
+void FCEUD_SaveStateAs(void) {}
+void FCEUD_ToggleStatusIcon(void) {}
 int FCEUD_ShowStatusIcon(void) { return 0; }
-void FCEUI_UseInputPreset(int preset) { }
-void FCEUD_SoundVolumeAdjust(int n) { }
-void FCEUD_SetEmulationSpeed(int cmd) { }
-bool FCEUD_PauseAfterPlayback() { }
-void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC fcexp) { }
+void FCEUI_UseInputPreset(int preset) {}
+void FCEUD_SoundVolumeAdjust(int n) {}
+void FCEUD_SetEmulationSpeed(int cmd) {}
+bool FCEUD_PauseAfterPlayback() {}
+void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC fcexp) {}
 FCEUFILE* FCEUD_OpenArchive(ArchiveScanRecord& asr, std::string& fname, std::string* innerFilename) { return 0; }
 FCEUFILE* FCEUD_OpenArchiveIndex(ArchiveScanRecord& asr, std::string &fname, int innerIndex) { return 0; }
-void FCEUD_Update(uint8 *XBuf, int32 *Buffer, int32 Count) { }
+void FCEUD_Update(uint8 *XBuf, int32 *Buffer, int32 Count) {}
 
 void FCEUD_SoundToggle()
 {

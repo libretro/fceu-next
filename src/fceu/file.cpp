@@ -251,6 +251,11 @@ zpfail:
 	return 0;
 }
 
+static ArchiveScanRecord FCEUD_ScanArchive(std::string fname)
+{
+	return ArchiveScanRecord();
+}
+
 FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, const char *ext, int index, const char** extensions)
 {
 	FILE *ipsfile=0;

@@ -13,7 +13,6 @@ EMUFILE_FILE* FCEUD_UTF8_fstream(const char *n, const char *m);
 inline EMUFILE_FILE* FCEUD_UTF8_fstream(const std::string &n, const char *m) { return FCEUD_UTF8_fstream(n.c_str(),m); }
 FCEUFILE* FCEUD_OpenArchiveIndex(ArchiveScanRecord& asr, std::string& fname, int innerIndex);
 FCEUFILE* FCEUD_OpenArchive(ArchiveScanRecord& asr, std::string& fname, std::string* innerFilename);
-ArchiveScanRecord FCEUD_ScanArchive(std::string fname);
 
 //This makes me feel dirty for some reason.
 void FCEU_printf(char *format, ...);

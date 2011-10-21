@@ -70,7 +70,7 @@ int FCEU_InitVirtualVideo(void)
 		*/
 
 
-		if(!(XBuf= (uint8*) (malloc(256 * 256 + 16))) || !(XBackBuf= (uint8*) (malloc(256 * 256 + 16))))
+		if(!(XBuf= (uint8*) (realloc(XBuf, 256 * 256 + 16))) || !(XBackBuf= (uint8*) (realloc(XBackBuf, 256 * 256 + 16))))
 		{
 			return 0;
 		}
