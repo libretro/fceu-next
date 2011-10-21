@@ -173,14 +173,14 @@ static void PrepDPCM()
 
 static int CheckFreq(uint32 cf, uint8 sr)
 {
- uint32 mod;
- if(!(sr&0x8))
- {
-  mod=cf>>(sr&7);
-  if((mod+cf)&0x800)
-   return(0);
- }
- return(1);
+	uint32 mod;
+	if(!(sr&0x8))
+	{
+		mod=cf>>(sr&7);
+		if((mod+cf)&0x800)
+			return(0);
+	}
+	return(1);
 }
 
 static void SQReload(int x, uint8 V)
@@ -307,15 +307,20 @@ static DECLFW(Write_DMCRegs)
 
 static DECLFW(StatusWrite)
 {
-	int x;
-
 	DoSQ1();
 	DoSQ2();
 	DoTriangle();
 	DoNoise();
 	DoPCM();
-	for(x=0;x<4;x++)
-		if(!(V&(1<<x))) lengthcount[x]=0;   /* Force length counters to 0. */
+
+	if(!(V & 1))
+		lengthcount[0]=0;   /* Force length counters to 0. */
+	if(!(V & 2))
+		lengthcount[1]=0;   /* Force length counters to 0. */
+	if(!(V & 4))
+		lengthcount[2]=0;   /* Force length counters to 0. */
+	if(!(V & 8))
+		lengthcount[3]=0;   /* Force length counters to 0. */
 
 	if(V&0x10)
 	{
@@ -333,21 +338,19 @@ static DECLFW(StatusWrite)
 
 static DECLFR(StatusRead)
 {
-	int x;
 	uint8 ret;
 
 	ret=SIRQStat;
 
-	for(x=0;x<4;x++) ret|=lengthcount[x]?(1<<x):0;
+	ret|=lengthcount[0]? 1 : 0;
+	ret|=lengthcount[1]? 2 : 0;
+	ret|=lengthcount[2]? 4 : 0;
+	ret|=lengthcount[3]? 8 : 0;
+
 	if(DMCSize) ret|=0x10;
 
-#ifdef FCEUDEF_DEBUGGER
-	if(!fceuindbg)
-#endif
-	{
-		SIRQStat&=~0x40;
-		X6502_IRQEnd(FCEU_IQFCOUNT);
-	}
+	SIRQStat&=~0x40;
+	X6502_IRQEnd(FCEU_IQFCOUNT);
 	return ret;
 }
 
@@ -454,7 +457,7 @@ static void FrameSoundStuff(int V)
 	}
 }
 
-void FrameSoundUpdate(void)
+static void FrameSoundUpdate(void)
 {
 	// Linear counter:  Bit 0-6 of $4008
 	// Length counter:  Bit 4-7 of $4003, $4007, $400b, $400f
