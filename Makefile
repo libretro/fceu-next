@@ -103,7 +103,6 @@ $(FCEU_API_DIR)/file.cpp \
 $(FCEU_API_DIR)/filter.cpp \
 $(FCEU_API_DIR)/ines.cpp \
 $(FCEU_API_DIR)/input.cpp \
-$(FCEU_API_DIR)/nsf.cpp \
 $(FCEU_API_DIR)/palette.cpp \
 $(FCEU_API_DIR)/ppu.cpp \
 $(FCEU_API_DIR)/sound.cpp \

@@ -1876,7 +1876,7 @@ static void emulator_start()
 	{
 		do
 		{
-			emulation_loop(FCEUPPU_Loop_NoNSF);
+			emulation_loop(FCEUPPU_Loop);
 		}while (is_running);
 	}
 }

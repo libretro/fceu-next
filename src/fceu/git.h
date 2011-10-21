@@ -5,8 +5,7 @@ enum EGIT
 {
 	GIT_CART	= 0,  //Cart
 	GIT_VSUNI	= 1,  //VS Unisystem
-	GIT_FDS		= 2,  // Famicom Disk System
-	GIT_NSF		= 3,  //NES Sound Format
+	GIT_FDS		= 2  // Famicom Disk System
 };
 
 enum EGIV

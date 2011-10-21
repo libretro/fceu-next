@@ -36,7 +36,6 @@
 #include "utils/crc32.h"
 
 #include "cart.h"
-#include "nsf.h"
 #include "fds.h"
 #include "ines.h"
 #include "unif.h"
@@ -117,8 +116,7 @@ static void FCEU_CloseGame(void)
 			GameInfo->name=0;
 		}
 
-		if(GameInfo->type!=GIT_NSF)
-			FCEU_FlushGameCheats(0,0);
+		FCEU_FlushGameCheats(0,0);
 
 		GameInterface(GI_CLOSE);
 
@@ -321,7 +319,6 @@ void ResetGameLoaded(void)
 int UNIFLoad(const char *name, FCEUFILE *fp);
 int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode);
 int FDSLoad(const char *name, FCEUFILE *fp);
-int NSFLoad(const char *name, FCEUFILE *fp);
 
 FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 {
@@ -379,8 +376,6 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 	  goto endlseq;*/
 	if(iNESLoad(name,fp,OverwriteVidMode))
 		goto endlseq;
-	if(NSFLoad(name,fp))
-		goto endlseq;
 	if(UNIFLoad(name,fp))
 		goto endlseq;
 	if(FDSLoad(name,fp))
@@ -400,19 +395,17 @@ endlseq:
 
 	FCEU_ResetVidSys();
 
-	if(GameInfo->type!=GIT_NSF)
-		if(FSettings.GameGenie)
-			OpenGenie();
+	if(FSettings.GameGenie)
+		OpenGenie();
+
 	PowerNES();
 
-	if(GameInfo->type!=GIT_NSF)
-		FCEU_LoadGamePalette();
+	FCEU_LoadGamePalette();
 
 	FCEU_ResetPalette();
 	FCEU_ResetMessages();	// Save state, status messages, etc.
 
-	if(GameInfo->type!=GIT_NSF)
-		FCEU_LoadGameCheats(0);
+	FCEU_LoadGameCheats(0);
 
 	return GameInfo;
 }
@@ -544,7 +537,7 @@ void PowerNES(void)
 	FCEUSND_Power();
 	FCEUPPU_Power();
 
-	//Have the external game hardware "powered" after the internal NES stuff.  Needed for the NSF code and VS System code.
+	//Have the external game hardware "powered" after the internal NES stuff.  Needed for the VS System code.
 	GameInterface(GI_POWER);
 	if(GameInfo->type==GIT_VSUNI)
 		FCEU_VSUniPower();

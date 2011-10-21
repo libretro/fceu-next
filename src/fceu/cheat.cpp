@@ -37,9 +37,9 @@ using namespace std;
 
 static uint8 *CheatRPtrs[64];
 
-vector<uint16> FrozenAddresses;			//List of addresses that are currently frozen
-void UpdateFrozenList(void);			//Function that populates the list of frozen addresses
-unsigned int FrozenAddressCount=0;		//Keeps up with the Frozen address count, necessary for using in other dialogs (such as hex editor)
+vector<uint16> FrozenAddresses;		//List of addresses that are currently frozen
+void UpdateFrozenList(void);		//Function that populates the list of frozen addresses
+unsigned int FrozenAddressCount=0;	//Keeps up with the Frozen address count, necessary for using in other dialogs (such as hex editor)
 
 
 void FCEU_CheatResetRAM(void)

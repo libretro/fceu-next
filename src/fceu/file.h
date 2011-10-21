@@ -150,9 +150,8 @@ void FCEU_SplitArchiveFilename(std::string src, std::string& archive, std::strin
 #define FCEUMKF_GGROM        7
 #define FCEUMKF_IPS          8
 #define FCEUMKF_FDS          9
-//#define FCEUMKF_NPTEMP       11 //mbg 6/21/08 - who needs this..?
 #define FCEUMKF_STATEGLOB    10
-#define FCEUMKF_AUTOSTATE	 11
+#define FCEUMKF_AUTOSTATE	11
 #define FCEUMKF_MEMW         12
 #define FCEUMKF_BBOT         13
 #define FCEUMKF_ROMS         14

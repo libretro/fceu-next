@@ -173,10 +173,8 @@ enum EMUCMDTYPE
 	EMUCMDTYPE_STATE,
 	EMUCMDTYPE_MOVIE,
 	EMUCMDTYPE_SOUND,
-	EMUCMDTYPE_AVI,
 	EMUCMDTYPE_FDS,
 	EMUCMDTYPE_VSUNI,
-	EMUCMDTYPE_TOOL,  //All Tools type are currenty windows only programs
 
 	EMUCMDTYPE_MAX
 };
@@ -184,12 +182,6 @@ enum EMUCMDTYPE
 extern const char* FCEUI_CommandTypeNames[];
 
 typedef void EMUCMDFN(void);
-
-enum EMUCMDFLAG
-{
-	EMUCMDFLAG_NONE = 0,
-	EMUCMDFLAG_TASEDIT = 1,
-};
 
 struct EMUCMDTABLE
 {

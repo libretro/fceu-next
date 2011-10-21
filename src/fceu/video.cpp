@@ -33,7 +33,6 @@
 #include "utils/crc32.h"
 #include "state.h"
 #include "palette.h"
-#include "nsf.h"
 #include "input.h"
 #include "vsuni.h"
 #include "drawing.h"
@@ -102,36 +101,20 @@ void ShowFPS(void);
 #if 0
 void FCEU_PutImage(void)
 {
-   #if 0
-	if(GameInfo->type==GIT_NSF)
-	{
-		DrawNSF(XBuf);
+	//Save backbuffer before overlay stuff is written.
+	memcpy(XBackBuf, XBuf, 256*256);
 
-		//Save snapshot after NSF screen is drawn.  Why would we want to do it before?
-		if(dosnapsave==1)
-		{
-			ReallySnap();
-			dosnapsave=0;
-		}
-	} 
-	else
-	{
-   #endif
-		//Save backbuffer before overlay stuff is written.
-		memcpy(XBackBuf, XBuf, 256*256);
+	//Some messages need to be displayed before the avi is dumped
+	//DrawMessage(true);
 
-		//Some messages need to be displayed before the avi is dumped
-		//DrawMessage(true);
+	if(GameInfo->type==GIT_VSUNI)
+		FCEU_VSUniDraw(XBuf);
 
-		if(GameInfo->type==GIT_VSUNI)
-			FCEU_VSUniDraw(XBuf);
-
-		FCEU_DrawSaveStates(XBuf);
-		//FCEU_DrawMovies(XBuf);
-		//FCEU_DrawLagCounter(XBuf);
-		FCEU_DrawNTSCControlBars(XBuf);
-		//FCEU_DrawRecordingStatus(XBuf);
-	//}
+	FCEU_DrawSaveStates(XBuf);
+	//FCEU_DrawMovies(XBuf);
+	//FCEU_DrawLagCounter(XBuf);
+	FCEU_DrawNTSCControlBars(XBuf);
+	//FCEU_DrawRecordingStatus(XBuf);
 
 	DrawMessage(false);
 

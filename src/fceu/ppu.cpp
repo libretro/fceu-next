@@ -27,7 +27,6 @@
 #include  "x6502.h"
 #include  "fceu.h"
 #include  "ppu.h"
-#include  "nsf.h"
 #include  "sound.h"
 #include  "file.h"
 #include  "utils/endian.h"
@@ -1822,9 +1821,9 @@ void FCEUPPU_Power(void)
 }
 
 #ifdef FRAMESKIP
-int FCEUPPU_Loop_NoNSF(int skip)
+int FCEUPPU_Loop(int skip)
 #else
-void FCEUPPU_Loop_NoNSF(int skip)
+void FCEUPPU_Loop(int skip)
 #endif
 {
 	X6502_Run(256+85);

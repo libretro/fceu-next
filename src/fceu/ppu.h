@@ -2,9 +2,9 @@ void FCEUPPU_Init(void);
 void FCEUPPU_Reset(void);
 void FCEUPPU_Power(void);
 #ifdef FRAMESKIP
-int FCEUPPU_Loop_NoNSF(int skip);
+int FCEUPPU_Loop(int skip);
 #else
-void FCEUPPU_Loop_NoNSF(int skip);
+void FCEUPPU_Loop(int skip);
 #endif
 
 void FCEUPPU_LineUpdate();
