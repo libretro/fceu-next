@@ -683,7 +683,8 @@ void FCEUSS_CheckStates(void)
 
 	for(ssel=0;ssel<10;ssel++)
 	{
-		st=FCEUD_UTF8fopen(FCEU_MakeFName(FCEUMKF_STATE,ssel,0),"rb");
+		std::string soot = FCEU_MakeFName(FCEUMKF_STATE,ssel,0);
+		st= fopen(soot.c_str(),"rb");
 		if(st)
 		{
 			SaveStateStatus[ssel]=1;

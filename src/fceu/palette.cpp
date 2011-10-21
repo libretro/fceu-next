@@ -205,7 +205,7 @@ void FCEU_LoadGamePalette(void)
 
 	fn=strdup(FCEU_MakeFName(FCEUMKF_PALETTE,0,0).c_str());
 
-	if((fp=FCEUD_UTF8fopen(fn,"rb")))
+	if((fp=fopen(fn,"rb")))
 	{
 		int x;
 		fread(ptmp,1,192,fp);

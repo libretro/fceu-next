@@ -222,7 +222,7 @@ void FCEU_LoadGameCheats(FILE *override)
 	else
 	{
 		fn=strdup(FCEU_MakeFName(FCEUMKF_CHEAT,0,0).c_str());
-		fp=FCEUD_UTF8fopen(fn,"rb");
+		fp=fopen(fn,"rb");
 		free(fn);
 		if(!fp) return;
 	}
@@ -333,7 +333,7 @@ void FCEU_FlushGameCheats(FILE *override, int nosave)
 			if(override)
 				fp = override;
 			else
-				fp=FCEUD_UTF8fopen(fn,"wb");
+				fp=fopen(fn,"wb");
 
 			if(fp)
 			{

@@ -782,7 +782,7 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 #ifndef GEKKO
 	fn = strdup(FCEU_MakeFName(FCEUMKF_FDSROM,0,0).c_str());
 
-	if(!(zp=FCEUD_UTF8fopen(fn,"rb")))  
+	if(!(zp=fopen(fn,"rb")))  
 	{
 		FCEU_PrintError("FDS BIOS ROM image missing: %s", FCEU_MakeFName(FCEUMKF_FDSROM,0,0).c_str());
 		FreeFDSMemory();
@@ -895,7 +895,7 @@ void FDSClose(void)
 
 	if(!DiskWritten) return;
 
-	if(!(fp=FCEUD_UTF8fopen(fn,"wb")))
+	if(!(fp=fopen(fn,"wb")))
 	{
 		free(fn);
 		return;

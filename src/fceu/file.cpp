@@ -270,7 +270,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, co
 
 	//try to setup the ips file
 	if(ipsfn && read)
-		ipsfile=FCEUD_UTF8fopen(ipsfn,"rb");
+		ipsfile=fopen(ipsfn,"rb");
 	if(read)
 	{
 		ArchiveScanRecord asr = FCEUD_ScanArchive(fileToOpen);
@@ -366,7 +366,10 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, co
 	applyips:
 		//try to open the ips file
 		if(!ipsfile && !ipsfn)
-			ipsfile=FCEUD_UTF8fopen(FCEU_MakeIpsFilename(DetermineFileBase(fceufp->logicalPath.c_str())),"rb");
+		{
+			std::string soot = FCEU_MakeIpsFilename(DetermineFileBase(fceufp->logicalPath.c_str()));
+			ipsfile=fopen(soot.c_str(),"rb");
+		}
 		ApplyIPS(ipsfile,fceufp);
 		return fceufp;
 	}
@@ -442,26 +445,24 @@ void FCEUI_SetDirOverride(int which, char *n)
 {
 	//	FCEU_PrintError("odirs[%d]=%s->%s", which, odirs[which], n);
 	if (which < FCEUIOD__COUNT)
-	{
 		odirs[which] = n;
-	}
 }
 
-	#ifndef HAVE_ASPRINTF
-	static int asprintf(char **strp, const char *fmt, ...)
-	{
-		va_list ap;
-		int ret;
+#ifndef HAVE_ASPRINTF
+static int asprintf(char **strp, const char *fmt, ...)
+{
+	va_list ap;
+	int ret;
 
-		va_start(ap,fmt);
-		*strp = (char*)malloc(2048);
-		if(!strp) //mbg merge 7/17/06 cast to char*
-			return(0);
-		ret=vsnprintf(*strp,2048,fmt,ap);
-		va_end(ap);
-		return(ret);
-	}
-	#endif
+	va_start(ap,fmt);
+	*strp = (char*)malloc(2048);
+	if(!strp) //mbg merge 7/17/06 cast to char*
+		return(0);
+	ret=vsnprintf(*strp,2048,fmt,ap);
+	va_end(ap);
+	return(ret);
+}
+#endif
 
 std::string  FCEU_GetPath(int type)
 {

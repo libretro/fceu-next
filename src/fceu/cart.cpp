@@ -452,7 +452,7 @@ void OpenGenie(void)
 		if(!(GENIEROM=(uint8 *)malloc(4096+1024))) return;
 
 		fn=strdup(FCEU_MakeFName(FCEUMKF_GGROM,0,0).c_str());
-		fp=FCEUD_UTF8fopen(fn,"rb");
+		fp=fopen(fn,"rb");
 		if(!fp)
 		{
 			FCEU_PrintError("Error opening Game Genie ROM image!");
@@ -644,7 +644,7 @@ void FCEU_SaveGameSave(CartInfo *LocalHWInfo)
 		FILE *sp;
 
 		std::string soot = FCEU_MakeFName(FCEUMKF_SAV,0,"sav");
-		if((sp=FCEUD_UTF8fopen(soot,"wb"))==NULL)
+		if((sp=fopen(soot.c_str(),"wb"))==NULL)
 		{
 			FCEU_PrintError("WRAM file \"%s\" cannot be written to.\n",soot.c_str());
 		}
@@ -666,7 +666,7 @@ void FCEU_LoadGameSave(CartInfo *LocalHWInfo)
 		FILE *sp;
 
 		std::string soot = FCEU_MakeFName(FCEUMKF_SAV,0,"sav");
-		sp=FCEUD_UTF8fopen(soot,"rb");
+		sp=fopen(soot.c_str(),"rb");
 		if(sp!=NULL)
 		{
 			for(int x=0;x<4;x++)

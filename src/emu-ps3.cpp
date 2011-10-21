@@ -757,11 +757,6 @@ void FCEUD_GetPalette(unsigned char i, unsigned char *r, unsigned char *g, unsig
 }
 
 
-FILE *FCEUD_UTF8fopen(const char *n, const char *m)
-{
-	return fopen(n, m);
-}
-
 EMUFILE_FILE* FCEUD_UTF8_fstream(const char *n, const char *m)
 {
 	EMUFILE_FILE *p = new EMUFILE_FILE(n, m);
