@@ -152,10 +152,9 @@ static DECLFW(B4016)
 }
 
 //a main joystick port driver representing the case where nothing is plugged in
-static INPUTC DummyJPort={0,0,0,0,0,0};
+static INPUTC DummyJPort={0,0,0,0,0};
 //and an expansion port driver for the same ting
-static INPUTCFC DummyPortFC={0,0,0,0,0,0};
-
+static INPUTCFC DummyPortFC={0,0,0,0,0};
 
 //--------4 player driver for expansion port--------
 static uint8 F4ReadBit[2];
@@ -175,11 +174,7 @@ static uint8 ReadFami4(int w, uint8 ret)
 	return(ret);
 }
 
-static INPUTCFC FAMI4C={ReadFami4,0,StrobeFami4,0,0,0};
-//------------------
-
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+static INPUTCFC FAMI4C={ReadFami4,0,StrobeFami4,0,0};
 
 static uint8 ReadGPVS(int w)
 {
@@ -241,17 +236,8 @@ static void StrobeGP(int w)
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^6
 
 
-static INPUTC GPC={ReadGP,0,StrobeGP,UpdateGP,0,0};
-static INPUTC GPCVS={ReadGPVS,0,StrobeGP,UpdateGP,0,0};
-
-void FCEU_DrawInput(uint8 *buf)
-{
-	joyports[0].driver->Draw(0,buf,joyports[0].attrib);
-	joyports[1].driver->Draw(1,buf,joyports[1].attrib);
-	if(portFC.driver)
-		portFC.driver->Draw(buf,portFC.attrib);
-}
-
+static INPUTC GPC={ReadGP,0,StrobeGP,UpdateGP,0};
+static INPUTC GPCVS={ReadGPVS,0,StrobeGP,UpdateGP,0};
 
 void FCEU_UpdateInput(void)
 {

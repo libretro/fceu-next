@@ -16,7 +16,6 @@ struct INPUTC
 	void Strobe(int w) { if(_Strobe) _Strobe(w); }
 	void Update(int w, void *data, int arg) { if(_Update) _Update(w,data,arg); }
 	void SLHook(int w, uint8 *bg, uint8 *spr, uint32 linets, int final) { if(_SLHook) _SLHook(w,bg,spr,linets,final); }
-	void Draw(int w, uint8 *buf, int arg) { if(_Draw) _Draw(w,buf,arg); }
 
 	uint8 (*_Read)(int w);
 	void (*_Write)(uint8 v);
@@ -24,7 +23,6 @@ struct INPUTC
 	//update will be called if input is coming from the user. refresh your logical state from user input devices
 	void (*_Update)(int w, void *data, int arg);
 	void (*_SLHook)(int w, uint8 *bg, uint8 *spr, uint32 linets, int final);
-	void (*_Draw)(int w, uint8 *buf, int arg);
 };
 
 //The interface for the expansion port device drivers
@@ -36,7 +34,6 @@ struct INPUTCFC
 	void Strobe() { if(_Strobe) _Strobe(); }
 	void Update(void *data, int arg) { if(_Update) _Update(data,arg); }
 	void SLHook(uint8 *bg, uint8 *spr, uint32 linets, int final) { if(_SLHook) _SLHook(bg,spr,linets,final); }
-	void Draw(uint8 *buf, int arg) { if(_Draw) _Draw(buf,arg); }
 
 	uint8 (*_Read)(int w, uint8 ret);
 	void (*_Write)(uint8 v);
@@ -44,7 +41,6 @@ struct INPUTCFC
 	//update will be called if input is coming from the user. refresh your logical state from user input devices
 	void (*_Update)(void *data, int arg);
 	void (*_SLHook)(uint8 *bg, uint8 *spr, uint32 linets, int final);
-	void (*_Draw)(uint8 *buf, int arg);
 };
 
 extern struct JOYPORT
@@ -66,7 +62,6 @@ extern struct FCPORT
 } portFC;
 
 
-void FCEU_DrawInput(uint8 *buf);
 void FCEU_UpdateInput(void);
 void InitializeInput(void);
 void FCEU_UpdateBot(void);

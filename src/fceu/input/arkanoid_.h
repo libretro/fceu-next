@@ -1,27 +1,3 @@
-/* FCE Ultra - NES/Famicom Emulator
- *
- * Copyright notice for this file:
- *  Copyright (C) 2002 Xodnizel
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-#include        <string.h>
-#include        <stdlib.h>
-#include        "share.h"
-
 typedef struct {
 	uint32 mzx,mzb;
 	uint32 readbit;
@@ -34,7 +10,6 @@ static void StrobeARKFC(void)
 {
 	FCArk.readbit=0;
 }
-
 
 static uint8 ReadARKFC(int w,uint8 ret)
 {
@@ -70,7 +45,7 @@ static void UpdateARKFC(void *data, int arg)
  FCArk.mzb=ptr[2]?1:0;
 }
 
-static INPUTCFC ARKCFC={ReadARKFC,0,StrobeARKFC,UpdateARKFC,0,0};
+static INPUTCFC ARKCFC={ReadARKFC,0,StrobeARKFC,UpdateARKFC,0};
 
 INPUTCFC *FCEU_InitArkanoidFC(void)
 {
@@ -107,7 +82,7 @@ static void UpdateARK(int w, void *data, int arg)
  NESArk[w].mzb=ptr[2]?1:0;
 }
 
-static INPUTC ARKC={ReadARK, 0, StrobeARK, UpdateARK, 0, 0};
+static INPUTC ARKC={ReadARK, 0, StrobeARK, UpdateARK, 0};
 
 INPUTC *FCEU_InitArkanoid(int w)
 {

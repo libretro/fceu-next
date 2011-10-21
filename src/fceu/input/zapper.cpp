@@ -122,11 +122,6 @@ static uint8 ReadZapper(int w)
 	return ret;
 }
 
-static void DrawZapper(int w, uint8 *buf, int arg)
-{
-	FCEU_DrawGunSight(buf, ZD[w].mzx,ZD[w].mzy);
-}
-
 static void UpdateZapper(int w, void *data, int arg)
 {
 	uint32 *ptr=(uint32 *)data;
@@ -142,8 +137,8 @@ static void UpdateZapper(int w, void *data, int arg)
 }
 
 
-static INPUTC ZAPC={ReadZapper,0,0,UpdateZapper,ZapperFrapper,DrawZapper};
-static INPUTC ZAPVSC={ReadZapperVS,0,StrobeZapperVS,UpdateZapper,ZapperFrapper,DrawZapper};
+static INPUTC ZAPC={ReadZapper,0,0,UpdateZapper,ZapperFrapper};
+static INPUTC ZAPVSC={ReadZapperVS,0,StrobeZapperVS,UpdateZapper,ZapperFrapper};
 
 INPUTC *FCEU_InitZapper(int w)
 {
