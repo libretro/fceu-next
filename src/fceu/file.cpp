@@ -163,22 +163,18 @@ void FCEU_SplitArchiveFilename(std::string src, std::string& archive, std::strin
 	}
 }
 
-FileBaseInfo CurrentFileBase() {
-	return FileBaseInfo(FileBaseDirectory,FileBase,FileExt);
-}
+#define CurrentFileBase() FileBaseInfo(FileBaseDirectory,FileBase,FileExt)
 
-FileBaseInfo DetermineFileBase(const char *f) {
-
+static FileBaseInfo DetermineFileBase(const char *f)
+{
 	char drv[PATH_MAX], dir[PATH_MAX], name[PATH_MAX], ext[PATH_MAX];
 	splitpath(f,drv,dir,name,ext);
- 
-        if(dir[0] == 0) strcpy(dir,".");
+
+	if(dir[0] == 0) strcpy(dir,".");
 
 	return FileBaseInfo((std::string)drv + dir,name,ext);	
-	
-}
 
-inline FileBaseInfo DetermineFileBase(const std::string& str) { return DetermineFileBase(str.c_str()); }
+}
 
 static FCEUFILE * TryUnzip(const std::string& path) {
 	unzFile tz;
@@ -362,7 +358,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, co
 
 			if(!fceufp) return 0;
 
-			FileBaseInfo fbi = DetermineFileBase(fileToOpen);
+			FileBaseInfo fbi = DetermineFileBase(fileToOpen.c_str());
 			fceufp->logicalPath = fbi.filebasedirectory + fceufp->filename;
 			goto applyips;
 		}
@@ -378,13 +374,6 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, co
 		return fceufp;
 	}
 	return 0;
-}
-
-uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
-{
-	fp->stream->fwrite((char*)ptr,size*nmemb);
-	//todo - how do we tell how many bytes we wrote?
-	return nmemb;
 }
 
 int FCEU_fseek(FCEUFILE *fp, long offset, int whence)

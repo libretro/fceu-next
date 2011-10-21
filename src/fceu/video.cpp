@@ -39,7 +39,6 @@
 
 uint8 *XBuf=NULL;
 uint8 *XBackBuf=NULL;
-int ClipSidesOffset=0;	//Used to move displayed messages when Clips left and right sides is checked
 
 GUIMESSAGE guiMessage;
 

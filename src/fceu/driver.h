@@ -170,9 +170,6 @@ int FCEUI_DatachSet(const uint8 *rcode);
 //indicates whether input aids should be drawn (such as crosshairs, etc; usually in fullscreen mode)
 bool FCEUD_ShouldDrawInputAids();
 
-///called when the emulator closes a game
-void FCEUD_OnCloseGame(void);
-
 ///A callback that the emu core uses to poll the state of a given emulator command key
 typedef int TestCommandState(int cmd);
 ///Signals the emu core to poll for emulator commands and take actions
@@ -189,12 +186,6 @@ enum EMUSPEED_SET
 	EMUSPEED_FASTEST
 };
 void FCEUD_SetEmulationSpeed(int cmd);
-void FCEUD_TurboOn(void);
-void FCEUD_TurboOff(void);
-void FCEUD_TurboToggle(void);
-
-///signals the driver to perform a file open GUI operation
-void FCEUD_CmdOpen(void);
 
 //new merge-era driver routines here:
 

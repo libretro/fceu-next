@@ -119,7 +119,6 @@ struct ArchiveScanRecord
 
 FCEUFILE *FCEU_fopen(const char *path, const char *ipsfn, const char *mode, const char *ext, int index=-1, const char** extensions = 0);
 bool FCEU_isFileInArchive(const char *path);
-uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE*);
 int FCEU_fseek(FCEUFILE*, long offset, int whence);
 
 void GetFileBase(const char *f);

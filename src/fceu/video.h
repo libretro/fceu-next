@@ -4,7 +4,6 @@
 int FCEU_InitVirtualVideo(void);
 extern uint8 *XBuf;
 extern uint8 *XBackBuf;
-extern int ClipSidesOffset;
 extern struct GUIMESSAGE
 {
 	//the current gui message
