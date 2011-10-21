@@ -196,6 +196,4 @@ struct EMUCMDTABLE
 
 extern struct EMUCMDTABLE FCEUI_CommandTable[];
 
-extern bool turbo;
-
 #endif //_INPUT_H_

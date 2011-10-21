@@ -449,6 +449,7 @@ void FCEUI_Kill(void)
 
 ///Emulates a single frame.
 
+#if 0
 void FCEUI_Emulate(uint8 ** pXBuf, int32 ** SoundBuf, int32 * SoundBufSize)
 {
 	int ssize = FlushEmulateSound();
@@ -460,6 +461,7 @@ void FCEUI_Emulate(uint8 ** pXBuf, int32 ** SoundBuf, int32 * SoundBufSize)
 	*SoundBuf=WaveFinal;
 	*SoundBufSize=ssize;
 }
+#endif
 
 void FCEUI_CloseGame(void)
 {

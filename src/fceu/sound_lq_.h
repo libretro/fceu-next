@@ -89,8 +89,8 @@ static const uint32 *NoiseFreqTable = NoiseFreqTableNTSC;
 
 static const uint32 NTSCDMCTable[0x10]=
 {
- 428,380,340,320,286,254,226,214,
- 190,160,142,128,106, 84 ,72,54
+	428,380,340,320,286,254,226,214,
+	190,160,142,128,106, 84 ,72,54
 };
 
 /* Previous values for PAL DMC was value - 1,
@@ -114,7 +114,8 @@ static int32 DMCacc=1;
 static int32 DMCPeriod=0;
 static uint8 DMCBitCount=0;
 
-static uint8 DMCAddressLatch=0,DMCSizeLatch=0; /* writes to 4012 and 4013 */
+static uint8 DMCAddressLatch=0;
+static uint8 DMCSizeLatch=0; /* writes to 4012 and 4013 */
 static uint8 DMCFormat=0;	/* Write to $4010 */
 
 static uint32 DMCAddress=0;

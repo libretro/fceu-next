@@ -75,10 +75,9 @@ uint64_t ingame_menu_item = 0;				// the current ingame menu item that is select
 
 /* Emulator-specific global variables */
 
-bool turbo = false;					// FCEU - handle turbo mode for fceu core but implemented externally
 static uint32 JSReturn = 0;
 void *InputDPR;
-uint8 *gfx=0;						// had to be made a global because ingame_menu needs access to it too
+static uint8 *gfx=0;					// had to be made a global because ingame_menu needs access to it too
 uint32_t hack_prevent_game_sram_from_being_erased = 1;	// ugly hack - is set to 0 after the hack has been applied
 
 #if 0
@@ -1711,8 +1710,15 @@ static  void ingame_menu(void)
 }
 
 /* PS3 Frontend - main functions */
+extern uint8 *XBuf;
 
 // Emulator-specific - core emulation loop functions
+#define FCEUI_Emulate(gfx, sound, ssize) \
+	ssize = FlushEmulateSound(); \
+	timestampbase += timestamp; \
+	timestamp = 0; \
+	gfx = XBuf; \
+	sound = WaveFinal;
 
 #define emulation_loop(loop) \
 	if(geniestage != 1) \
@@ -1720,7 +1726,7 @@ static  void ingame_menu(void)
 	\
 	loop(fskip); \
 	\
-	FCEUI_Emulate(&gfx, &sound, &ssize); \
+	FCEUI_Emulate(gfx, sound, ssize); \
 	\
 	Graphics->Draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT); \
 	if(Graphics->frame_count < special_action_msg_expired) \

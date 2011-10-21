@@ -71,10 +71,6 @@ extern INPUTCFC *FCEU_InitOekaKids(void);
 extern INPUTCFC *FCEU_InitTopRider(void);
 extern INPUTCFC *FCEU_InitBarcodeWorld(void);
 extern INPUTCFC *FCEU_InitFamicom3D(void);
-//---------------
-
-//global lag variables
-//-------------
 
 static uint8 joy_readbit[2];
 static uint8 joy[4]={0,0,0,0};

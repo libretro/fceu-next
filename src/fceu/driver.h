@@ -64,7 +64,7 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode);
 bool FCEUI_Initialize();
 
 //Emulates a frame.
-void FCEUI_Emulate(uint8 **, int32 **, int32 *);
+//void FCEUI_Emulate(uint8 **, int32 **, int32 *);
 
 //Closes currently loaded game
 void FCEUI_CloseGame(void);
