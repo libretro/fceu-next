@@ -17,8 +17,8 @@ void FCEU_printf(char *format, ...);
 #define FCEUI_printf FCEU_printf
 
 //Video interface
-void FCEUD_SetPalette(uint8 index, uint8 r, uint8 g, uint8 b);
-void FCEUD_GetPalette(uint8 i,uint8 *r, uint8 *g, uint8 *b);
+void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b);
+void FCEUD_GetPalette(unsigned char i, unsigned char *r, unsigned char *g, unsigned char *b);
 
 //Displays an error.  Can block or not.
 void FCEUD_PrintError(const char *s);
