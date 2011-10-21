@@ -40,8 +40,9 @@
 #include "driver.h"
 
 //PS3 includes
+#ifdef __CELLOS_LV2__
 #include <ppu_intrinsics.h>
-
+#endif
 
 #define VBlankON  (PPU[0]&0x80)   //Generate VBlank NMI
 #define Sprite16  (PPU[0]&0x20)   //Sprites 8x16/8x8
@@ -60,10 +61,6 @@
 #define PPU_status      (PPU[2])
 
 #define Pal     (PALRAM)
-
-static void RefreshLine(int lastpixel);
-static void RefreshSprites(void);
-static void CopySprites(uint8 *target);
 
 static uint32 ppulut1[256];
 static uint32 ppulut2[256];
@@ -187,14 +184,20 @@ static void Fixit1(void)
 	}
 }
 
+#ifdef __CELLOS_LV2__
+#define PRECACHE(var) __dcbt(&var);
+#else
+#define PRECACHE(var)
+#endif
+
 #define spr_reset() \
-	__dcbt(&spr_read); \
+	PRECACHE(spr_read); \
 	spr_read.num = spr_read.count = spr_read.fetch = spr_read.found = spr_read.ret = spr_read.last = spr_read.mode = 0; \
 	spr_read.found_pos[0] = spr_read.found_pos[1] = spr_read.found_pos[2] = spr_read.found_pos[3] = 0; \
 	spr_read.found_pos[4] = spr_read.found_pos[5] = spr_read.found_pos[6] = spr_read.found_pos[7] = 0;
 
 #define spr_start_scanline() \
-	__dcbt(&spr_read); \
+	PRECACHE(spr_read); \
 	spr_read.num = 1; \
 	spr_read.found = 0; \
 	spr_read.fetch = 1; \
@@ -223,14 +226,14 @@ static void Fixit1(void)
 //made up by daisy-chaining the HT counter to the H counter. The HT counter is
 //then clocked every 8 pixel dot clocks (or every 8/3 CPU clock cycles).
 #define ppur_increment_hsc() \
-		__dcbt(&ppur); \
+		PRECACHE(ppur); \
 		ppur.ht++; \
 		ppur.h += (ppur.ht >> 5); \
 		ppur.ht &= 31; \
 		ppur.h &= 1;
 
 #define ppur_reset() \
-		__dcbt(&ppur); \
+		PRECACHE(ppur); \
 		ppur.fv = ppur.v = ppur.h = ppur.vt = ppur.ht = 0; \
 		ppur.fh = ppur.par = ppur.s = 0; \
 		ppur._fv = ppur._v = ppur._h = ppur._vt = ppur._ht = 0; \
@@ -239,7 +242,7 @@ static void Fixit1(void)
 		ppur_status.sl = 241;
 
 #define ppur_increment_vs() \
-		__dcbt(&ppur); \
+		PRECACHE(ppur); \
 		ppur.fv++; \
 		ppur.vt += (ppur.fv >> 3); \
 		ppur.vt &= 31; /* fixed tecmo super bowl */ \
@@ -262,7 +265,7 @@ static void Fixit1(void)
 //difference is that the HT counter is no longer being clocked, and the VT
 //counter is now being clocked by access to 2007.
 #define ppur_increment2007(by32) \
-	__dcbt(&ppur); \
+	PRECACHE(ppur); \
 	if(by32) \
 		ppur.vt++; \
 	else \
@@ -280,7 +283,7 @@ static void Fixit1(void)
 	ppur.fv &= 7;
 
 #define ppur_install_latches() \
-	__dcbt(&ppur); \
+	PRECACHE(ppur); \
 	ppur.fv = ppur._fv; \
 	ppur.v = ppur._v; \
 	ppur.h = ppur._h; \
@@ -288,56 +291,14 @@ static void Fixit1(void)
 	ppur.ht = ppur._ht;
 
 #define ppur_install_h_latches() \
-	__dcbt(&ppur); \
+	PRECACHE(ppur); \
 	ppur.ht = ppur._ht; \
 	ppur.h = ppur._h;
 
 #define ppur_clear_latches() \
-	__dcbt(&ppur); \
+	PRECACHE(ppur); \
 	ppur._fv = ppur._v = ppur._h = ppur._vt = ppur._ht = 0; \
 	ppur.fh = 0;
-
-
-
-static void makeppulut(void)
-{
-	int x;
-	int y;
-	int cc,xo,pixel;
-
-
-	for(x=0;x<256;x++)
-	{
-		ppulut1[x] = 0;
-
-		ppulut1[x] |= ((x>>(7))&1);
-		ppulut1[x] |= ((x>>(6))&1) << 4;
-		ppulut1[x] |= ((x>>(5))&1) << 8;
-		ppulut1[x] |= ((x>>(4))&1) << 12;
-		ppulut1[x] |= ((x>>(3))&1) << 16;
-		ppulut1[x] |= ((x>>(2))&1) << 20;
-		ppulut1[x] |= ((x>>(1))&1) << 24;
-		ppulut1[x] |= ((x>>(0))&1) << 28;
-
-		ppulut2[x] = ppulut1[x] << 1;
-	}
-
-	for(cc=0;cc<16;cc++)
-	{
-		for(xo=0;xo<8;xo++)
-		{
-			ppulut3[ xo | ( cc << 3 ) ] = 0;
-
-			for(pixel=0;pixel<8;pixel++)
-			{
-				int shiftr;
-				shiftr = ( pixel + xo ) / 8;
-				shiftr *= 2;
-				ppulut3[ xo | (cc<<3) ] |= ( ( cc >> shiftr ) & 3 ) << ( 2 + pixel * 4 );
-			}
-		}
-	}
-}
 
 int ppudead=1;
 static int kook=0;
@@ -492,23 +453,6 @@ void (*FFCEUX_PPUWrite)(uint32 A, uint8 V) = 0;
 
 //whether to use the new ppu (new PPU doesn't handle MMC5 extra nametables at all
 int newppu = 0;
-
-void ppu_getScroll(int &xpos, int &ypos)
-{
-	if(newppu)
-	{
-		ypos = ppur._vt*8 + ppur._fv + ppur._v*256;
-		xpos = ppur._ht*8 + ppur.fh + ppur._h*256;
-	}
-	else
-	{
-		xpos = ((RefreshAddr & 0x400) >> 2) | ((RefreshAddr & 0x1F) << 3) | XOffset;
-
-		ypos = ((RefreshAddr & 0x3E0) >> 2) | ((RefreshAddr & 0x7000) >> 12);
-		if(RefreshAddr & 0x800) ypos += 240;
-	}
-}
-//---------------
 
 static DECLFR(A2002)
 {
@@ -1003,29 +947,10 @@ static void ResetRL(uint8 *target)
 }
 
 static uint8 sprlinebuf[256+8];
-
-void FCEUPPU_LineUpdate(void)
-{
-	if(Pline)
-	{
-		int l=GETLASTPIXEL;
-		RefreshLine(l);
-	}
-}
-
-static void CheckSpriteHit(int p);
-
-#define EndRL() \
-	RefreshLine(272); \
-	if(tofix) \
-		Fixit1(); \
-	if(sphitx != 0x100) \
-	{ \
-		CheckSpriteHit(272); \
-	} \
-	Pline=0;
-
 static int32 sphitx;
+//spork the world.  Any sprites on this line? Then this will be set to 1.
+//Needed for zapper emulation and *gasp* sprite emulation.
+static int spork=0;
 static uint8 sphitdata;
 
 static void CheckSpriteHit(int p)
@@ -1048,10 +973,6 @@ static void CheckSpriteHit(int p)
 		}
 	}
 }
-
-//spork the world.  Any sprites on this line? Then this will be set to 1.
-//Needed for zapper emulation and *gasp* sprite emulation.
-static int spork=0;
 
 // lasttile is really "second to last tile."
 static void RefreshLine(int lastpixel)
@@ -1261,6 +1182,31 @@ static void RefreshLine(int lastpixel)
 	firsttile=lasttile;
 }
 
+void FCEUPPU_LineUpdate(void)
+{
+	if(Pline)
+	{
+		int l=GETLASTPIXEL;
+		RefreshLine(l);
+	}
+}
+
+static void CheckSpriteHit(int p);
+
+#define EndRL() \
+	RefreshLine(272); \
+	if(tofix) \
+		Fixit1(); \
+	if(sphitx != 0x100) \
+	{ \
+		CheckSpriteHit(272); \
+	} \
+	Pline=0;
+
+
+
+
+
 static INLINE void Fixit2(void)
 {
 	if(ScreenON || SpriteON)
@@ -1434,78 +1380,6 @@ static void FetchSpriteData(void)
 }
 
 void MMC5_hb(int);     //Ugh ugh ugh.
-static void DoLine(void)
-{
-	int x;
-	uint8 *target=XBuf+(scanline<<8);
-
-	if(MMC5Hack && (ScreenON || SpriteON) )
-		MMC5_hb(scanline);
-
-	X6502_Run(256);
-	EndRL();
-
-	if(SpriteON && spork)
-		CopySprites(target);
-
-	if(ScreenON || SpriteON)  // Yes, very el-cheapo.
-	{
-		if(PPU[1]&0x01)
-		{
-			for(x=63;x>=0;x--)
-				*(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2]) & 0x30303030;
-		}
-	}
-	if((PPU[1]>>5)==0x7)
-	{
-		for(x=63;x>=0;x--)
-			*(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2]) & 0x3f3f3f3f) | 0xc0c0c0c0;
-	}
-	else if(PPU[1]&0xE0)
-		for(x=63;x>=0;x--)
-			*(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2]) | 0x40404040;
-	else
-		for(x=63;x>=0;x--)
-			*(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2]) & 0x3f3f3f3f) | 0x80808080;
-
-	sphitx=0x100;
-
-	if(ScreenON || SpriteON)
-		FetchSpriteData();
-
-	X6502_Run(6);
-	Fixit2();
-	if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
-	{
-		//X6502_Run(6); loop-invariant code motion
-		//Fixit2();
-		X6502_Run(4);
-		GameHBIRQHook();
-		X6502_Run(85-16-10);
-	}
-	else
-	{
-		//X6502_Run(6);  // Tried 65, caused problems with Slalom(maybe others)
-		//Fixit2();	// loop-invariant code motion
-		X6502_Run(85-6-16);
-
-		// A semi-hack for Star Trek: 25th Anniversary
-		if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
-			GameHBIRQHook();
-	}
-
-	if(SpriteON)
-		RefreshSprites();
-	if(GameHBIRQHook2 && (ScreenON || SpriteON) )
-		GameHBIRQHook2();
-}
-
-
-void FCEUI_DisableSpriteLimitation(int a)
-{
-	maxsprites=a?64:8;
-}
-
 
 static void RefreshSprites(void)
 {
@@ -1708,6 +1582,78 @@ loopskie:
 		goto loopskie;
 }
 
+static void DoLine(void)
+{
+	int x;
+	uint8 *target=XBuf+(scanline<<8);
+
+	if(MMC5Hack && (ScreenON || SpriteON) )
+		MMC5_hb(scanline);
+
+	X6502_Run(256);
+	EndRL();
+
+	if(SpriteON && spork)
+		CopySprites(target);
+
+	if(ScreenON || SpriteON)  // Yes, very el-cheapo.
+	{
+		if(PPU[1]&0x01)
+		{
+			for(x=63;x>=0;x--)
+				*(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2]) & 0x30303030;
+		}
+	}
+	if((PPU[1]>>5)==0x7)
+	{
+		for(x=63;x>=0;x--)
+			*(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2]) & 0x3f3f3f3f) | 0xc0c0c0c0;
+	}
+	else if(PPU[1]&0xE0)
+		for(x=63;x>=0;x--)
+			*(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2]) | 0x40404040;
+	else
+		for(x=63;x>=0;x--)
+			*(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2]) & 0x3f3f3f3f) | 0x80808080;
+
+	sphitx=0x100;
+
+	if(ScreenON || SpriteON)
+		FetchSpriteData();
+
+	X6502_Run(6);
+	Fixit2();
+	if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
+	{
+		//X6502_Run(6); loop-invariant code motion
+		//Fixit2();
+		X6502_Run(4);
+		GameHBIRQHook();
+		X6502_Run(85-16-10);
+	}
+	else
+	{
+		//X6502_Run(6);  // Tried 65, caused problems with Slalom(maybe others)
+		//Fixit2();	// loop-invariant code motion
+		X6502_Run(85-6-16);
+
+		// A semi-hack for Star Trek: 25th Anniversary
+		if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
+			GameHBIRQHook();
+	}
+
+	if(SpriteON)
+		RefreshSprites();
+	if(GameHBIRQHook2 && (ScreenON || SpriteON) )
+		GameHBIRQHook2();
+}
+
+
+void FCEUI_DisableSpriteLimitation(int a)
+{
+	maxsprites=a?64:8;
+}
+
 void FCEUPPU_SetVideoSystem(int w)
 {
 	if(w)
@@ -1727,7 +1673,43 @@ void FCEUPPU_SetVideoSystem(int w)
 //Initializes the PPU
 void FCEUPPU_Init(void)
 {
-	makeppulut();
+	//make PPU LUT
+	int x;
+	int y;
+	int cc,xo,pixel;
+
+
+	for(x=0;x<256;x++)
+	{
+		ppulut1[x] = 0;
+
+		ppulut1[x] |= ((x>>(7))&1);
+		ppulut1[x] |= ((x>>(6))&1) << 4;
+		ppulut1[x] |= ((x>>(5))&1) << 8;
+		ppulut1[x] |= ((x>>(4))&1) << 12;
+		ppulut1[x] |= ((x>>(3))&1) << 16;
+		ppulut1[x] |= ((x>>(2))&1) << 20;
+		ppulut1[x] |= ((x>>(1))&1) << 24;
+		ppulut1[x] |= ((x>>(0))&1) << 28;
+
+		ppulut2[x] = ppulut1[x] << 1;
+	}
+
+	for(cc=0;cc<16;cc++)
+	{
+		for(xo=0;xo<8;xo++)
+		{
+			ppulut3[ xo | ( cc << 3 ) ] = 0;
+
+			for(pixel=0;pixel<8;pixel++)
+			{
+				int shiftr;
+				shiftr = ( pixel + xo ) / 8;
+				shiftr *= 2;
+				ppulut3[ xo | (cc<<3) ] |= ( ( cc >> shiftr ) & 3 ) << ( 2 + pixel * 4 );
+			}
+		}
+	}
 }
 
 void PPU_ResetHooks()
@@ -1925,78 +1907,70 @@ void FCEUPPU_SaveState(void)
 	RefreshAddrT=RefreshAddr;
 }
 
+#define KLINE_TIME 341
+#define KLINE_TIME_X242 82522
+#define KLINE_TIME_X70 23870
+#define KLINE_TIME_X20 6820
+#define KFETCH_TIME 2
 
-//---------------------
-int pputime=0;
-int totpputime=0;
-const int kLineTime=341;
-const int kFetchTime=2;
-
-void runppu(int x)
-{
-	//pputime+=x;
-	//if(cputodo<200) return;
-
-	ppur_status.cycle = (ppur_status.cycle + x) %
-		ppur_status.end_cycle;
-
+#define runppu(x) \
+	ppur_status.cycle = (ppur_status.cycle + x) % ppur_status.end_cycle; \
 	X6502_Run(x);
-	//pputime -= cputodo<<2;
-}
 
 //todo - consider making this a 3 or 4 slot fifo to keep from touching so much memory
 struct BGData {
 		struct Record {
 			uint8 nt, at, pt[2];
 
-			INLINE void Read() {
+			INLINE void Read()
+			{
 				RefreshAddr = ppur_get_ntread();
 				nt = CALL_PPUREAD(RefreshAddr);
-				runppu(kFetchTime);
+				runppu(KFETCH_TIME);
 
 				RefreshAddr = ppur_get_atread();
 				at = CALL_PPUREAD(RefreshAddr);
 
 				//modify at to get appropriate palette shift
-				if(ppur.vt&2) at >>= 4;
-				if(ppur.ht&2) at >>= 2;
+				if(ppur.vt & 2)
+					at >>= 4;
+				if(ppur.ht & 2)
+					at >>= 2;
 				at &= 0x03;
 				at <<= 2;
-                //horizontal scroll clocked at cycle 3 and then
-                //vertical scroll at 251
-                runppu(1);
-                if (PPUON)
-                {
-			        ppur_increment_hsc();
-                    if (ppur_status.cycle == 251)
-		    {
-			    ppur_increment_vs();
-		    }
-                }
-                runppu(1);
+				//horizontal scroll clocked at cycle 3 and then
+				//vertical scroll at 251
+				runppu(1);
+				if (PPUON)
+				{
+					ppur_increment_hsc();
+					if (ppur_status.cycle == 251)
+					{
+						ppur_increment_vs();
+					}
+				}
+				runppu(1);
 
-                ppur.par = nt;
+				ppur.par = nt;
 				RefreshAddr = ppur_get_ptread();
 				pt[0] = CALL_PPUREAD(RefreshAddr);
-				runppu(kFetchTime);
+				runppu(KFETCH_TIME);
 				RefreshAddr |= 8;
 				pt[1] = CALL_PPUREAD(RefreshAddr);
-				runppu(kFetchTime);
+				runppu(KFETCH_TIME);
 			}
 		};
 
 		Record main[34]; //one at the end is junk, it can never be rendered
 	} bgdata;
 
-static inline int PaletteAdjustPixel(int pixel)
-{
-	if((PPU[1]>>5)==0x7)
-		return (pixel&0x3f)|0xc0;
-	else if(PPU[1]&0xE0)
-		return pixel | 0x40;
-	else
-		return (pixel&0x3F)|0x80;
-}
+#define PaletteAdjustPixel(ptr, pixel) \
+	if((PPU[1]>>5)==0x7) \
+		*ptr++ = (pixel&0x3f)|0xc0; \
+	else if(PPU[1]&0xE0) \
+		*ptr++ = pixel | 0x40; \
+	else \
+		*ptr++ = (pixel&0x3F)|0x80;
 
 void ppudead_loop(int newppu)
 {
@@ -2011,12 +1985,14 @@ void ppudead_loop(int newppu)
 			 * should write to those regs during that time, it needs
 			 * to wait for vblank  */
 			ppur_status.sl = 241;
+			uint32_t var;
 			if (PAL)
-				runppu(70*kLineTime);
+				var = KLINE_TIME_X70;
 			else
-				runppu(20*kLineTime);
+				var = KLINE_TIME_X20;
+			runppu(var);
 			ppur_status.sl = 0;
-			runppu(242*kLineTime);
+			runppu(KLINE_TIME_X242);
 			--ppudead;
 		}
 		else
@@ -2029,7 +2005,6 @@ void ppudead_loop(int newppu)
 	}
 }
 
-int framectr=0;
 void FCEUX_PPU_Loop(int skip)
 {
 	PPU_status |= 0x80;
@@ -2048,10 +2023,13 @@ void FCEUX_PPU_Loop(int skip)
 	if(VBlankON)
 		TriggerNMI();
 
+	uint32_t var;
 	if (PAL)
-		runppu(70*(kLineTime)-delay);
+		var = KLINE_TIME_X70-delay;
 	else
-		runppu(20*(kLineTime)-delay);
+		var = KLINE_TIME_X20-delay;
+
+	runppu(var);
 
 	//this seems to run just before the dummy scanline begins
 	PPU_status = 0;
@@ -2197,10 +2175,10 @@ void FCEUX_PPU_Loop(int skip)
 					runppu(1);
 				}
 				else
-					runppu(kFetchTime);
+					runppu(KFETCH_TIME);
 			}
 			else
-				runppu(kFetchTime);
+				runppu(KFETCH_TIME);
 		}
 		//Dragon's Lair (Europe version mapper 4)
 		//does not set SpriteON in the beginning but it does
@@ -2220,17 +2198,19 @@ void FCEUX_PPU_Loop(int skip)
 		}
 
 		if(realSprite)
-			runppu(kFetchTime);
+			runppu(KFETCH_TIME);
 
 
 		//pattern table fetches
 		RefreshAddr = patternAddress;
 		oam[4] = CALL_PPUREAD(RefreshAddr);
-		if(realSprite) runppu(kFetchTime);
+		if(realSprite)
+			runppu(KFETCH_TIME);
 
 		RefreshAddr += 8;
 		oam[5] = CALL_PPUREAD(RefreshAddr);
-		if(realSprite) runppu(kFetchTime);
+		if(realSprite)
+			runppu(KFETCH_TIME);
 
 		//hflip
 		if(!(oam[2]&0x40))
@@ -2252,13 +2232,13 @@ void FCEUX_PPU_Loop(int skip)
 	//screen (or basically, the first nametable address that will be accessed when
 	//the PPU is fetching background data on the next scanline).
 	//(not implemented yet)
-	runppu(kFetchTime);
+	runppu(KFETCH_TIME);
 	if (idleSynch && PPUON && !PAL)
 		ppur_status.end_cycle = 340;
 	else
 		ppur_status.end_cycle = 341;
 	idleSynch ^= 1;
-	runppu(kFetchTime);
+	runppu(KFETCH_TIME);
 
 	//After memory access 170, the PPU simply rests for 4 cycles (or the
 	//equivelant of half a memory access cycle) before repeating the whole
@@ -2368,7 +2348,7 @@ void FCEUX_PPU_Loop(int skip)
 					}
 				}
 
-				*ptr++ = PaletteAdjustPixel(pixelcolor);
+				PaletteAdjustPixel(ptr, pixelcolor);
 			}
 		}
 
@@ -2466,9 +2446,8 @@ void FCEUX_PPU_Loop(int skip)
 			//garbage nametable fetches
 			//reset the scroll counter, happens at cycle 304
 			if (realSprite)
-			{
-				runppu(kFetchTime);
-			}
+				runppu(KFETCH_TIME);
+
 			//Dragon's Lair (Europe version mapper 4)
 			//does not set SpriteON in the beginning but it does
 			//set the bg on so if using the conditional SpriteON the MMC3 counter
@@ -2487,17 +2466,19 @@ void FCEUX_PPU_Loop(int skip)
 			}
 
 			if(realSprite)
-				runppu(kFetchTime);
+				runppu(KFETCH_TIME);
 
 
 			//pattern table fetches
 			RefreshAddr = patternAddress;
 			oam[4] = CALL_PPUREAD(RefreshAddr);
-			if(realSprite) runppu(kFetchTime);
+			if(realSprite)
+				runppu(KFETCH_TIME);
 
 			RefreshAddr += 8;
 			oam[5] = CALL_PPUREAD(RefreshAddr);
-			if(realSprite) runppu(kFetchTime);
+			if(realSprite)
+				runppu(KFETCH_TIME);
 
 			//hflip
 			if(!(oam[2]&0x40))
@@ -2519,9 +2500,9 @@ void FCEUX_PPU_Loop(int skip)
 		//screen (or basically, the first nametable address that will be accessed when
 		//the PPU is fetching background data on the next scanline).
 		//(not implemented yet)
-		runppu(kFetchTime);
+		runppu(KFETCH_TIME);
 		ppur_status.end_cycle = 341;
-		runppu(kFetchTime);
+		runppu(KFETCH_TIME);
 
 		//After memory access 170, the PPU simply rests for 4 cycles (or the
 		//equivelant of half a memory access cycle) before repeating the whole
@@ -2535,6 +2516,5 @@ void FCEUX_PPU_Loop(int skip)
 		MMC5_hb(240);
 
 	//idle for one line
-	runppu(kLineTime);
-	framectr++;
+	runppu(KLINE_TIME);
 }
