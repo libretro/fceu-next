@@ -1,11 +1,7 @@
 void FCEUPPU_Init(void);
 void FCEUPPU_Reset(void);
 void FCEUPPU_Power(void);
-#ifdef FRAMESKIP
-int FCEUPPU_Loop(int skip);
-#else
 void FCEUPPU_Loop(int skip);
-#endif
 
 void FCEUPPU_LineUpdate();
 void FCEUPPU_SetVideoSystem(int w);

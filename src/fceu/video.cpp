@@ -40,26 +40,10 @@
 uint8 *XBuf=NULL;
 uint8 *XBackBuf=NULL;
 int ClipSidesOffset=0;	//Used to move displayed messages when Clips left and right sides is checked
-static uint8 *xbsave=NULL;
 
 GUIMESSAGE guiMessage;
-GUIMESSAGE subtitleMessage;
-
-//for input display
-extern int input_display;
-extern uint32 cur_input_display;
-
-bool oldInputDisplay = false;
-
-
-std::string AsSnapshotName ="";			//adelikat:this will set the snapshot name when for s savesnapshot as function
-
-void FCEUI_SetSnapshotAsName(std::string name) { AsSnapshotName = name; }
-std::string FCEUI_GetSnapshotAsName() { return AsSnapshotName; }
 
 /**
-* Return: Flag that indicates whether the function was succesful or not.
-*
 * TODO: This function is Windows-only. It should probably be moved.
 **/
 int FCEU_InitVirtualVideo(void)
@@ -74,9 +58,6 @@ int FCEU_InitVirtualVideo(void)
 			return 0;
 		}
 
-
-		xbsave = XBuf;
-
 		if( sizeof(uint8*) == 4 )
 		{
 			uintptr_t m = (uintptr_t)XBuf;
@@ -90,38 +71,6 @@ int FCEU_InitVirtualVideo(void)
 		return 1;
 }
 
-
-#ifdef FRAMESKIP
-
-//#define SHOWFPS
-void ShowFPS(void);
-#endif
-
-#if 0
-void FCEU_PutImage(void)
-{
-	//Save backbuffer before overlay stuff is written.
-	memcpy(XBackBuf, XBuf, 256*256);
-
-	//Some messages need to be displayed before the avi is dumped
-	//DrawMessage(true);
-
-	if(GameInfo->type==GIT_VSUNI)
-		FCEU_VSUniDraw(XBuf);
-
-	FCEU_DrawSaveStates(XBuf);
-	//FCEU_DrawMovies(XBuf);
-	//FCEU_DrawLagCounter(XBuf);
-	FCEU_DrawNTSCControlBars(XBuf);
-	//FCEU_DrawRecordingStatus(XBuf);
-
-	DrawMessage(false);
-
-	//if(FCEUD_ShouldDrawInputAids())
-	FCEU_DrawInput(XBuf);
-}
-#endif
-
 void FCEU_DispMessage(const char *format, int disppos=0, ...)
 {
 	va_list ap;
@@ -129,31 +78,4 @@ void FCEU_DispMessage(const char *format, int disppos=0, ...)
 	va_start(ap,disppos);
 	vsnprintf(guiMessage.errmsg,sizeof(guiMessage.errmsg),format,ap);
 	va_end(ap);
-
-	guiMessage.howlong = 180;
-	guiMessage.isMovieMessage = false;
-
-	guiMessage.linesFromBottom = disppos;
 }
-
-void FCEU_ResetMessages()
-{
-	guiMessage.howlong = 0;
-	guiMessage.isMovieMessage = false;
-	guiMessage.linesFromBottom = 0;
-}
-
-
-#if 0
-int GetScreenPixelPalette(int x, int y, bool usebackup) {
-
-	if (((x < 0) || (x > 255)) || ((y < 0) || (y > 255)))
-		return -1;
-
-	if (usebackup)
-		return XBackBuf[(y*256)+x] & 0x3f;
-	else
-		return XBuf[(y*256)+x] & 0x3f;
-
-}
-#endif

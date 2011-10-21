@@ -395,7 +395,6 @@ endlseq:
 	FCEU_LoadGamePalette();
 
 	FCEU_ResetPalette();
-	FCEU_ResetMessages();	// Save state, status messages, etc.
 
 	FCEU_LoadGameCheats(0);
 
@@ -450,16 +449,9 @@ void FCEUI_Kill(void)
 
 ///Emulates a single frame.
 
-///Skip may be passed in, if FRAMESKIP is #defined, to cause this to emulate more than one frame
 void FCEUI_Emulate(uint8 ** pXBuf, int32 ** SoundBuf, int32 * SoundBufSize)
 {
-	//skip initiates frame skip if 1, or frame skip and sound skip if 2
-	int ssize;
-
-	if(timestamp)
-		ssize = FlushEmulateSound();
-	else
-		ssize = 0;
+	int ssize = FlushEmulateSound();
 
 	timestampbase += timestamp;
 	timestamp = 0;
@@ -488,7 +480,7 @@ void ResetNES(void)
 	memset(XBackBuf,0,256*256);
 }
 
-void FCEU_MemoryRand(uint8 *ptr, uint32 size)
+static void FCEU_MemoryRand(uint8 *ptr, uint32 size)
 {
 	int x=0;
 	do
@@ -807,16 +799,3 @@ bool FCEUXLoad(const char *name, FCEUFILE *fp)
 
 	return true;
 }
-
-
-uint8 FCEU_ReadRomByte(uint32 i) {
-	extern iNES_HEADER head;
-	if(i < 16)
-		return *((unsigned char *)&head+i);
-	if(i < 16+PRGsize[0])
-		return PRGptr[0][i-16];
-	if(i < 16+PRGsize[0]+CHRsize[0])
-		return CHRptr[0][i-16-PRGsize[0]];
-	return 0;
-}
-

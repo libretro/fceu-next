@@ -1783,11 +1783,7 @@ void FCEUPPU_Power(void)
 	BWrite[0x4014]=B4014;
 }
 
-#ifdef FRAMESKIP
-int FCEUPPU_Loop(int skip)
-#else
 void FCEUPPU_Loop(int skip)
-#endif
 {
 	X6502_Run(256+85);
 	PPU_status |= 0x80;
@@ -1834,35 +1830,6 @@ void FCEUPPU_Loop(int skip)
 
 	X6502_Run(16-kook);
 	kook ^= 1;
-#ifdef FRAMESKIP
-	int y;
-
-	y=SPRAM[0];
-	y++;
-
-	PPU_status|=0x20;       // Fixes "Bee 52".  Does it break anything?
-	if(GameHBIRQHook)
-	{
-		X6502_Run(256);
-		for(scanline=0;scanline<240;scanline++)
-		{
-			if(ScreenON || SpriteON)
-				GameHBIRQHook();
-			if(scanline == y && SpriteON)
-				PPU_status|=0x40;
-			X6502_Run((scanline==239) ? 85 : (256+85));
-		}
-	}
-	else if(y<240)
-	{
-		X6502_Run((256+85)*y);
-		if(SpriteON)
-			PPU_status|=0x40; // Quick and very dirty hack.
-		X6502_Run((256+85)*(240-y));
-	}
-	else
-		X6502_Run((256+85)*240);
-#endif
 	int max,maxref;
 
 	deemp=PPU[1]>>5;
@@ -1890,21 +1857,6 @@ void FCEUPPU_Loop(int skip)
 	deempcnt[5]=0;
 	deempcnt[6]=0;
 	SetNESDeemph(maxref,0);
-
-#ifdef FRAMESKIP
-	if(skip)
-	{
-		//FCEU_PutImageDummy();
-		return(0);
-	}
-	else
-#endif
-	{
-		//FCEU_PutImage();
-		#ifdef FRAMESKIP
-		return(1);
-		#endif
-	}
 }
 
 static uint16 TempAddrT,RefreshAddrT;
@@ -2078,11 +2030,7 @@ void ppudead_loop(int newppu)
 }
 
 int framectr=0;
-#ifdef FRAMESKIP
-int FCEUX_PPU_Loop(int skip)
-#else
 void FCEUX_PPU_Loop(int skip)
-#endif
 {
 	PPU_status |= 0x80;
 	ppuphase = PPUPHASE_VBL;
@@ -2589,9 +2537,4 @@ void FCEUX_PPU_Loop(int skip)
 	//idle for one line
 	runppu(kLineTime);
 	framectr++;
-
-	//FCEU_PutImage();
-#ifdef FRAMESKIP
-	return 0;
-#endif
 }

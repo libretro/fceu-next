@@ -8,7 +8,6 @@ void ResetGameLoaded(void);
 #define DECLFR(x) uint8 x (uint32 A)
 #define DECLFW(x) void x (uint32 A, uint8 V)
 
-void FCEU_MemoryRand(uint8 *ptr, uint32 size);
 void SetReadHandler(int32 start, int32 end, readfunc func);
 void SetWriteHandler(int32 start, int32 end, writefunc func);
 writefunc GetWriteHandler(int32 a);
@@ -41,9 +40,6 @@ extern uint8 MMC5HackSPPage;
 
 extern  uint8  *RAM;            //shared memory modifications
 extern  uint8  *GameMemBlock;   //shared memory modifications
-extern int EmulationPaused;
-
-uint8 FCEU_ReadRomByte(uint32 i);
 
 extern readfunc ARead[0x10000];
 extern writefunc BWrite[0x10000];
@@ -84,8 +80,6 @@ typedef struct {
 	int UsrFirstSLine[2];
 	int UsrLastSLine[2];
 
-	//this variable isn't used at all, snap is always name-based
-	//bool SnapName;
 	uint32 SndRate;
 } FCEUS;
 
@@ -105,13 +99,7 @@ void FCEU_DispMessage(const char *format, int disppos, ...);
 void FCEU_TogglePPU();
 
 void SetNESDeemph(uint8 d, int force);
-void DrawTextTrans(uint8 *dest, uint32 width, uint8 *textmsg, uint8 fgcolor);
-void FCEU_PutImage(void);
-#ifdef FRAMESKIP
-void FCEU_PutImageDummy(void);
-#endif
 
-extern uint8 Exit;
 extern uint8 pale;
 extern uint8 vsdip;
 
@@ -123,6 +111,6 @@ extern uint8 vsdip;
 #define JOY_DOWN        0x20
 #define JOY_LEFT        0x40
 #define JOY_RIGHT       0x80
-#endif
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
+#endif
