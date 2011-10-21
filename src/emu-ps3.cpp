@@ -817,18 +817,12 @@ void FCEUD_VideoChanged()
 
 // dummy functions
 
-void FCEUD_HideMenuToggle(void) {}
 void FCEUD_TurboOn(void) {}
 void FCEUD_TurboOff(void) {}
 void FCEUD_TurboToggle(void) {}
-void FCEUD_LoadStateFrom(void) {}
-void FCEUD_SaveStateAs(void) {}
-void FCEUD_ToggleStatusIcon(void) {}
-int FCEUD_ShowStatusIcon(void) { return 0; }
 void FCEUI_UseInputPreset(int preset) {}
 void FCEUD_SoundVolumeAdjust(int n) {}
 void FCEUD_SetEmulationSpeed(int cmd) {}
-bool FCEUD_PauseAfterPlayback() {}
 void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC fcexp) {}
 FCEUFILE* FCEUD_OpenArchive(ArchiveScanRecord& asr, std::string& fname, std::string* innerFilename) { return 0; }
 FCEUFILE* FCEUD_OpenArchiveIndex(ArchiveScanRecord& asr, std::string &fname, int innerIndex) { return 0; }

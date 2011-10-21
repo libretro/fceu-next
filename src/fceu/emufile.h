@@ -51,29 +51,20 @@ class EMUFILE
 
 
 	//returns a new EMUFILE which is guranteed to be in memory. the EMUFILE you call this on may be deleted. use the returned EMUFILE in its place
-	virtual EMUFILE* memwrap() = 0;
 
 	virtual ~EMUFILE() {}
 
-	static bool readAllBytes(std::vector<u8>* buf, const std::string& fname);
-
-	bool fail(bool unset=false) { bool ret = failbit; if(unset) unfail(); return ret; }
-	void unfail() { failbit=false; }
-
-	bool eof() { return size()==ftell(); }
+	bool fail(bool unset=false) { bool ret = failbit; if(unset) failbit = false; return ret; }
 
 	size_t fread(const void *ptr, size_t bytes){
 		return _fread(ptr,bytes);
 	}
-
-	void unget() { fseek(-1,SEEK_CUR); }
 
 	//virtuals
 	public:
 
 	virtual FILE *get_fp() = 0;
 
-	virtual int fprintf(const char *format, ...) = 0;
 
 	virtual int fgetc() = 0;
 	virtual int fputc(int c) = 0;
@@ -84,31 +75,6 @@ class EMUFILE
 	//they handle the return values correctly
 
 	virtual void fwrite(const void *ptr, size_t bytes) = 0;
-
-	void write64le(u64* val);
-	void write64le(u64 val);
-	size_t read64le(u64* val);
-	u64 read64le();
-	void write32le(u32* val);
-	void write32le(s32* val) { write32le((u32*)val); }
-	void write32le(u32 val);
-	size_t read32le(u32* val);
-	size_t read32le(s32* val);
-	u32 read32le();
-	void write16le(u16* val);
-	void write16le(s16* val) { write16le((u16*)val); }
-	void write16le(u16 val);
-	size_t read16le(s16* Bufo);
-	size_t read16le(u16* val);
-	u16 read16le();
-	void write8le(u8* val);
-	void write8le(u8 val);
-	size_t read8le(u8* val);
-	u8 read8le();
-	void writedouble(double* val);
-	void writedouble(double val);
-	double readdouble();
-	size_t readdouble(double* val);
 
 	virtual int fseek(int offset, int origin) = 0;
 
@@ -149,8 +115,6 @@ class EMUFILE_MEMORY : public EMUFILE
 		if(ownvec) delete vec;
 	}
 
-	virtual EMUFILE* memwrap();
-
 	virtual void truncate(s32 length)
 	{
 		vec->resize(length);
@@ -166,25 +130,6 @@ class EMUFILE_MEMORY : public EMUFILE
 	std::vector<u8>* get_vec() { return vec; };
 
 	virtual FILE *get_fp() { return NULL; }
-
-	virtual int fprintf(const char *format, ...) {
-		va_list argptr;
-		va_start(argptr, format);
-
-		//we dont generate straight into the buffer because it will null terminate (one more byte than we want)
-		int amt = vsnprintf(0,0,format,argptr);
-		char* tempbuf = new char[amt+1];
-
-		va_end(argptr);
-		va_start(argptr, format);
-		vsprintf(tempbuf,format,argptr);
-
-		fwrite(tempbuf,amt);
-		delete[] tempbuf;
-
-		va_end(argptr);
-		return amt;
-	};
 
 	virtual int fgetc() {
 		u8 temp;
@@ -246,11 +191,6 @@ class EMUFILE_MEMORY : public EMUFILE
 		return pos;
 	}
 
-	void trim()
-	{
-		vec->resize(len);
-	}
-
 	virtual int size() { return (int)len; }
 };
 
@@ -285,19 +225,7 @@ class EMUFILE_FILE : public EMUFILE
 		return fp; 
 	}
 
-	virtual EMUFILE* memwrap();
-
-	bool is_open() { return fp != NULL; }
-
 	virtual void truncate(s32 length);
-
-	virtual int fprintf(const char *format, ...) {
-		va_list argptr;
-		va_start(argptr, format);
-		int ret = ::vfprintf(fp, format, argptr);
-		va_end(argptr);
-		return ret;
-	};
 
 	virtual int fgetc() {
 		return ::fgetc(fp);

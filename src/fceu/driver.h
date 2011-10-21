@@ -116,14 +116,9 @@ extern void FCEUI_SelectStateNext(int);
 void FCEUI_SaveState(const char *fname);
 uint32_t FCEUI_LoadState(const char *fname);
 
-void FCEUD_SaveStateAs(void);
-void FCEUD_LoadStateFrom(void);
-
 //at the minimum, you should call FCEUI_SetInput, FCEUI_SetInputFC, and FCEUI_SetInputFourscore
 //you may also need to maintain your own internal state
 void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC fcexp);
-
-void FCEUD_LuaRunFrom(void);
 
 int32 FCEUI_GetDesiredFPS(void);
 void FCEU_DispMessage(const char *format, int disppos, ...);
@@ -202,17 +197,10 @@ void FCEUD_TurboOn(void);
 void FCEUD_TurboOff(void);
 void FCEUD_TurboToggle(void);
 
-int FCEUD_ShowStatusIcon(void);
-void FCEUD_ToggleStatusIcon(void);
-void FCEUD_HideMenuToggle(void);
-
 ///signals the driver to perform a file open GUI operation
 void FCEUD_CmdOpen(void);
 
 //new merge-era driver routines here:
-
-///I am dissatisfied with this method of getting an option from the driver to the core. but that is what we're using for now
-bool FCEUD_PauseAfterPlayback();
 
 ///called when fceu changes something in the video system you might be interested in
 void FCEUD_VideoChanged();

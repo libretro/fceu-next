@@ -551,7 +551,6 @@ struct EMUCMDTABLE FCEUI_CommandTable[]=
 {
 	{ EMUCMD_POWER,							EMUCMDTYPE_MISC,	FCEUI_PowerNES,		  0, 0, "Power", 0 },
 	{ EMUCMD_RESET,							EMUCMDTYPE_MISC,	FCEUI_ResetNES,		  0, 0, "Reset", 0 },
-	{ EMUCMD_HIDE_MENU_TOGGLE,				EMUCMDTYPE_MISC,	FCEUD_HideMenuToggle, 0, 0, "Hide Menu Toggle", 0},
 	{ EMUCMD_SPEED_SLOWEST,					EMUCMDTYPE_SPEED,	CommandEmulationSpeed, 0, 0, "Slowest Speed", 0 },
 	{ EMUCMD_SPEED_SLOWER,					EMUCMDTYPE_SPEED,	CommandEmulationSpeed, 0, 0, "Speed Down", 0 },
 	{ EMUCMD_SPEED_NORMAL,					EMUCMDTYPE_SPEED,	CommandEmulationSpeed, 0, 0, "Normal Speed", 0 },
@@ -573,7 +572,6 @@ struct EMUCMDTABLE FCEUI_CommandTable[]=
 	{ EMUCMD_SAVE_SLOT_NEXT,				EMUCMDTYPE_STATE,	CommandSelectSaveSlot, 0, 0, "Next Savestate Slot", 0 },
 	{ EMUCMD_SAVE_SLOT_PREV,				EMUCMDTYPE_STATE,	CommandSelectSaveSlot, 0, 0, "Previous Savestate Slot", 0 },
 	{ EMUCMD_SAVE_STATE,					EMUCMDTYPE_STATE,	CommandStateSave, 0, 0, "Save State", 0 },
-	{ EMUCMD_SAVE_STATE_AS,					EMUCMDTYPE_STATE,	FCEUD_SaveStateAs, 0, 0, "Save State As...", 0 },
 	{ EMUCMD_SAVE_STATE_SLOT_0,				EMUCMDTYPE_STATE,	CommandStateSave, 0, 0, "Save State to Slot 0", 0 },
 	{ EMUCMD_SAVE_STATE_SLOT_1,				EMUCMDTYPE_STATE,	CommandStateSave, 0, 0, "Save State to Slot 1", 0 },
 	{ EMUCMD_SAVE_STATE_SLOT_2,				EMUCMDTYPE_STATE,	CommandStateSave, 0, 0, "Save State to Slot 2", 0 },
@@ -585,7 +583,6 @@ struct EMUCMDTABLE FCEUI_CommandTable[]=
 	{ EMUCMD_SAVE_STATE_SLOT_8,				EMUCMDTYPE_STATE,	CommandStateSave, 0, 0, "Save State to Slot 8", 0 },
 	{ EMUCMD_SAVE_STATE_SLOT_9,				EMUCMDTYPE_STATE,	CommandStateSave, 0, 0, "Save State to Slot 9", 0 },
 	{ EMUCMD_LOAD_STATE,					EMUCMDTYPE_STATE,	CommandStateLoad, 0, 0, "Load State", 0 },
-	{ EMUCMD_LOAD_STATE_FROM,				EMUCMDTYPE_STATE,	FCEUD_LoadStateFrom, 0, 0, "Load State From...", 0 },
 	{ EMUCMD_LOAD_STATE_SLOT_0,				EMUCMDTYPE_STATE,	CommandStateLoad, 0, 0, "Load State from Slot 0", 0 },
 	{ EMUCMD_LOAD_STATE_SLOT_1,				EMUCMDTYPE_STATE,	CommandStateLoad, 0, 0, "Load State from Slot 1", 0 },
 	{ EMUCMD_LOAD_STATE_SLOT_2,				EMUCMDTYPE_STATE,	CommandStateLoad, 0, 0, "Load State from Slot 2", 0 },
