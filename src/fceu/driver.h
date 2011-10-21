@@ -53,9 +53,6 @@ void FCEUI_UseInputPreset(int preset);
 //0 to keep 8-sprites limitation, 1 to remove it
 void FCEUI_DisableSpriteLimitation(int a);
 
-void FCEUI_SetRenderPlanes(bool sprites, bool bg);
-void FCEUI_GetRenderPlanes(bool& sprites, bool& bg);
-
 //name=path and file to load.  returns null if it failed
 FCEUGI *FCEUI_LoadGame(const char *name, int OverwriteVidMode);
 

@@ -82,12 +82,6 @@ static uint8 LastStrobe;
 
 bool replaceP2StartWithMicrophone = false;
 
-//This function is a quick hack to get the NSF player to use emulated gamepad input.
-uint8 FCEU_GetJoyJoy(void)
-{
-	return(joy[0]|joy[1]|joy[2]|joy[3]);
-}
-
 extern uint8 coinon;
 
 //set to true if the fourscore is attached
@@ -549,7 +543,6 @@ static void CommandSelectSaveSlot(void);
 static void CommandEmulationSpeed(void);
 static void CommandSoundAdjust(void);
 static void CommandUsePreset(void);
-static void BackgroundDisplayToggle(void);
 static void ObjectDisplayToggle(void);
 static void ViewSlots(void);
 static void UndoRedoSavestate(void);
@@ -628,8 +621,6 @@ struct EMUCMDTABLE FCEUI_CommandTable[]=
 	{ EMUCMD_MISC_USE_INPUT_PRESET_1,		EMUCMDTYPE_MISC,	CommandUsePreset, 0, 0, "Use Input Preset 1", 0 },
 	{ EMUCMD_MISC_USE_INPUT_PRESET_2,		EMUCMDTYPE_MISC,	CommandUsePreset, 0, 0, "Use Input Preset 2", 0 },
 	{ EMUCMD_MISC_USE_INPUT_PRESET_3,		EMUCMDTYPE_MISC,	CommandUsePreset, 0, 0, "Use Input Preset 3", 0 },
-	{ EMUCMD_MISC_DISPLAY_BG_TOGGLE,		EMUCMDTYPE_MISC,	BackgroundDisplayToggle, 0, 0, "Toggle Background Display", 0 },
-	{ EMUCMD_MISC_DISPLAY_OBJ_TOGGLE,		EMUCMDTYPE_MISC,	ObjectDisplayToggle, 0, 0, "Toggle Object Display", 0 },
 	{ EMUCMD_MISC_UNDOREDOSAVESTATE,		EMUCMDTYPE_MISC,	UndoRedoSavestate,  0,0,"Undo/Redo Savestate",    0},
 };
 
@@ -734,22 +725,6 @@ static void CommandSoundAdjust(void)
 static void CommandUsePreset(void)
 {
 	FCEUI_UseInputPreset(execcmd-EMUCMD_MISC_USE_INPUT_PRESET_1);
-}
-
-static void BackgroundDisplayToggle(void)
-{
-	bool spr, bg;
-	FCEUI_GetRenderPlanes(spr,bg);
-	bg = !bg;
-	FCEUI_SetRenderPlanes(spr,bg);
-}
-
-static void ObjectDisplayToggle(void)
-{
-	bool spr, bg;
-	FCEUI_GetRenderPlanes(spr,bg);
-	spr = !spr;
-	FCEUI_SetRenderPlanes(spr,bg);
 }
 
 static void UndoRedoSavestate(void)

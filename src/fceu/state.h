@@ -59,7 +59,7 @@ void AddExState(void *v, uint32 s, int type, char *desc);
 //all FCEUSTATE flags together so that we can mask them out and get the size
 #define FCEUSTATE_FLAGS (FCEUSTATE_RLSB|FCEUSTATE_INDIRECT)
 
-void FCEU_DrawSaveStates(uint8 *XBuf);
+//void FCEU_DrawSaveStates(uint8 *XBuf);
 
 void CreateBackupSaveState(const char *fname); //backsup a savestate before overwriting it with a new one
 void BackupLoadState();				 //Makes a backup savestate before any loadstate

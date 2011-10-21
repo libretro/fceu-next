@@ -35,7 +35,6 @@
 #include "palette.h"
 #include "input.h"
 #include "vsuni.h"
-#include "drawing.h"
 #include "driver.h"
 
 uint8 *XBuf=NULL;

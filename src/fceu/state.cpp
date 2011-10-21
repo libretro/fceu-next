@@ -815,6 +815,7 @@ uint32_t FCEUI_LoadState(const char *fname)
 	}
 }
 
+#if 0
 void FCEU_DrawSaveStates(uint8 *XBuf)
 {
 	if(!StateShow) return;
@@ -822,6 +823,7 @@ void FCEU_DrawSaveStates(uint8 *XBuf)
 	FCEU_DrawNumberRow(XBuf,SaveStateStatus,CurrentState);
 	StateShow--;
 }
+#endif
 
 //*************************************************************************
 //Savestate backup functions

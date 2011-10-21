@@ -92,8 +92,6 @@ typedef struct BITREVLUT {
 				lut[j++] = lut[i] + a;
 		}while(bits);
 	}
-
-	uint8_t operator[](int index) { return lut[index]; }
 };
 struct BITREVLUT bitrevlut;
 
@@ -406,31 +404,6 @@ uint8 * MMC5BGVRAMADR(uint32 V)
 			return &MMC5BGVPage[(V)>>10][(V)];
 	} else return &MMC5BGVPage[(V)>>10][(V)];
 }
-
-//this duplicates logic which is embedded in the ppu rendering code
-//which figures out where to get CHR data from depending on various hack modes
-//mostly involving mmc5.
-//this might be incomplete.
-#if 0
-uint8* FCEUPPU_GetCHR(uint32 vadr, uint32 refreshaddr)
-{
-	if(MMC5Hack)
-	{
-		if(MMC5HackCHRMode==1)
-		{
-			uint8 *C = MMC5HackVROMPTR;
-			C += (((MMC5HackExNTARAMPtr[refreshaddr & 0x3ff]) & 0x3f & MMC5HackVROMMask) << 12) + (vadr & 0xfff);
-			C += (MMC50x5130&0x3)<<18; //11-jun-2009 for kuja_killer
-			return C;
-		}
-		else
-		{
-			return MMC5BGVRAMADR(vadr);
-		}
-	}
-	else return VRAMADR(vadr);
-}
-#endif
 
 //likewise for ATTR
 int FCEUPPU_GetAttr(int ntnum, int xt, int yt)
@@ -1039,16 +1012,6 @@ void FCEUPPU_LineUpdate(void)
 		RefreshLine(l);
 	}
 }
-
-
-void FCEUI_SetRenderPlanes(bool sprites, bool bg)
-{
-}
-
-void FCEUI_GetRenderPlanes(bool& sprites, bool& bg)
-{
-}
-
 
 static void CheckSpriteHit(int p);
 
@@ -1937,16 +1900,12 @@ void FCEUPPU_Loop(int skip)
 	else
 #endif
 	{
-		//mbg 6/21/08 - tileview is being ripped out since i dont know how long its been since it worked
-		//if(tileview) TileView();
 		//FCEU_PutImage();
 		#ifdef FRAMESKIP
 		return(1);
 		#endif
 	}
 }
-
-//int (*PPU_MASTER)(int skip) = FCEUPPU_Loop;
 
 static uint16 TempAddrT,RefreshAddrT;
 
@@ -2328,8 +2287,8 @@ void FCEUX_PPU_Loop(int skip)
 		//hflip
 		if(!(oam[2]&0x40))
 		{
-			oam[4] = bitrevlut[oam[4]];
-			oam[5] = bitrevlut[oam[5]];
+			oam[4] = bitrevlut.lut[oam[4]];
+			oam[5] = bitrevlut.lut[oam[5]];
 		}
 	}
 
@@ -2595,8 +2554,8 @@ void FCEUX_PPU_Loop(int skip)
 			//hflip
 			if(!(oam[2]&0x40))
 			{
-				oam[4] = bitrevlut[oam[4]];
-				oam[5] = bitrevlut[oam[5]];
+				oam[4] = bitrevlut.lut[oam[4]];
+				oam[5] = bitrevlut.lut[oam[5]];
 			}
 		}
 

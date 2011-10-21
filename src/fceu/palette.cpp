@@ -85,12 +85,13 @@ void FCEUI_SetNTSCTH(int n, int tint, int hue)
 	FCEU_ResetPalette();
 }
 
+static uint16 rtmul[7]={32768*1.239,32768*.794,32768*1.019,32768*.905,32768*1.023,32768*.741,32768*.75};
+static uint16 gtmul[7]={32768*.915,32768*1.086,32768*.98,32768*1.026,32768*.908,32768*.987,32768*.75};
+static uint16 btmul[7]={32768*.743,32768*.882,32768*.653,32768*1.277,32768*.979,32768*.101,32768*.75};
 static uint8 lastd=0;
+
 void SetNESDeemph(uint8 d, int force)
 {
-	static uint16 rtmul[7]={32768*1.239,32768*.794,32768*1.019,32768*.905,32768*1.023,32768*.741,32768*.75};
-	static uint16 gtmul[7]={32768*.915,32768*1.086,32768*.98,32768*1.026,32768*.908,32768*.987,32768*.75};
-	static uint16 btmul[7]={32768*.743,32768*.882,32768*.653,32768*1.277,32768*.979,32768*.101,32768*.75};
 	uint32 r,g,b;
 	int x;
 
@@ -293,16 +294,18 @@ void FCEUI_NTSCINC(void)
 			{
 				switch(controlselect)
 				{
-				case 1:
-               ntschue++;
-					if(ntschue>128) ntschue=128;
-					CalculatePalette();
-					break;
-				case 2:
-               ntsctint++;
-					if(ntsctint>128) ntsctint=128;
-					CalculatePalette();
-					break;
+					case 1:
+						ntschue++;
+						if(ntschue>128)
+							ntschue=128;
+						CalculatePalette();
+						break;
+					case 2:
+						ntsctint++;
+						if(ntsctint>128)
+							ntsctint=128;
+						CalculatePalette();
+						break;
 				}
 			}
 			controllength=360;
@@ -327,6 +330,7 @@ void FCEUI_NTSCSELTINT(void)
 	}
 }
 
+#if 0
 void FCEU_DrawNTSCControlBars(uint8 *XBuf)
 {
 	uint8 *XBaf;
@@ -362,3 +366,4 @@ void FCEU_DrawNTSCControlBars(uint8 *XBuf)
 			XBaf[x-256*x2]=0x85;
 	}
 }
+#endif
