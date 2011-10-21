@@ -32,11 +32,7 @@
 #include "utils/endian.h"
 #include "utils/memory.h"
 #include "utils/md5.h"
-#ifdef GEKKO
 #include <unzip.h>
-#else
-#include "utils/unzip.h"
-#endif
 #include "driver.h"
 #include "types.h"
 #include "fceu.h"
@@ -278,7 +274,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, co
 		if(!asr.isArchive())
 		{
 			//if the archive contained no files, try to open it the old fashioned way
-			EMUFILE_FILE* fp = FCEUD_UTF8_fstream(fileToOpen,mode);
+			EMUFILE_FILE* fp = new EMUFILE_FILE(fileToOpen,mode);
 			if(!fp || (fp->get_fp() == NULL))
 			{
 				return 0;
@@ -397,22 +393,6 @@ void FCEUI_SetDirOverride(int which, char *n)
 	if (which < FCEUIOD__COUNT)
 		odirs[which] = n;
 }
-
-#ifndef HAVE_ASPRINTF
-static int asprintf(char **strp, const char *fmt, ...)
-{
-	va_list ap;
-	int ret;
-
-	va_start(ap,fmt);
-	*strp = (char*)malloc(2048);
-	if(!strp) //mbg merge 7/17/06 cast to char*
-		return(0);
-	ret=vsnprintf(*strp,2048,fmt,ap);
-	va_end(ap);
-	return(ret);
-}
-#endif
 
 std::string  FCEU_GetPath(int type)
 {

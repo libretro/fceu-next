@@ -383,7 +383,7 @@ void FCEUSS_Save(const char *fname)
 
 	if(fname)	//If filename is given use it.
 	{
-		st = FCEUD_UTF8_fstream(fname, "wb");
+		st = new EMUFILE_FILE(fname, "wb");
 		strcpy(fn, fname);
 	}
 	else		//Else, generate one
@@ -391,7 +391,7 @@ void FCEUSS_Save(const char *fname)
 		//FCEU_PrintError("daCurrentState=%d",CurrentState);
 		strcpy(fn, FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0).c_str());
 
-		st = FCEUD_UTF8_fstream(fn,"wb");
+		st = new EMUFILE_FILE(fn,"wb");
 	}
 
 	if(st == NULL || st->get_fp() == NULL)
@@ -528,13 +528,13 @@ bool FCEUSS_Load(const char *fname)
 
 	if(fname)
 	{
-		st=FCEUD_UTF8_fstream(fname, "rb");
+		st= new EMUFILE_FILE(fname, "rb");
 		strcpy(fn, fname);
 	}
 	else
 	{
 		strcpy(fn, FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname).c_str());
-		st=FCEUD_UTF8_fstream(fn,"rb");
+		st= new EMUFILE_FILE(fn,"rb");
 	}
 
 	if(st == NULL || (st->get_fp() == NULL))

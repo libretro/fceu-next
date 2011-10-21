@@ -755,34 +755,6 @@ void FCEUD_GetPalette(unsigned char i, unsigned char *r, unsigned char *g, unsig
 	*b = Graphics->palette_b[i];
 }
 
-
-EMUFILE_FILE* FCEUD_UTF8_fstream(const char *n, const char *m)
-{
-	EMUFILE_FILE *p = new EMUFILE_FILE(n, m);
-	return p;
-}
-
-bool FCEUD_ShouldDrawInputAids()
-{
-        return 1;
-}
-
-void FCEUD_PrintError(const char *c)
-{
-#ifdef CELL_DEBUG_PRINTF
-	//CELL_PRINTF("%s", c);
-#endif
-	FCEU_DispMessage(c, 20);
-}
-
-void FCEUD_Message(const char *text)
-{
-#ifdef CELL_DEBUG_PRINTF
-	//CELL_PRINTF("%s", text);
-#endif
-	FCEU_DispMessage(text, 20);
-}
-
 void FCEUD_VideoChanged()
 {
 	if (Graphics->GetCurrentResolution() == CELL_VIDEO_OUT_RESOLUTION_576)
@@ -816,12 +788,12 @@ void FCEUD_VideoChanged()
 
 // dummy functions
 
-void FCEUI_UseInputPreset(int preset) {}
-void FCEUD_SoundVolumeAdjust(int n) {}
-void FCEUD_SetEmulationSpeed(int cmd) {}
 void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC fcexp) {}
 FCEUFILE* FCEUD_OpenArchive(ArchiveScanRecord& asr, std::string& fname, std::string* innerFilename) { return 0; }
 FCEUFILE* FCEUD_OpenArchiveIndex(ArchiveScanRecord& asr, std::string &fname, int innerIndex) { return 0; }
+bool FCEUD_ShouldDrawInputAids() { return 1; }
+void FCEUD_PrintError(const char *c) { FCEU_DispMessage(c, 20); }
+void FCEUD_Message(const char *text) { FCEU_DispMessage(text, 20); }
 
 void FCEUD_SoundToggle()
 {

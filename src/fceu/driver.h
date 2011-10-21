@@ -9,8 +9,6 @@
 #include "git.h"
 #include "file.h"
 
-EMUFILE_FILE* FCEUD_UTF8_fstream(const char *n, const char *m);
-inline EMUFILE_FILE* FCEUD_UTF8_fstream(const std::string &n, const char *m) { return FCEUD_UTF8_fstream(n.c_str(),m); }
 FCEUFILE* FCEUD_OpenArchiveIndex(ArchiveScanRecord& asr, std::string& fname, int innerIndex);
 FCEUFILE* FCEUD_OpenArchive(ArchiveScanRecord& asr, std::string& fname, std::string* innerFilename);
 
@@ -46,8 +44,6 @@ bool FCEUI_GetInputFourscore();
 //tells whether the microphone is used
 bool FCEUI_GetInputMicrophone();
 
-void FCEUI_UseInputPreset(int preset);
-
 //New interface functions
 
 //0 to keep 8-sprites limitation, 1 to remove it
@@ -62,9 +58,6 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode);
 
 //general purpose emulator initialization. returns true if successful
 bool FCEUI_Initialize();
-
-//Emulates a frame.
-//void FCEUI_Emulate(uint8 **, int32 **, int32 *);
 
 //Closes currently loaded game
 void FCEUI_CloseGame(void);
@@ -103,7 +96,6 @@ void FCEUI_SetNoiseVolume(uint32 volume);
 void FCEUI_SetPCMVolume(uint32 volume);
 
 void FCEUD_SoundToggle(void);
-void FCEUD_SoundVolumeAdjust(int);
 
 int FCEUI_SelectState(int, int);
 extern void FCEUI_SelectStateNext(int);
@@ -174,18 +166,6 @@ bool FCEUD_ShouldDrawInputAids();
 typedef int TestCommandState(int cmd);
 ///Signals the emu core to poll for emulator commands and take actions
 void FCEUI_HandleEmuCommands(TestCommandState* testfn);
-
-
-//Emulation speed
-enum EMUSPEED_SET
-{
-	EMUSPEED_SLOWEST=0,
-	EMUSPEED_SLOWER,
-	EMUSPEED_NORMAL,
-	EMUSPEED_FASTER,
-	EMUSPEED_FASTEST
-};
-void FCEUD_SetEmulationSpeed(int cmd);
 
 //new merge-era driver routines here:
 

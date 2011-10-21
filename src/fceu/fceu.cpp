@@ -48,12 +48,7 @@
 #include "vsuni.h"
 #include "ines.h"
 
-
-#ifdef GEKKO
 #include "driver.h"
-#else
-#include "drivers/sdl/sdl.h"
-#endif
 
 using namespace std;
 
