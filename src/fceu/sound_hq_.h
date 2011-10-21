@@ -1006,10 +1006,9 @@ int FlushEmulateSound(void)
 	if(GameExpSound.HiSync) GameExpSound.HiSync(left);
 	for(x=0;x<5;x++)
 		ChannelBC[x]=left;
-	else
-		nosoundo:
+nosoundo:
 
-			soundtsoffs=left;
+	soundtsoffs=left;
 	inbuf=end;
 
 	return(end);
@@ -1140,12 +1139,6 @@ void SetSoundVariables(void)
 void FCEUI_Sound(int Rate)
 {
 	FSettings.SndRate=Rate;
-	SetSoundVariables();
-}
-
-void FCEUI_SetSoundQuality(int quality)
-{
-	FSettings.soundq=quality;
 	SetSoundVariables();
 }
 

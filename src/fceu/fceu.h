@@ -87,7 +87,6 @@ typedef struct {
 	//this variable isn't used at all, snap is always name-based
 	//bool SnapName;
 	uint32 SndRate;
-	int soundq;
 } FCEUS;
 
 //the number of scanlines in the currently selected configuration

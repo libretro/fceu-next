@@ -32,17 +32,17 @@ static int dwave=0;
 
 void DoVRC7Sound(void)
 {
- int32 z,a;
+#if SOUND_QUALITY == 1
+	return;
+#else
+	int32 z,a;
+	z=((SOUNDTS<<16)/soundtsinc)>>4;
+	a=z-dwave;
 
- #if 0
- if(FSettings.soundq>=1) return;
- #endif
- z=((SOUNDTS<<16)/soundtsinc)>>4;
- a=z-dwave;
+	moocow(VRC7Sound, &Wave[dwave], a, 1);
 
- moocow(VRC7Sound, &Wave[dwave], a, 1);
-
- dwave+=a;
+	dwave+=a;
+#endif
 }
 
 void UpdateOPLNEO(int32 *Wave, int Count)

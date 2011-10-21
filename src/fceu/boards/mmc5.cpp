@@ -726,36 +726,17 @@ void MMC5RunSound(int Count)
 
 void Mapper5_ESI(void)
 {
- GameExpSound.RChange=Mapper5_ESI;
- #if 0
- if(FSettings.SndRate)
- {
- #endif
-  #if 0
-  if(FSettings.soundq>=1)
-  {
-   sfun=Do5SQHQ;
-   psfun=Do5PCMHQ;
-  }
-  else
-  {
-  #endif
-   sfun=Do5SQ;
-   psfun=Do5PCM;
-  #if 0
-  }
-  #endif
- #if 0
- }
- else
- {
-  sfun=0;
-  psfun=0;
- }
- #endif
- memset(MMC5Sound.BC,0,sizeof(MMC5Sound.BC));
- memset(MMC5Sound.vcount,0,sizeof(MMC5Sound.vcount));
- GameExpSound.HiSync=MMC5HiSync;
+	GameExpSound.RChange=Mapper5_ESI;
+#if SOUND_QUALITY == 1
+	sfun=Do5SQHQ;
+	psfun=Do5PCMHQ;
+#else
+	sfun=Do5SQ;
+	psfun=Do5PCM;
+#endif
+	memset(MMC5Sound.BC,0,sizeof(MMC5Sound.BC));
+	memset(MMC5Sound.vcount,0,sizeof(MMC5Sound.vcount));
+	GameExpSound.HiSync=MMC5HiSync;
 }
 
 void NSFMMC5_Init(void)

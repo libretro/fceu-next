@@ -1139,12 +1139,6 @@ void FCEUI_Sound(int Rate)
 	SetSoundVariables();
 }
 
-void FCEUI_SetSoundQuality(int quality)
-{
-	FSettings.soundq=quality;
-	SetSoundVariables();
-}
-
 void FCEUI_SetSoundVolume(uint32 volume)
 {
 	FSettings.SoundVolume=volume;

@@ -27,8 +27,11 @@ void SexyFilter(int32 *in, int32 *out, int32 count)
 	mul2=(24<<16)/FSettings.SndRate;
 	vmul=(FSettings.SoundVolume<<16)*3/4/100;
 
-	/* if(FSettings.soundq) vmul/=4; */
-	/* else */ vmul <<= 1;			/* TODO:  Increase volume in low quality sound rendering code itself */
+#if SOUND_QUALITY == 1
+	vmul >>= 2;
+#else
+	vmul <<= 1;			/* TODO:  Increase volume in low quality sound rendering code itself */
+#endif
 
 	do
 	{    

@@ -106,8 +106,6 @@ void FCEUI_SetSquare2Volume(uint32 volume);
 void FCEUI_SetNoiseVolume(uint32 volume);
 void FCEUI_SetPCMVolume(uint32 volume);
 
-void FCEUI_SetSoundQuality(int quality);
-
 void FCEUD_SoundToggle(void);
 void FCEUD_SoundVolumeAdjust(int);
 

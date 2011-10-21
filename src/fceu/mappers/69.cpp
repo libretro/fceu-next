@@ -49,71 +49,92 @@ static DECLFW(Mapper69_SWL)
 
 static DECLFW(Mapper69_SWH)
 {
-             int x;
-             GameExpSound.Fill=AYSound;
-             GameExpSound.HiFill=AYSoundHQ;
-             #if 0
-             if(FSettings.SndRate)
-             #endif
-             switch(sunindex)
-             {
-              case 0:
-              case 1:
-              case 8:/* if(FSettings.soundq>=1) DoAYSQHQ(0); else */ DoAYSQ(0);break;
-              case 2:
-              case 3:
-              case 9:/* if(FSettings.soundq>=1) DoAYSQHQ(1); else */ DoAYSQ(1);break;
-              case 4:
-              case 5:
-              case 10:/* if(FSettings.soundq>=1) DoAYSQHQ(2); else */ DoAYSQ(2);break;
-              case 7:
-                        /* if(FSettings.soundq>=1) DoAYSQHQ(x); else */ DoAYSQ(0);
-                        /* if(FSettings.soundq>=1) DoAYSQHQ(x); else */ DoAYSQ(1);
-                     break;
-             }
-             MapperExRAM[sunindex]=V;
+	int x;
+	GameExpSound.Fill=AYSound;
+	GameExpSound.HiFill=AYSoundHQ;
+
+	switch(sunindex)
+	{
+		case 0:
+		case 1:
+		case 8:
+			#if SOUND_QUALITY == 1
+			DoAYSQHQ(0);
+			#else
+			DoAYSQ(0);
+			#endif
+			break;
+		case 2:
+		case 3:
+		case 9:
+			#if SOUND_QUALITY == 1
+			DoAYSQHQ(1);
+			#else
+			DoAYSQ(1);
+			#endif
+			break;
+		case 4:
+		case 5:
+		case 10:
+			#if SOUND_QUALITY == 1
+			DoAYSQHQ(2);
+			#else
+			DoAYSQ(2);
+			#endif
+			break;
+		case 7:
+			#if SOUND_QUALITY == 1
+			DoAYSQHQ(x);
+			DoAYSQHQ(x);
+			#else
+			DoAYSQ(0);
+			DoAYSQ(1);
+			#endif
+			break;
+	}
+	MapperExRAM[sunindex]=V;
 }
 
 static DECLFW(Mapper69_write)
 {
- switch(A&0xE000)
- {
-  case 0x8000:sunselect=V;break;
-  case 0xa000:
-              sunselect&=0xF;
-              if(sunselect<=7)
-               VROM_BANK1(sunselect<<10,V);
-              else
-               switch(sunselect&0x0f)
-               {
-                case 8:
-                       sungah=V;
-                       if(V&0x40)
-                        {
-                         if(V&0x80) // Select WRAM
-                          setprg8r(0x10,0x6000,0);
-                        }
-                        else
-                         setprg8(0x6000,V);
-                        break;
-                case 9:ROM_BANK8(0x8000,V);break;
-                case 0xa:ROM_BANK8(0xa000,V);break;
-                case 0xb:ROM_BANK8(0xc000,V);break;
-                case 0xc:
-                         switch(V&3)
-                         {
-                          case 0:MIRROR_SET2(1);break;
-                          case 1:MIRROR_SET2(0);break;
-                          case 2:onemir(0);break;
-                          case 3:onemir(1);break;
-                         }
-                         break;
-             case 0xd:IRQa=V;X6502_IRQEnd(FCEU_IQEXT);break;
-             case 0xe:IRQCount&=0xFF00;IRQCount|=V;X6502_IRQEnd(FCEU_IQEXT);break;
-             case 0xf:IRQCount&=0x00FF;IRQCount|=V<<8;X6502_IRQEnd(FCEU_IQEXT);break;
-             }
-             break;
- }
+	switch(A&0xE000)
+	{
+		case 0x8000:sunselect=V;break;
+		case 0xa000:
+			    sunselect&=0xF;
+			    if(sunselect<=7)
+				    VROM_BANK1(sunselect<<10,V);
+			    else
+				    switch(sunselect&0x0f)
+				    {
+					    case 8:
+						    sungah=V;
+						    if(V&0x40)
+						    {
+							    if(V&0x80) // Select WRAM
+								    setprg8r(0x10,0x6000,0);
+						    }
+						    else
+							    setprg8(0x6000,V);
+						    break;
+					    case 9:ROM_BANK8(0x8000,V);break;
+					    case 0xa:ROM_BANK8(0xa000,V);break;
+					    case 0xb:ROM_BANK8(0xc000,V);break;
+					    case 0xc:
+						     switch(V&3)
+						     {
+							     case 0:MIRROR_SET2(1);break;
+							     case 1:MIRROR_SET2(0);break;
+							     case 2:onemir(0);break;
+							     case 3:onemir(1);break;
+						     }
+						     break;
+					    case 0xd:IRQa=V;X6502_IRQEnd(FCEU_IQEXT);break;
+					    case 0xe:IRQCount&=0xFF00;IRQCount|=V;X6502_IRQEnd(FCEU_IQEXT);break;
+					    case 0xf:IRQCount&=0x00FF;IRQCount|=V<<8;X6502_IRQEnd(FCEU_IQEXT);break;
+				    }
+			    break;
+	}
 }
 
 static int32 vcount[3];
