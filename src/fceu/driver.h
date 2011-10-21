@@ -166,17 +166,6 @@ void FCEUI_CheatSearchSetCurrentAsOriginal(void);
 
 void FCEUI_SetDirOverride(int which, char *n);
 
-void FCEUI_NMI(void);
-void FCEUI_IRQ(void);
-void FCEUI_GetIVectors(uint16 *reset, uint16 *irq, uint16 *nmi);
-
-void FCEUI_ToggleTileView(void);
-void FCEUI_SetLowPass(int q);
-
-void FCEUI_NSFSetVis(int mode);
-int FCEUI_NSFChange(int amount);
-int FCEUI_NSFGetInfo(uint8 *name, uint8 *artist, uint8 *copyright, int maxlen);
-
 void FCEUI_VSUniToggleDIPView(void);
 void FCEUI_VSUniToggleDIP(int w);
 uint8 FCEUI_VSUniGetDIPs(void);

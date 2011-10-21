@@ -18,24 +18,6 @@ static int32 coeffs[NCOEFFS];
 static uint32 mrindex;
 static uint32 mrratio;
 
-void SexyFilter2(int32 *in, int32 count)
-{
-	static int64 acc=0;
-
-	while(count--)
-	{
-		int64 dropcurrent;
-		dropcurrent=((*in<<16)-acc)>>3;
-
-		acc+=dropcurrent;
-		*in=acc>>16;
-		in++;
-		//acc=((int64)0x100000-c)* *in + ((c*acc)>>20);
-		//*in=acc>>20;
-		//in++;
-	}
-}
-
 void SexyFilter(int32 *in, int32 *out, int32 count)
 {
 	static int64 acc1=0,acc2=0;
@@ -82,6 +64,7 @@ void SexyFilter(int32 *in, int32 *out, int32 count)
    code to be higher, or you *might* overflow the FIR code.
 */
 
+#if 0
 int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
 {
 	uint32 x;
@@ -95,6 +78,7 @@ int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
 	//	}
 	max=(inlen-1)<<16;
 
+#if 0
 	if(FSettings.soundq==2)
 		for(x=mrindex;x<max;x+=mrratio)
 		{
@@ -114,6 +98,7 @@ int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
 			count++; 
 		}
 	else
+#endif
 		for(x=mrindex;x<max;x+=mrratio)
 		{
 			int32 acc=0,acc2=0;
@@ -134,6 +119,7 @@ int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
 
 	mrindex=x-max;
 
+#if 0
 	if(FSettings.soundq==2)
 	{
 		mrindex+=SQ2NCOEFFS*65536;
@@ -141,18 +127,20 @@ int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
 	}
 	else
 	{
+#endif
 		mrindex+=NCOEFFS*65536;
 		*leftover=NCOEFFS+1;
+#if 0
 	}
+#endif
 
 	if(GameExpSound.NeoFill)
 		GameExpSound.NeoFill(outsave,count);
 
 	SexyFilter(outsave,outsave,count);
-	if(FSettings.lowpass)
-		SexyFilter2(outsave,count);
 	return(count);
 }
+#endif
 
 void MakeFilters(int32 rate)
 {

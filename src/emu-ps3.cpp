@@ -837,10 +837,7 @@ void FCEUD_Update(uint8 *XBuf, int32 *Buffer, int32 Count) {}
 void FCEUD_SoundToggle()
 {
 	if(Settings.Throttled)
-	{
 		FCEUI_SetSoundVolume(100);
-		FCEUI_SetLowPass(0);
-	}
 	else
 		FCEUI_SetSoundVolume(0);
 }

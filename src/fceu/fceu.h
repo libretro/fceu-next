@@ -65,8 +65,6 @@ extern int GameAttributes;
 
 extern uint8 PAL;
 
-//#include "driver.h"
-
 typedef struct {
 	int PAL;
 	int SoundVolume;		//Master volume
@@ -81,9 +79,6 @@ typedef struct {
 	int FirstSLine;
 	int LastSLine;
 
-	//the number of scanlines in the currently selected configuration
-	int TotalScanlines() { return LastSLine - FirstSLine + 1; }
-
 	//Driver-supplied user-selected first and last rendered scanlines.
 	//Usr*SLine[0] is for NTSC, Usr*SLine[1] is for PAL.
 	int UsrFirstSLine[2];
@@ -93,8 +88,10 @@ typedef struct {
 	//bool SnapName;
 	uint32 SndRate;
 	int soundq;
-	int lowpass;
 } FCEUS;
+
+//the number of scanlines in the currently selected configuration
+#define TotalScanLines() (FSettings.LastSLine - FSettings.FirstSLine + 1)
 
 int FCEU_TextScanlineOffset(int y);
 int FCEU_TextScanlineOffsetFromBottom(int y);

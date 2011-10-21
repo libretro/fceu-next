@@ -130,9 +130,9 @@ static const uint32 PALDMCTable[0x10]=
 // $4012        -        Address register: $c000 + V*64
 // $4013        -        Size register:  Size in bytes = (V+1)*64
 
-/*static*/ int32 DMCacc=1;
+static int32 DMCacc=1;
 static int32 DMCPeriod=0;
-/*static*/ uint8 DMCBitCount=0;
+static uint8 DMCBitCount=0;
 
 static uint8 DMCAddressLatch=0,DMCSizeLatch=0; /* writes to 4012 and 4013 */
 static uint8 DMCFormat=0;	/* Write to $4010 */
@@ -157,10 +157,10 @@ static uint32 ChannelBC[5];
 
 static void LoadDMCPeriod(uint8 V)
 {
- if(PAL)
-  DMCPeriod=PALDMCTable[V];
- else
-  DMCPeriod=NTSCDMCTable[V];
+	if(PAL)
+		DMCPeriod=PALDMCTable[V];
+	else
+		DMCPeriod=NTSCDMCTable[V];
 }
 
 static void PrepDPCM()
@@ -185,22 +185,22 @@ static int CheckFreq(uint32 cf, uint8 sr)
 
 static void SQReload(int x, uint8 V)
 {
-           if(EnabledChannels&(1<<x))
-           {           
-            if(x)
-             DoSQ2();
-            else
-             DoSQ1();
-            lengthcount[x]=lengthtable[(V>>3)&0x1f];
-	   }
+	if(EnabledChannels&(1<<x))
+	{           
+		if(x)
+			DoSQ2();
+		else
+			DoSQ1();
+		lengthcount[x]=lengthtable[(V>>3)&0x1f];
+	}
 
-           sweepon[x]=PSG[(x<<2)|1]&0x80;
-           curfreq[x]=PSG[(x<<2)|0x2]|((V&7)<<8);
-           SweepCount[x]=((PSG[(x<<2)|0x1]>>4)&7)+1;           
+	sweepon[x]=PSG[(x<<2)|1]&0x80;
+	curfreq[x]=PSG[(x<<2)|0x2]|((V&7)<<8);
+	SweepCount[x]=((PSG[(x<<2)|0x1]>>4)&7)+1;           
 
-           RectDutyCount[x]=7;
-	   EnvUnits[x].reloaddec=1;
-	   //reloadfreq[x]=1;
+	RectDutyCount[x]=7;
+	EnvUnits[x].reloaddec=1;
+	//reloadfreq[x]=1;
 }
 
 static DECLFW(Write_PSG)
@@ -533,16 +533,10 @@ void FCEU_SoundCPUHook(int cycles)
 			int t=((DMCShift&1)<<2)-2;
 
 			/* Unbelievably ugly hack */ 
-#if 0
-			if(FSettings.SndRate)
-			{
-#endif
-				soundtsoffs+=DMCacc;
-				DoPCM();
-				soundtsoffs-=DMCacc;
-#if 0
-			}
-#endif
+			soundtsoffs+=DMCacc;
+			DoPCM();
+			soundtsoffs-=DMCacc;
+
 			RawDALatch+=t;
 			if(RawDALatch&0x80)
 				RawDALatch=bah;
@@ -653,7 +647,10 @@ static void RDoSQLQ(void)
 
 	start=ChannelBC[0];
 	end=(SOUNDTS<<16)/soundtsinc;
-	if(end<=start) return;
+
+	if(end<=start)
+		return;
+
 	ChannelBC[0]=end;
 
 	for(x=0;x<2;x++)
@@ -676,7 +673,8 @@ static void RDoSQLQ(void)
 		//Modify Square wave volume based on channel volume modifiers
 		//adelikat: Note: the formulat x = x * y /100 does not yield exact results, but is "close enough" and avoids the need for using double vales or implicit cohersion which are slower (we need speed here)
 		ampx = x ? FSettings.Square1Volume : FSettings.Square2Volume;  // TODO OPTIMIZE ME!
-		if (ampx != 256) amp[x] = (amp[x] * ampx) / 256; // CaH4e3: fixed - setting up maximum volume for square2 caused complete mute square2 channel
+		if (ampx != 256)
+			amp[x] = (amp[x] * ampx) / 256; // CaH4e3: fixed - setting up maximum volume for square2 caused complete mute square2 channel
 
 		if(!inie[x]) amp[x]=0;    /* Correct? Buzzing in MM2, others otherwise... */
 
@@ -1004,17 +1002,6 @@ int FlushEmulateSound(void)
 	int x;
 	int32 end,left;
 
-	//if(!timestamp) return(0);
-
-#if 0
-	if(!FSettings.SndRate)
-	{
-		left=0;
-		end=0;
-		goto nosoundo;
-	}
-#endif
-
 	DoSQ1();
 	DoSQ2();
 	DoTriangle();
@@ -1052,8 +1039,6 @@ int FlushEmulateSound(void)
 
 		SexyFilter(Wave,WaveFinal,end>>4);
 
-		//if(FSettings.lowpass)
-		// SexyFilter2(WaveFinal,end>>4);
 		if(end&0xF)
 			Wave[0]=Wave[(end>>4)];
 		Wave[end>>4]=0;
@@ -1174,49 +1159,37 @@ void SetSoundVariables(void)
 	fhinc=PAL?16626:14915;  // *2 CPU clock rate
 	fhinc*=24;
 
-#if 0
-	if(FSettings.SndRate)
+	wlookup1[0]=0;
+	for(x=1;x<32;x++)
 	{
-#endif
-		wlookup1[0]=0;
-		for(x=1;x<32;x++)
-		{
-			wlookup1[x]=(double)16*16*16*4*95.52/((double)8128/(double)x+100);
-			/* if(!FSettings.soundq) */ wlookup1[x]>>=4;
-		}
-		wlookup2[0]=0;
-		for(x=1;x<203;x++)
-		{
-			wlookup2[x]=(double)16*16*16*4*163.67/((double)24329/(double)x+100);
-			/* if(!FSettings.soundq) */ wlookup2[x]>>=4;
-		}
+		wlookup1[x]=(double)16*16*16*4*95.52/((double)8128/(double)x+100);
+		/* if(!FSettings.soundq) */ wlookup1[x]>>=4;
+	}
+	wlookup2[0]=0;
+	for(x=1;x<203;x++)
+	{
+		wlookup2[x]=(double)16*16*16*4*163.67/((double)24329/(double)x+100);
+		/* if(!FSettings.soundq) */ wlookup2[x]>>=4;
+	}
 #if 0
-		if(FSettings.soundq>=1)
-		{
-			DoNoise=RDoNoise;
-			DoTriangle=RDoTriangle;
-			DoPCM=RDoPCM;
-			DoSQ1=RDoSQ1;
-			DoSQ2=RDoSQ2;
-		}
-		else
-		{
-#endif
-			DoNoise=DoTriangle=DoPCM=DoSQ1=DoSQ2=Dummyfunc;
-			DoSQ1=RDoSQLQ;
-			DoSQ2=RDoSQLQ;
-			DoTriangle=RDoTriangleNoisePCMLQ;
-			DoNoise=RDoTriangleNoisePCMLQ;
-			DoPCM=RDoTriangleNoisePCMLQ;
-#if 0
-		}
-#endif
-#if 0
-	}  
+	if(FSettings.soundq>=1)
+	{
+		DoNoise=RDoNoise;
+		DoTriangle=RDoTriangle;
+		DoPCM=RDoPCM;
+		DoSQ1=RDoSQ1;
+		DoSQ2=RDoSQ2;
+	}
 	else
 	{
+#endif
 		DoNoise=DoTriangle=DoPCM=DoSQ1=DoSQ2=Dummyfunc;
-		return;
+		DoSQ1=RDoSQLQ;
+		DoSQ2=RDoSQLQ;
+		DoTriangle=RDoTriangleNoisePCMLQ;
+		DoNoise=RDoTriangleNoisePCMLQ;
+		DoPCM=RDoTriangleNoisePCMLQ;
+#if 0
 	}
 #endif
 
@@ -1238,11 +1211,6 @@ void FCEUI_Sound(int Rate)
 {
 	FSettings.SndRate=Rate;
 	SetSoundVariables();
-}
-
-void FCEUI_SetLowPass(int q)
-{
-	FSettings.lowpass=q;
 }
 
 void FCEUI_SetSoundQuality(int quality)
