@@ -545,7 +545,6 @@ static void CommandSoundAdjust(void);
 static void CommandUsePreset(void);
 static void ObjectDisplayToggle(void);
 static void ViewSlots(void);
-static void UndoRedoSavestate(void);
 
 struct EMUCMDTABLE FCEUI_CommandTable[]=
 {
@@ -618,7 +617,6 @@ struct EMUCMDTABLE FCEUI_CommandTable[]=
 	{ EMUCMD_MISC_USE_INPUT_PRESET_1,		EMUCMDTYPE_MISC,	CommandUsePreset, 0, 0, "Use Input Preset 1", 0 },
 	{ EMUCMD_MISC_USE_INPUT_PRESET_2,		EMUCMDTYPE_MISC,	CommandUsePreset, 0, 0, "Use Input Preset 2", 0 },
 	{ EMUCMD_MISC_USE_INPUT_PRESET_3,		EMUCMDTYPE_MISC,	CommandUsePreset, 0, 0, "Use Input Preset 3", 0 },
-	{ EMUCMD_MISC_UNDOREDOSAVESTATE,		EMUCMDTYPE_MISC,	UndoRedoSavestate,  0,0,"Undo/Redo Savestate",    0},
 };
 
 #define NUM_EMU_CMDS		(sizeof(FCEUI_CommandTable)/sizeof(FCEUI_CommandTable[0]))
@@ -722,10 +720,4 @@ static void CommandSoundAdjust(void)
 static void CommandUsePreset(void)
 {
 	FCEUI_UseInputPreset(execcmd-EMUCMD_MISC_USE_INPUT_PRESET_1);
-}
-
-static void UndoRedoSavestate(void)
-{
-	if (lastSavestateMade && (undoSS || redoSS))
-		SwapSaveState();
 }

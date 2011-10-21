@@ -651,7 +651,7 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 {
 	struct md5_context md5;
 
-	if(FCEU_fread(&head,1,16,fp)!=16)
+	if(fp->stream->fread((char*)&head,16) != 16)
 		return 0;
 
 	if(memcmp(&head,"NES\x1a",4))
@@ -721,7 +721,7 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 	if(head.ROM_type&4)   /* Trainer */
 	{
 		trainerpoo = (uint8 *)realloc(trainerpoo, 512);
-		FCEU_fread(trainerpoo,512,1,fp);
+		fp->stream->fread((char*)trainerpoo,512);
 	}
 
 	ResetCartMapping();
@@ -730,10 +730,10 @@ int iNESLoad(const char *name, FCEUFILE *fp, int OverwriteVidMode)
 	SetupCartPRGMapping(0,ROM,ROM_size*0x4000,0);
 	// SetupCartPRGMapping(1,WRAM,8192,1);
 
-	FCEU_fread(ROM,0x4000,(round) ? ROM_size : head.ROM_size,fp);
+	fp->stream->fread((char*)ROM,(round) ? 0x4000 * ROM_size : 0x4000 * head.ROM_size);
 
 	if(VROM_size)
-		FCEU_fread(VROM,0x2000,head.VROM_size,fp);
+		fp->stream->fread((char*)VROM, 0x2000 * head.VROM_size);
 
 	md5_starts(&md5);
 	md5_update(&md5,ROM,ROM_size<<14);

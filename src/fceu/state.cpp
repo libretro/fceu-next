@@ -51,37 +51,20 @@ static void (*SPreSave)(void);
 static void (*SPostSave)(void);
 
 static int SaveStateStatus[10];
-static int StateShow;
 
-//tells the save system innards that we're loading the old format
-bool FCEU_state_loading_old_format;
-
-char lastSavestateMade[2048]; //Stores the filename of the last savestate made (needed for UndoSavestate)
-bool undoSS = false;		  //This will be true if there is lastSavestateMade, it was made since ROM was loaded, a backup state for lastSavestateMade exists
-bool redoSS = false;		  //This will be true if UndoSaveState is run, will turn false when a new savestate is made
-
-char lastLoadstateMade[2048]; //Stores the filename of the last state loaded (needed for Undo/Redo loadstate)
-bool undoLS = false;		  //This will be true if a backupstate was made and it was made since ROM was loaded
-bool redoLS = false;		  //This will be true if a backupstate was loaded, meaning redoLoadState can be run
-
-bool internalSaveLoad = false;
-
-bool backupSavestates = true;
-bool compressSavestates = true;  //By default FCEUX compresses savestates when a movie is inactive.
+bool FCEU_state_loading_old_format;	//tells the save system innards that we're loading the old format
 
 #define SFMDATA_SIZE (64)
-static SFORMAT SFMDATA[SFMDATA_SIZE];
-static int SFEXINDEX;
-
 #define RLSB 		FCEUSTATE_RLSB	//0x80000000
 
+static SFORMAT SFMDATA[SFMDATA_SIZE];
+static int SFEXINDEX;
 
 extern SFORMAT FCEUPPU_STATEINFO[];
 extern SFORMAT FCEU_NEWPPU_STATEINFO[];
 extern SFORMAT FCEUSND_STATEINFO[];
 extern SFORMAT FCEUCTRL_STATEINFO[];
 extern SFORMAT FCEUMOV_STATEINFO[];
-
 
 SFORMAT SFCPU[]={
 	{ &X.PC, 2|RLSB, "PC\0"},
@@ -103,8 +86,6 @@ SFORMAT SFCPUC[]={
 	{ &X.mooPI, 1, "MooP"}, // alternative to the "quick and dirty hack"
 	{ 0 }
 };
-
-void foo(uint8* test) { (void)test; }
 
 static int SubWrite(EMUFILE* os, SFORMAT *sf)
 {
@@ -194,7 +175,7 @@ static bool ReadStateChunk(EMUFILE* is, SFORMAT *sf, int size)
 	SFORMAT *tmp;
 	int temp = is->ftell();
 
-	while(is->ftell()<temp+size)
+	while(is->ftell() < temp+size)
 	{
 		uint32 tsize;
 		char toa[4];
@@ -217,11 +198,12 @@ static bool ReadStateChunk(EMUFILE* is, SFORMAT *sf, int size)
 		}
 		else
 			is->fseek(tsize,SEEK_CUR);
-	} // while(...)
+	}
+
 	return true;
 }
 
-static int read_sfcpuc=0, read_snd=0;
+static int read_sfcpuc=0;
 
 static bool ReadStateChunks(EMUFILE* is, int32 totalsize)
 {
@@ -231,13 +213,17 @@ static bool ReadStateChunks(EMUFILE* is, int32 totalsize)
 	bool warned=false;
 
 	read_sfcpuc=0;
-	read_snd=0;
 
 	while(totalsize > 0)
 	{
 		t=is->fgetc();
-		if(t==EOF) break;
-		if(!read32le(&size,is)) break;
+
+		if(t==EOF)
+			break;
+
+		if(!read32le(&size,is))
+			break;
+
 		totalsize -= size + 5;
 
 		switch(t)
@@ -272,8 +258,6 @@ static bool ReadStateChunks(EMUFILE* is, int32 totalsize)
 			case 5:
 				if(!ReadStateChunk(is,FCEUSND_STATEINFO,size))
 					ret=false;
-				else
-					read_snd=1;
 				break;
 			case 6:
 				is->fseek(size,SEEK_CUR);
@@ -310,14 +294,6 @@ static bool ReadStateChunks(EMUFILE* is, int32 totalsize)
 				is->fseek(size,SEEK_CUR);
 		}
 	}
-	//endo:
-
-	//mbg 6/16/08 - wtf
-	// if(X.mooPI==0xFF && !scan_chunks)
-	// {
-	////	 FCEU_PrintError("prevmoo=%d, p=%d",moo,X.P);
-	//   X.mooPI=X.P; // "Quick and dirty hack." //begone
-	// }
 
 	return ret;
 }
@@ -326,7 +302,7 @@ int CurrentState=0;
 extern int geniestage;
 
 
-bool FCEUSS_SaveMS(EMUFILE* outstream, int compressionLevel)
+static bool FCEUSS_SaveMS(EMUFILE* outstream)
 {
 	//a temp memory stream. we'll dump some data here and then compress
 	//TODO - support dumping directly without compressing to save a buffer copy
@@ -355,9 +331,13 @@ bool FCEUSS_SaveMS(EMUFILE* outstream, int compressionLevel)
 		totalsize += 5 + size;
 	}
 
-	if(SPreSave) SPreSave();
-	totalsize+=WriteStateChunk(os,0x10,SFMDATA);
-	if(SPreSave) SPostSave();
+	if(SPreSave)
+		SPreSave();
+
+	totalsize += WriteStateChunk(os,0x10,SFMDATA);
+
+	if(SPreSave)
+		SPostSave();
 
 	//save the length of the file
 	int len = ms.size();
@@ -372,14 +352,6 @@ bool FCEUSS_SaveMS(EMUFILE* outstream, int compressionLevel)
 	int error = Z_OK;
 	uint8* cbuf = (uint8*)ms.buf();
 	uLongf comprlen = -1;
-	if(compressionLevel != Z_NO_COMPRESSION && compressSavestates)
-	{
-		//worst case compression.
-		//zlib says "0.1% larger than sourceLen plus 12 bytes"
-		comprlen = (len>>9)+12 + len;
-		cbuf = new uint8[comprlen];
-		error = compress2(cbuf,&comprlen,(uint8*)ms.buf(),len,compressionLevel);
-	}
 
 	//dump the header
 	uint8 header[16]="FCSX";
@@ -389,9 +361,11 @@ bool FCEUSS_SaveMS(EMUFILE* outstream, int compressionLevel)
 
 	//dump it to the destination file
 	outstream->fwrite((char*)header,16);
-	outstream->fwrite((char*)cbuf,comprlen==-1?totalsize:comprlen);
+	outstream->fwrite((char*)cbuf, comprlen == -1 ? totalsize : comprlen);
 
-	if(cbuf != (uint8*)ms.buf()) delete[] cbuf;
+	if(cbuf != (uint8*)ms.buf())
+		delete[] cbuf;
+
 	return error == Z_OK;
 }
 
@@ -417,16 +391,6 @@ void FCEUSS_Save(const char *fname)
 		//FCEU_PrintError("daCurrentState=%d",CurrentState);
 		strcpy(fn, FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0).c_str());
 
-		//backup existing savestate first
-		if (CheckFileExists(fn) && backupSavestates)	//adelikat:  If the files exists and we are allowed to make backup savestates
-		{
-			CreateBackupSaveState(fn);		//Make a backup of previous savestate before overwriting it
-			strcpy(lastSavestateMade,fn);	//Remember what the last savestate filename was (for undoing later)
-			undoSS = true;					//Backup was created so undo is possible
-		}
-		else
-			undoSS = false;					//so backup made so lastSavestateMade does have a backup file, so no undo
-		
 		st = FCEUD_UTF8_fstream(fn,"wb");
 	}
 
@@ -436,7 +400,7 @@ void FCEUSS_Save(const char *fname)
 		return;
 	}
 
-	FCEUSS_SaveMS(st,-1);
+	FCEUSS_SaveMS(st);
 
 	delete st;
 
@@ -445,55 +409,26 @@ void FCEUSS_Save(const char *fname)
 		SaveStateStatus[CurrentState]=1;
 		//FCEU_DispMessage("State %d saved.",0,CurrentState);
 	}
-		redoSS = false;					//we have a new savestate so redo is not possible
 }
 
-int FCEUSS_LoadFP_old(EMUFILE* is, ENUM_SSLOADPARAMS params)
+static int FCEUSS_LoadFP_old(EMUFILE* is)
 {
-	//if(params==SSLOADPARAM_DUMMY && suppress_scan_chunks)
-	//	return 1;
-
 	int x;
 	uint8 header[16];
 	int stateversion;
 	char* fn=0;
 
-	////Make temporary savestate in case something screws up during the load
-	//if(params == SSLOADPARAM_BACKUP)
-	//{
-	//	fn=FCEU_MakeFName(FCEUMKF_NPTEMP,0,0);
-	//	FILE *fp;
-	//	
-	//	if((fp=fopen(fn,"wb")))
-	//	{
-	//		if(FCEUSS_SaveFP(fp))
-	//		{
-	//			fclose(fp);
-	//		}
-	//		else
-	//		{
-	//			fclose(fp);
-	//			unlink(fn);
-	//			free(fn);
-	//			fn=0;
-	//		}
-	//	}
-	//}
-
 	//if(params!=SSLOADPARAM_DUMMY)
 	is->fread((char*)&header,16);
+
 	if(memcmp(header,"FCS",3))
-	{
-		return(0);
-	}
+		return 0;
+
 	if(header[3] == 0xFF)
-	{
 		stateversion = FCEU_de32lsb(header + 8);
-	}
 	else
-	{
-		stateversion=header[3] * 100;
-	}
+		stateversion = header[3] * 100;
+
 	//if(params == SSLOADPARAM_DUMMY)
 	//{
 	//	scan_chunks=1;
@@ -505,13 +440,11 @@ int FCEUSS_LoadFP_old(EMUFILE* is, ENUM_SSLOADPARAMS params)
 	//	return 1;
 	//}
 	if(read_sfcpuc && stateversion<9500)
-	{
 		X.IRQlow=0;
-	}
+
 	if(GameStateRestore)
-	{
 		GameStateRestore(stateversion);
-	}
+
 	if(x)
 	{
 		FCEUPPU_LoadState(stateversion);
@@ -520,18 +453,8 @@ int FCEUSS_LoadFP_old(EMUFILE* is, ENUM_SSLOADPARAMS params)
 	}
 	if(fn)
 	{
-		//if(!x || params == SSLOADPARAM_DUMMY)  //is make_backup==2 possible??  oh well.
-		//{
-		//	* Oops!  Load the temporary savestate */
-		//	FILE *fp;
-		//		
-		//	if((fp=fopen(fn,"rb")))
-		//	{
-		//		FCEUSS_LoadFP(fp,SSLOADPARAM_NOBACKUP);
-		//		fclose(fp);
-		//	}
-		//	unlink(fn);
-		//}
+		// Previously, temporary savestate would be loaded here in case things went wrong -
+		// was commented-out code anyway
 		free(fn);
 	}
 
@@ -539,19 +462,10 @@ int FCEUSS_LoadFP_old(EMUFILE* is, ENUM_SSLOADPARAMS params)
 }
 
 
-bool FCEUSS_LoadFP(EMUFILE* is, ENUM_SSLOADPARAMS params)
+static bool FCEUSS_LoadFP(EMUFILE* is)
 {
-	//maybe make a backup savestate
-	EMUFILE_MEMORY msBackupSavestate;
-	bool backup = (params == SSLOADPARAM_BACKUP);
-
 	if(!is)
 		return false;
-
-	if(backup)
-	{
-		FCEUSS_SaveMS(&msBackupSavestate,Z_NO_COMPRESSION);
-	}
 
 	uint8 header[16];
 
@@ -561,10 +475,8 @@ bool FCEUSS_LoadFP(EMUFILE* is, ENUM_SSLOADPARAMS params)
 		//its not an fceux save file.. perhaps it is an fceu savefile
 		is->fseek(0,SEEK_SET);
 		FCEU_state_loading_old_format = true;
-		bool ret = FCEUSS_LoadFP_old(is,params)!=0;
+		bool ret = FCEUSS_LoadFP_old(is) != 0;
 		FCEU_state_loading_old_format = false;
-		if(!ret && backup)
-			FCEUSS_LoadFP(&msBackupSavestate,SSLOADPARAM_NOBACKUP);
 		return ret;
 	}
 
@@ -593,10 +505,6 @@ bool FCEUSS_LoadFP(EMUFILE* is, ENUM_SSLOADPARAMS params)
 	EMUFILE_MEMORY mstemp(&buf);
 	bool x = ReadStateChunks(&mstemp,totalsize)!=0;
 
-	//mbg 5/24/08 - we don't support old states, so this shouldnt matter.
-	//if(read_sfcpuc && stateversion<9500)
-	//	X.IRQlow=0;
-
 	if(GameStateRestore)
 		GameStateRestore(stateversion);
 
@@ -604,12 +512,6 @@ bool FCEUSS_LoadFP(EMUFILE* is, ENUM_SSLOADPARAMS params)
 	{
 		FCEUPPU_LoadState(stateversion);
 		FCEUSND_LoadState(stateversion);
-		//x=FCEUMOV_PostLoad();
-	}
-
-	if(!x && backup) {
-		msBackupSavestate.fseek(0,SEEK_SET);
-		FCEUSS_LoadFP(&msBackupSavestate,SSLOADPARAM_NOBACKUP);
 	}
 
 	return x;
@@ -621,11 +523,9 @@ bool FCEUSS_Load(const char *fname)
 	EMUFILE* st;
 	char fn[2048];
 
-	if(geniestage==1)
-	{
-		//FCEU_DispMessage("Cannot load FCS in GG screen.",0);
-		return false;
-	}
+	if(geniestage == 1)
+		return false;	// Cannot load FCS in GG screen.
+
 	if(fname)
 	{
 		st=FCEUD_UTF8_fstream(fname, "rb");
@@ -635,7 +535,6 @@ bool FCEUSS_Load(const char *fname)
 	{
 		strcpy(fn, FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname).c_str());
 		st=FCEUD_UTF8_fstream(fn,"rb");
-		strcpy(lastLoadstateMade,fn);
 	}
 
 	if(st == NULL || (st->get_fp() == NULL))
@@ -648,7 +547,7 @@ bool FCEUSS_Load(const char *fname)
 	//If in bot mode, don't do a backup when loading.
 	//Otherwise you eat at the hard disk, since so many
 	//states are being loaded.
-	if(FCEUSS_LoadFP(st, /* backupSavestates ? SSLOADPARAM_BACKUP : */ SSLOADPARAM_NOBACKUP))
+	if(FCEUSS_LoadFP(st))
 	{
 		if(fname)
 		{
@@ -670,7 +569,7 @@ bool FCEUSS_Load(const char *fname)
 		if(!fname)
 			SaveStateStatus[CurrentState]=1;
 
-		//FCEU_DispMessage("Error(s) reading state %d! Filename: %s",0,CurrentState, fn);
+		// Error reading state!
 		delete st;
 		return 0;
 	}
@@ -679,9 +578,8 @@ bool FCEUSS_Load(const char *fname)
 void FCEUSS_CheckStates(void)
 {
 	FILE *st=NULL;
-	int ssel;
 
-	for(ssel=0;ssel<10;ssel++)
+	for(int ssel = 0; ssel < 10; ssel++)
 	{
 		std::string soot = FCEU_MakeFName(FCEUMKF_STATE,ssel,0);
 		st= fopen(soot.c_str(),"rb");
@@ -695,17 +593,16 @@ void FCEUSS_CheckStates(void)
 	}
 
 	CurrentState=1;
-	StateShow=0;
 }
 
 void ResetExState(void (*PreSave)(void), void (*PostSave)(void))
 {
-	int x;
-	for(x=0;x<SFEXINDEX;x++)
+	for(int x = 0; x < SFEXINDEX; x++)
 	{
 		if(SFMDATA[x].desc)
 			free(SFMDATA[x].desc);
 	}
+
 	// adelikat, 3/14/09:  had to add this to clear out the size parameter.  NROM(mapper 0) games were having savestate crashes if loaded after a non NROM game	because the size variable was carrying over and causing savestates to save too much data
 	SFMDATA[0].s = 0;		
 	
@@ -723,9 +620,12 @@ void AddExState(void *v, uint32 s, int type, char *desc)
 	}
 	else
 		SFMDATA[SFEXINDEX].desc=0;
+
 	SFMDATA[SFEXINDEX].v=v;
 	SFMDATA[SFEXINDEX].s=s;
-	if(type) SFMDATA[SFEXINDEX].s|=RLSB;
+	if(type)
+		SFMDATA[SFEXINDEX].s |= RLSB;
+
 	if(SFEXINDEX<SFMDATA_SIZE-1)
 		SFEXINDEX++;
 	else
@@ -746,6 +646,7 @@ void FCEUI_SelectStateNext(int n)
 		CurrentState=(CurrentState+1)%10;
 	else
 		CurrentState=(CurrentState+9)%10;
+
 	FCEUI_SelectState(CurrentState, 1);
 }
 
@@ -753,220 +654,43 @@ int FCEUI_SelectState(int w, int show)
 {
 	FCEUSS_CheckStates();
 	int oldstate=CurrentState;
-	if(w == -1) { StateShow = 0; return 0; } //mbg merge 7/17/06 had to make return a value
+
+	if(w == -1)
+		return 0;	//mbg merge 7/17/06 had to make return a value
 
 	CurrentState=w;
-	if(show)
-	{
-		StateShow=180;
-		//FCEU_DispMessage("-select state-",0);
-	}
+
 	return oldstate;
 }
 
 void FCEUI_SaveState(const char *fname)
 {
-	if(!FCEU_IsValidUI(FCEUI_SAVESTATE)) return;
+	if(!FCEU_IsValidUI(FCEUI_SAVESTATE))
+		return;
 
-	StateShow=0;
-	
 	FCEUSS_Save(fname);
 }
 
-int loadStateFailed = 0; // hack, this function should return a value instead
-
 bool file_exists(const char * filename)
 {
-    if (FILE * file = fopen(filename, "r")) //I'm sure, you meant for READING =)
-    {
-        fclose(file);
-        return true;
-    }
-    return false;
+	if (FILE * file = fopen(filename, "r")) //I'm sure, you meant for READING =)
+	{
+		fclose(file);
+		return true;
+	}
+
+	return false;
 }
 uint32_t FCEUI_LoadState(const char *fname)
 {
 	if(!FCEU_IsValidUI(FCEUI_LOADSTATE))
 		return false;
 
-	StateShow = 0;
-	loadStateFailed = 0;
-
-	/* For network play, be load the state locally, and then save the state to a temporary file,
-	   and send that.  This insures that if an older state is loaded that is missing some
-	   information expected in newer save states, desynchronization won't occur(at least not
-	   from this ;)).
-	 */
-	//if (backupSavestates) BackupLoadState();	//If allowed, backup the current state before loading a new one
-
 	if (fname != NULL && !file_exists(fname))
-	{
-		loadStateFailed = 1;
 		return false; // state doesn't exist; exit cleanly
-	}
+
 	if(FCEUSS_Load(fname))
-	{
 		  return true;
-	}
 	else
-	{
-		loadStateFailed = 1;
 		return false;
-	}
-}
-
-#if 0
-void FCEU_DrawSaveStates(uint8 *XBuf)
-{
-	if(!StateShow) return;
-
-	FCEU_DrawNumberRow(XBuf,SaveStateStatus,CurrentState);
-	StateShow--;
-}
-#endif
-
-//*************************************************************************
-//Savestate backup functions
-//(Used when making savestates)
-//*************************************************************************
-
-string GenerateBackupSaveStateFn(const char *fname)
-{
-	//This backup is for the backup "slot" for any savestate made.  Example: smb.fc0 becomes smb-bak.fc0
-	string filename;
-	filename = fname;	//Convert fname to a string object
-	int x = filename.find_last_of("."); //Find file extension
-	filename.insert(x,"-bak");		//add "-bak" before the dot.  
-	
-	return filename;
-}
-
-
-void CreateBackupSaveState(const char *fname)
-{
-	string newFilename = GenerateBackupSaveStateFn(fname);	//Get backup savestate filename
-	if (CheckFileExists(newFilename.c_str()))				//See if backup already exists
-		remove(newFilename.c_str())	;						//If so, delete it
-	rename(fname,newFilename.c_str());						//Rename savestate to backup filename
-	undoSS = true;		//There is a backup savestate file to mast last loaded, so undo is possible
-}
-
-void SwapSaveState()
-{
-	//--------------------------------------------------------------------------------------------
-	//Both files must exist
-	//--------------------------------------------------------------------------------------------
-	
-	if (!lastSavestateMade) 
-	{
-		FCEU_DispMessage("Can't Undo",0);
-		FCEUI_printf("Undo savestate was attempted but unsuccessful because there was not a recently used savestate.\n");
-		return;		//If there is no last savestate, can't undo
-	}
-	string backup = GenerateBackupSaveStateFn(lastSavestateMade);	//Get filename of backup state
-	if (!CheckFileExists(backup.c_str())) 
-	{
-		FCEU_DispMessage("Can't Undo",0);
-		FCEUI_printf("Undo savestate was attempted but unsuccessful because there was not a backup of the last used savestate.\n");
-		return;		//If no backup, can't undo
-	}
-
-	//--------------------------------------------------------------------------------------------
-	//So both exists, now swap the last savestate and its backup
-	//--------------------------------------------------------------------------------------------
-	string temp = backup;					//Put backup filename in temp
-	temp.append("x");						//Add x
-	
-	rename(backup.c_str(),temp.c_str());		//rename backup file to temp file
-	rename(lastSavestateMade,backup.c_str());	//rename current as backup
-	rename(temp.c_str(),lastSavestateMade);		//rename backup as current
-	
-	undoSS = true;	//Just in case, if this was run, then there is definately a last savestate and backup
-	if (redoSS)				//This was a redo function, so if run again it will be an undo again
-		redoSS = false;
-	else					//This was an undo function so next will be redo, so flag it
-		redoSS = true;
-
-	FCEU_DispMessage("%s restored",0,backup.c_str());
-	FCEUI_printf("%s restored\n",0,backup.c_str());
-}	
-	
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-//*************************************************************************
-//Loadstate backup functions
-//(Used when Loading savestates)
-//*************************************************************************
-
-string GetBackupFileName()
-{
-	//This backup savestate is a special one specifically made whenever a loadstate occurs so that the user's place in a movie/game is never lost
-	//particularly from unintentional loadstating
-	string filename;
-	int x;
-	
-	filename = strdup(FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0).c_str());	//Generate normal savestate filename
-	x = filename.find_last_of(".");		//Find last dot
-	filename = filename.substr(0,x);	//Chop off file extension
-	filename.append(".bak.fc0");		//add .bak
-
-	return filename;
-}
-
-bool CheckBackupSaveStateExist()
-{
-	//This function simply checks to see if the backup loadstate exists, the backup loadstate is a special savestate
-	//That is made before loading any state, so that the user never loses his data
-	string filename = GetBackupFileName(); //Get backup savestate filename
-		
-	//Check if this filename exists
-	fstream test;
-	test.open(filename.c_str(),fstream::in);
-		
-	if (test.fail())
-	{
-		test.close();
-		return false;
-	}
-	else
-	{
-		test.close();
-		return true;
-	}
-}
-
-void BackupLoadState()
-{
-	string filename = GetBackupFileName();
-	internalSaveLoad = true;
-	FCEUSS_Save(filename.c_str());
-	internalSaveLoad = false;
-	undoLS = true;
-}
-
-void LoadBackup()
-{
-	if (!undoLS) return;
-	string filename = GetBackupFileName();	//Get backup filename
-	if (CheckBackupSaveStateExist())
-	{
-		//internalSaveLoad = true;
-		FCEUSS_Load(filename.c_str());		//Load it
-		//internalSaveLoad = false;
-		redoLS = true;						//Flag redoLoadState
-		undoLS = false;						//Flag that LoadBackup cannot be run again
-	}
-	else
-		FCEU_DispMessage("Error: Could not load %s",0,filename.c_str());
-}
-
-void RedoLoadState()
-{
-	if (!redoLS) return;
-	if (lastLoadstateMade && redoLS)
-	{
-		FCEUSS_Load(lastLoadstateMade);
-		FCEUI_printf("Redoing %s\n",lastLoadstateMade);
-	}
-	redoLS = false;		//Flag that RedoLoadState can not be run again
-	undoLS = true;		//Flag that LoadBackup can be run again
 }

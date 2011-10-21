@@ -46,7 +46,6 @@
 
 using namespace std;
 
-bool bindSavestate = true;	//Toggle that determines if a savestate filename will include the movie filename
 static std::string BaseDirectory;
 static char FileExt[2048];	//Includes the . character, as in ".nes"
 char FileBase[2048];
@@ -346,7 +345,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, co
 			fceufp->archiveIndex = -1;
 			fceufp->stream = fp;
 			FCEU_fseek(fceufp,0,SEEK_END);
-			fceufp->size = FCEU_ftell(fceufp);
+			fceufp->size = fceufp->stream->ftell();
 			FCEU_fseek(fceufp,0,SEEK_SET);
 			goto applyips;
 		}
@@ -381,17 +380,6 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, co
 	return 0;
 }
 
-int FCEU_fclose(FCEUFILE *fp)
-{
-	delete fp;
-	return 1;
-}
-
-uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
-{
-	return fp->stream->fread((char*)ptr,size*nmemb);
-}
-
 uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
 {
 	fp->stream->fwrite((char*)ptr,size*nmemb);
@@ -403,40 +391,8 @@ int FCEU_fseek(FCEUFILE *fp, long offset, int whence)
 {
 	fp->stream->fseek(offset,whence);
 
-	return FCEU_ftell(fp);
-}
-
-uint64 FCEU_ftell(FCEUFILE *fp)
-{
 	return fp->stream->ftell();
 }
-
-int FCEU_read16le(uint16 *val, FCEUFILE *fp)
-{
-	return read16le(val,fp->stream);
-}
-
-int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp)
-{
-	return read32le(Bufo, fp->stream);
-}
-
-int FCEU_fgetc(FCEUFILE *fp)
-{
-	return fp->stream->fgetc();
-}
-
-uint64 FCEU_fgetsize(FCEUFILE *fp)
-{
-	return fp->size;
-}
-
-int FCEU_fisarchive(FCEUFILE *fp)
-{
-	if(fp->archiveIndex==0) return 0;
-	else return 1;
-}
-
 
 /// Updates the base directory
 void FCEUI_SetBaseDirectory(std::string const & dir)

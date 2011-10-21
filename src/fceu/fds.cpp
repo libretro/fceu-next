@@ -677,14 +677,14 @@ static int SubLoad(FCEUFILE *fp)
 	uint8 header[16];
 	int x;
 
-	FCEU_fread(header,16,1,fp);
+	fp->stream->fread((char*)header,16);
 
 	if(memcmp(header,"FDS\x1a",4))
 	{
 		if(!(memcmp(header+1,"*NINTENDO-HVC*",14)))
 		{
 			long t;
-			t=FCEU_fgetsize(fp);
+			t= fp->size;
 			if(t<65500)
 				t=65500;
 			TotalSides=t/65500;
@@ -711,7 +711,7 @@ static int SubLoad(FCEUFILE *fp)
 				free(diskdata[zol]);
 			return 0;
 		}
-		FCEU_fread(diskdata[x],1,65500,fp);
+		fp->stream->fread((char*)diskdata[x],65500);
 		md5_update(&md5,diskdata[x],65500);
 	}
 	md5_finish(&md5,GameInfo->MD5.data);
@@ -808,7 +808,7 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 			free(fn);
 			return(0);
 		}
-		FCEU_fclose(tp);
+		delete tp;
 		DiskWritten=1;  /* For save state handling. */
 	}
 	free(fn);

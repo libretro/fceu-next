@@ -131,14 +131,6 @@ static void FCEU_CloseGame(void)
 
 		delete GameInfo;
 		GameInfo = 0;
-
-		//Reset flags for Undo/Redo/Auto Savestating //adelikat: TODO: maybe this stuff would be cleaner as a struct or class
-		lastSavestateMade[0] = 0;
-		undoSS = false;
-		redoSS = false;
-		lastLoadstateMade[0] = 0;
-		undoLS = false;
-		redoLS = false;
 	}
 }
 
@@ -382,7 +374,7 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 		goto endlseq;
 
 	FCEU_PrintError("An error occurred while loading the file.");
-	FCEU_fclose(fp);
+	delete fp;
 
 	delete GameInfo;
 	GameInfo = 0;
@@ -391,7 +383,7 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 
 endlseq:
 
-	FCEU_fclose(fp);
+	delete fp;
 
 	FCEU_ResetVidSys();
 
@@ -768,7 +760,7 @@ bool FCEUXLoad(const char *name, FCEUFILE *fp)
 {
 	//read ines header
 	iNES_HEADER head;
-	if(FCEU_fread(&head,1,16,fp)!=16)
+	if(fp->stream->fread((char*)&head,16) != 16)
 		return false;
 
 	//validate header
@@ -804,8 +796,8 @@ bool FCEUXLoad(const char *name, FCEUFILE *fp)
 	cart->chrSize = cart->chrPages*8*1024;
 	cart->PRG = new char[cart->prgSize];
 	cart->CHR = new char[cart->chrSize];
-	FCEU_fread(cart->PRG,1,cart->prgSize,fp);
-	FCEU_fread(cart->CHR,1,cart->chrSize,fp);
+	fp->stream->fread((char*)cart->PRG,cart->prgSize);
+	fp->stream->fread((char*)cart->CHR,cart->chrSize);
 
 	//setup the emulator
 	GameInterface=FCEUXGameInterface;

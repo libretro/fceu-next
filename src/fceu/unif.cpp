@@ -128,7 +128,7 @@ static void MooMirroring(void)
 static int DoMirroring(FCEUFILE *fp)
 {
 	uint8 t;
-	t=FCEU_fgetc(fp);
+	t= fp->stream->fgetc();
 	mirrortodo=t;
 
 	{
@@ -148,7 +148,7 @@ static int NAME(FCEUFILE *fp)
 	FCEU_printf(" Name: ");
 	index=0;
 
-	while((t=FCEU_fgetc(fp))>0)
+	while((t= fp->stream->fgetc()) > 0)
 		if(index<99)
 			namebuf[index++]=t;
 
@@ -169,17 +169,21 @@ static int DINF(FCEUFILE *fp)
 	uint16 y;
 	int t;
 
-	if(FCEU_fread(name,1,100,fp)!=100)
+	if(fp->stream->fread((char*)name,100) != 100)
 		return(0);
-	if((t=FCEU_fgetc(fp))==EOF) return(0);
+	if((t=fp->stream->fgetc()) == EOF)
+		return(0);
 	d=t;
-	if((t=FCEU_fgetc(fp))==EOF) return(0);
+	if((t=fp->stream->fgetc())==EOF)
+		return(0);
 	m=t;
-	if((t=FCEU_fgetc(fp))==EOF) return(0);
+	if((t=fp->stream->fgetc())==EOF)
+		return(0);
 	y=t;
-	if((t=FCEU_fgetc(fp))==EOF) return(0);
+	if((t=fp->stream->fgetc())==EOF)
+		return(0);
 	y|=t<<8;
-	if(FCEU_fread(method,1,100,fp)!=100)
+	if(fp->stream->fread((char*)method,100) != 100)
 		return(0);
 	name[99]=method[99]=0;
 	FCEU_printf(" Dumped by: %s\n",name);
@@ -196,7 +200,7 @@ static int CTRL(FCEUFILE *fp)
 {
 	int t;
 
-	if((t=FCEU_fgetc(fp))==EOF)
+	if((t=fp->stream->fgetc())==EOF)
 		return(0);
 	/* The information stored in this byte isn't very helpful, but it's
 	better than nothing...maybe.
@@ -214,7 +218,7 @@ static int CTRL(FCEUFILE *fp)
 static int TVCI(FCEUFILE *fp)
 {
 	int t;
-	if( (t=FCEU_fgetc(fp)) ==EOF)
+	if( (t=fp->stream->fgetc()) ==EOF)
 		return(0);
 	if(t<=2)
 	{
@@ -237,7 +241,7 @@ static int TVCI(FCEUFILE *fp)
 static int EnableBattery(FCEUFILE *fp)
 {
 	FCEU_printf(" Battery-backed.\n");
-	if(FCEU_fgetc(fp)==EOF)
+	if(fp->stream->fgetc() == EOF)
 		return(0);
 	UNIFCart.battery=1;
 	return(1);
@@ -258,7 +262,7 @@ static int LoadPRG(FCEUFILE *fp)
 		return(0);
 	mallocedsizes[z]=t;
 	memset(malloced[z]+uchead.info,0xFF,t-uchead.info);
-	if(FCEU_fread(malloced[z],1,uchead.info,fp)!=uchead.info)
+	if(fp->stream->fread((char*)malloced[z], uchead.info) != uchead.info)
 	{
 		FCEU_printf("Read Error!\n");
 		return(0);
@@ -274,7 +278,7 @@ static int SetBoardName(FCEUFILE *fp)
 {
 	if(!(boardname=(uint8 *)malloc(uchead.info+1)))
 		return(0);
-	FCEU_fread(boardname,1,uchead.info,fp);
+	fp->stream->fread((char*)boardname,uchead.info);
 	boardname[uchead.info]=0;
 	FCEU_printf(" Board name: %s\n",boardname);
 	sboardname=boardname;
@@ -297,7 +301,7 @@ static int LoadCHR(FCEUFILE *fp)
 		return(0);
 	mallocedsizes[16+z]=t;
 	memset(malloced[16+z]+uchead.info,0xFF,t-uchead.info);
-	if(FCEU_fread(malloced[16+z],1,uchead.info,fp)!=uchead.info)
+	if(fp->stream->fread((char*)malloced[16+z],uchead.info) != uchead.info)
 	{
 		FCEU_printf("Read Error!\n");
 		return(0);
@@ -463,14 +467,14 @@ int LoadUNIFChunks(FCEUFILE *fp)
 	int t;
 	for(;;)
 	{
-		t=FCEU_fread(&uchead,1,4,fp);
+		t=fp->stream->fread((char*)&uchead,4);
 		if(t<4)
 		{
 			if(t>0)
 				return 0;
 			return 1;
 		}
-		if(!(FCEU_read32le(&uchead.info,fp)))
+		if(!(read32le(&uchead.info,fp->stream)))
 			return 0;
 		t=0;
 		x=0;
@@ -559,7 +563,7 @@ static void UNIFGI(GI h)
 int UNIFLoad(const char *name, FCEUFILE *fp)
 {
 	FCEU_fseek(fp,0,SEEK_SET);
-	FCEU_fread(&unhead,1,4,fp);
+	fp->stream->fread((char*)&unhead,4);
 	if(memcmp(&unhead,"UNIF",4))
 		return 0;
 
@@ -567,7 +571,7 @@ int UNIFLoad(const char *name, FCEUFILE *fp)
 
 	ResetExState(0,0);
 	ResetUNIF();
-	if(!FCEU_read32le(&unhead.info,fp))
+	if(!read32le(&unhead.info,fp->stream))
 		goto aborto;
 	if(FCEU_fseek(fp,0x20,SEEK_SET)<0)
 		goto aborto;

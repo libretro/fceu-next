@@ -6,8 +6,6 @@
 #include "types.h"
 #include "emufile.h"
 
-extern bool bindSavestate;
-
 struct FCEUFILE {
 	//the stream you can use to access the data
 	//std::iostream *stream;
@@ -121,18 +119,8 @@ struct ArchiveScanRecord
 
 FCEUFILE *FCEU_fopen(const char *path, const char *ipsfn, const char *mode, const char *ext, int index=-1, const char** extensions = 0);
 bool FCEU_isFileInArchive(const char *path);
-int FCEU_fclose(FCEUFILE*);
-uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE*);
 uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE*);
 int FCEU_fseek(FCEUFILE*, long offset, int whence);
-uint64 FCEU_ftell(FCEUFILE*);
-int FCEU_read32le(uint32 *Bufo, FCEUFILE*);
-int FCEU_read16le(uint16 *Bufo, FCEUFILE*);
-int FCEU_fgetc(FCEUFILE*);
-uint64 FCEU_fgetsize(FCEUFILE*);
-int FCEU_fisarchive(FCEUFILE*);
-
-
 
 void GetFileBase(const char *f);
 std::string FCEU_GetPath(int type);
