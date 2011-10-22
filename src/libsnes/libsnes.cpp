@@ -516,13 +516,11 @@ bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned r
 {
    FCEUI_Initialize();
 
-   const char *tmppath = tmpnam(NULL);
-   if (!tmppath)
-      return false;
-
    // Append basename to detect certain ROM types from filename (Hack).
-   std::string actual_path = tmppath;
+   std::string actual_path = "FCEU_tmp_";
    actual_path += g_basename;
+
+   fprintf(stderr, "[FCEU]: Using temp path: \"%s\"\n", actual_path.c_str());
 
    FILE *file = fopen(actual_path.c_str(), "wb");
    if (!file)
@@ -536,7 +534,7 @@ bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned r
 
    fceu_init();
 
-   return 1;
+   return true;
 }
 
 bool snes_load_cartridge_bsx_slotted(
