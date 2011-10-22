@@ -30,9 +30,8 @@ static snes_input_state_t input_cb = NULL;
 
 /* emulator-specific variables */
 
-static unsigned char palette_r[256];
-static unsigned char palette_g[256];
-static unsigned char palette_b[256];
+static uint16_t palette[256];
+
 static int32 *sound = 0;
 static int32 ssize = 0;
 static uint8 *gfx = 0;
@@ -51,17 +50,10 @@ extern uint8 *XBuf;
 
 void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b)
 {
-	// Make PC compatible copy
-	palette_r[index] = r;
-	palette_g[index] = g;
-	palette_b[index] = b;
-}
-
-void FCEUD_GetPalette(unsigned char i, unsigned char *r, unsigned char *g, unsigned char *b)
-{
-	*r = palette_r[i];
-	*g = palette_g[i];
-	*b = palette_b[i];
+   r >>= 3;
+   g >>= 3;
+   b >>= 3;
+   palette[index] = (r << 10) | (g << 5) | (b << 0);
 }
 
 void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC fcexp) {}
@@ -470,15 +462,8 @@ void snes_run(void)
    static uint16_t video_out[1024 * 240];
    const uint8_t *gfx = XBuf;
    for (unsigned y = 0; y < 240; y++)
-   {
       for (unsigned x = 0; x < 256; x++, gfx++)
-      {
-         unsigned r = palette_r[*gfx] >> 3;
-         unsigned g = palette_g[*gfx] >> 3;
-         unsigned b = palette_b[*gfx] >> 3;
-         video_out[y * 1024 + x] = (r << 10) | (g << 5) | (b << 0);
-      }
-   }
+         video_out[y * 1024 + x] = palette[*gfx];
 
    video_cb(video_out, 256, 240);
 
