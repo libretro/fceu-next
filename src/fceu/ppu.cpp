@@ -67,11 +67,17 @@ static uint32 ppulut2[256];
 static uint32 ppulut3[128];
 
 struct BITREVLUT {
-
+#ifdef __LIBSNES__
 	uint8_t lut[256];
+#else
+	uint8_t * lut;
+#endif
 	BITREVLUT() {
 		int bits = 8;
 		int n = 256;
+		#ifndef __LIBSNES__
+		lut = new uint8_t[n];
+		#endif
 
 		int m = 1;
 		int a = n>>1;
