@@ -366,6 +366,18 @@ void snes_init(void) {}
 
 static unsigned serialize_size = 0;
 
+static void emulator_set_input(void)
+{
+	InputDPR = &JSReturn;
+
+	//FIXME: Should probably be fixed later - games like A Boy And His Blob don't like 4 controllers being
+	//hooked up
+	FCEUI_SetInput(0, SI_GAMEPAD, InputDPR, 0);
+	FCEUI_SetInput(1, SI_GAMEPAD, InputDPR, 0);
+	FCEUI_SetInput(2, SI_GAMEPAD, InputDPR, 0);
+	FCEUI_SetInput(3, SI_GAMEPAD, InputDPR, 0);
+}
+
 static void emulator_set_custom_palette()
 {
 	if (current_palette == 0 )
@@ -397,6 +409,7 @@ static void fceu_init(void)
 	if (UNIFCart.battery)
 		FCEU_LoadGameSave(&UNIFCart);
 
+	emulator_set_input();
 	emulator_set_custom_palette();
 
 	FCEUD_SoundToggle();
