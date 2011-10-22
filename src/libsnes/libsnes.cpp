@@ -351,8 +351,19 @@ void snes_set_input_state(snes_input_state_t cb)
 void snes_set_controller_port_device(bool, unsigned)
 {}
 
-void snes_set_cartridge_basename(const char*)
-{}
+static std::string g_basename;
+void snes_set_cartridge_basename(const char* path_)
+{
+   char path[1024];
+   strncpy(path, path_, sizeof(path));
+   
+   const char *split = strrchr(path_, '/');
+   if (!split) split = strrchr(path_, '\\');
+   if (split)
+      g_basename = split + 1;
+   else
+      g_basename = path_;
+}
 
 void snes_init(void) {}
 
@@ -503,15 +514,19 @@ bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned r
    if (!tmppath)
       return false;
 
-   FILE *file = fopen(tmppath, "wb");
+   // Append basename to detect certain ROM types from filename (Hack).
+   std::string actual_path = tmppath;
+   actual_path += g_basename;
+
+   FILE *file = fopen(actual_path.c_str(), "wb");
    if (!file)
       return false;
 
    fwrite(rom_data, 1, rom_size, file);
    fclose(file);
    //FIXME: we need a real filename with real file extension here
-   GameInfo = FCEUI_LoadGame(tmppath, 1);
-   unlink(tmppath);
+   GameInfo = FCEUI_LoadGame(actual_path.c_str(), 1);
+   unlink(actual_path.c_str());
 
    fceu_init();
 
