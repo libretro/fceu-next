@@ -405,14 +405,6 @@ static void fceu_init(void)
 	
 	if(ppudead)
 		ppudead_loop(newppu);
-
-//TODO: Savestate/rewind stuff here
-#if 0
-	uint8_t *state_buf = new uint8_t[2000000];
-
-	serialize_size = CPUWriteState_libgba(state_buf, 2000000);
-	delete[] state_buf;
-#endif
 }
 
 void snes_term(void) {}
@@ -435,24 +427,25 @@ void snes_run(void)
 	timestamp = 0;
 	gfx = XBuf;
 	sound = WaveFinal;
+
+   for (unsigned i = 0; i < ssize; i++)
+      audio_cb(sound[i] & 0xffff, sound[i] & 0xffff);
 }
 
 
 unsigned snes_serialize_size(void)
 {
-   return serialize_size;
+   return 0;
 }
 
 bool snes_serialize(uint8_t *data, unsigned size)
 {
-   //return CPUWriteState_libgba(data, size);
-   return 1;
+   return false;
 }
 
 bool snes_unserialize(const uint8_t *data, unsigned size)
 {
-   //return CPUReadState_libgba(data, size);
-   return 1;
+   return false;
 }
 
 void snes_cheat_reset(void)
@@ -509,12 +502,7 @@ bool snes_load_cartridge_super_game_boy(
 
 void snes_unload_cartridge(void)
 {
-	if (iNESCart.battery)
-		FCEU_SaveGameSave(&iNESCart);
-	if (UNIFCart.battery)
-		FCEU_SaveGameSave(&UNIFCart);
 	FCEUI_CloseGame();
-	GameInfo = 0;
 }
 
 bool snes_get_region(void)
@@ -524,45 +512,11 @@ bool snes_get_region(void)
 
 uint8_t *snes_get_memory_data(unsigned id)
 {
-   if (id != SNES_MEMORY_CARTRIDGE_RAM)
-      return 0;
-   /*
-   if (eepromInUse)
-      return eepromData;
-
-   if (saveType == 1 || saveType == 2)
-      return flashSaveMemory;
-
-   return 0;
-   */
-   //return flashSaveMemory;
    return 0;
 }
 
 unsigned snes_get_memory_size(unsigned id)
 {
-   if (id != SNES_MEMORY_CARTRIDGE_RAM)
-      return 0;
-
-   /*
-   if (eepromInUse)
-      return eepromSize;
-
-   if (saveType == 1)
-      return 0x10000;
-   else if (saveType == 2)
-      return flashSize;
-   else
-      return 0;
-   */
-   return 0x10000;
+   return 0;
 }
 
-//TODO: Hook up sound
-#if 0
-void systemOnWriteDataToSoundBuffer(int16_t *finalWave, int length)
-{
-   for (int i = 0; i < length; i += 2)
-      audio_cb(finalWave[i + 0], finalWave[i + 1]);
-}
-#endif
