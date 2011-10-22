@@ -449,6 +449,7 @@ static void update_input(void)
       JSReturn[0] |= input_cb(SNES_PORT_1, SNES_DEVICE_JOYPAD, 0, bindmap[i].snes) ? bindmap[i].nes : 0;
    for (unsigned i = 0; i < 8; i++)
       JSReturn[1] |= input_cb(SNES_PORT_2, SNES_DEVICE_JOYPAD, 0, bindmap[i].snes) ? bindmap[i].nes : 0;
+   FCEU_UpdateInput();
 }
 
 void snes_run(void)
