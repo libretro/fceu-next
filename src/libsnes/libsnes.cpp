@@ -36,7 +36,7 @@ static unsigned char palette_b[256];
 static int32 *sound = 0;
 static int32 ssize = 0;
 static uint8 *gfx = 0;
-static uint32 JSReturn = 0;
+static uint8 JSReturn[2];
 void *InputDPR;
 static uint32 current_palette = 0;
 
@@ -368,14 +368,8 @@ static unsigned serialize_size = 0;
 
 static void emulator_set_input(void)
 {
-	InputDPR = &JSReturn;
-
-	//FIXME: Should probably be fixed later - games like A Boy And His Blob don't like 4 controllers being
-	//hooked up
-	FCEUI_SetInput(0, SI_GAMEPAD, InputDPR, 0);
-	FCEUI_SetInput(1, SI_GAMEPAD, InputDPR, 0);
-	FCEUI_SetInput(2, SI_GAMEPAD, InputDPR, 0);
-	FCEUI_SetInput(3, SI_GAMEPAD, InputDPR, 0);
+	FCEUI_SetInput(0, SI_GAMEPAD, &JSReturn[0], 0);
+	FCEUI_SetInput(1, SI_GAMEPAD, &JSReturn[1], 0);
 }
 
 static void emulator_set_custom_palette()
@@ -428,10 +422,41 @@ void snes_power(void)
 void snes_reset(void)
 {}
 
+
+struct keymap
+{
+   unsigned snes;
+   unsigned nes;
+};
+
+static const keymap bindmap[] = {
+   { SNES_DEVICE_ID_JOYPAD_A, JOY_A },
+   { SNES_DEVICE_ID_JOYPAD_B, JOY_B },
+   { SNES_DEVICE_ID_JOYPAD_SELECT, JOY_SELECT },
+   { SNES_DEVICE_ID_JOYPAD_START, JOY_START },
+   { SNES_DEVICE_ID_JOYPAD_UP, JOY_UP },
+   { SNES_DEVICE_ID_JOYPAD_DOWN, JOY_DOWN },
+   { SNES_DEVICE_ID_JOYPAD_LEFT, JOY_LEFT },
+   { SNES_DEVICE_ID_JOYPAD_RIGHT, JOY_RIGHT },
+};
+
+static void update_input(void)
+{
+   poll_cb();
+   JSReturn[0] = 0;
+   JSReturn[1] = 0;
+   for (unsigned i = 0; i < 8; i++)
+      JSReturn[0] |= input_cb(SNES_PORT_1, SNES_DEVICE_JOYPAD, 0, bindmap[i].snes) ? bindmap[i].nes : 0;
+   for (unsigned i = 0; i < 8; i++)
+      JSReturn[1] |= input_cb(SNES_PORT_2, SNES_DEVICE_JOYPAD, 0, bindmap[i].snes) ? bindmap[i].nes : 0;
+}
+
 void snes_run(void)
 {
 	if (geniestage != 1)
 		FCEU_ApplyPeriodicCheats();
+
+   update_input();
 
 	FCEUX_PPU_Loop(0);			//for now, just use new PPU
 
