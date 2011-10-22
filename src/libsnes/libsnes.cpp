@@ -469,6 +469,8 @@ void snes_cheat_set(unsigned, bool, const char*)
 
 bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned rom_size)
 {
+   FCEUI_Initialize();
+
    const char *tmppath = tmpnam(NULL);
    if (!tmppath)
       return false;
