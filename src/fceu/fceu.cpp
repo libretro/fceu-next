@@ -347,7 +347,11 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 	if(fp->archiveFilename != "") GameInfo->archiveFilename = strdup(fp->archiveFilename.c_str());
 	GameInfo->archiveCount = fp->archiveCount;
 
+#ifdef __LIBSNES__
+	GameInfo->soundrate = 32000;
+#else
 	GameInfo->soundrate = 48200;
+#endif
 	GameInfo->name=0;
 	GameInfo->type=GIT_CART;
 	GameInfo->vidsys=GIV_USER;

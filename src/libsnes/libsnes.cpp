@@ -441,6 +441,21 @@ void snes_run(void)
 	gfx = XBuf;
 	sound = WaveFinal;
 
+   static uint16_t video_out[1024 * 240];
+   const uint8_t *gfx = XBuf;
+   for (unsigned y = 0; y < 240; y++)
+   {
+      for (unsigned x = 0; x < 256; x++, gfx++)
+      {
+         unsigned r = palette_r[*gfx] >> 3;
+         unsigned g = palette_g[*gfx] >> 3;
+         unsigned b = palette_b[*gfx] >> 3;
+         video_out[y * 1024 + x] = (r << 10) | (g << 5) | (b << 0);
+      }
+   }
+
+   video_cb(video_out, 256, 240);
+
    for (unsigned i = 0; i < ssize; i++)
       audio_cb(sound[i] & 0xffff, sound[i] & 0xffff);
 }

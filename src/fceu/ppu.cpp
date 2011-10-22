@@ -66,13 +66,12 @@ static uint32 ppulut1[256];
 static uint32 ppulut2[256];
 static uint32 ppulut3[128];
 
-typedef struct BITREVLUT {
+struct BITREVLUT {
 
-	uint8_t * lut;
+	uint8_t lut[256];
 	BITREVLUT() {
 		int bits = 8;
 		int n = 256;
-		lut = new uint8_t[n];
 
 		int m = 1;
 		int a = n>>1;
