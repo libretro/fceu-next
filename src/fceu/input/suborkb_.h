@@ -1,5 +1,7 @@
 
 #include "suborkb.h"
+#undef AK
+#undef AK2
 #define AK2(x,y)        ( (SUBORB_FKB_##x) | (SUBORB_FKB_##y <<8) )
 #define AK(x)                 SUBORB_FKB_##x
 

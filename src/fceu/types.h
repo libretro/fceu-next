@@ -54,7 +54,8 @@ typedef signed int int32;
 #else
 
 //mingw32 doesnt prototype this for some reason
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_WIN64)
+#undef alloca
 #define alloca __builtin_alloca
 #endif
 
