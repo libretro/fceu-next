@@ -420,10 +420,14 @@ static void fceu_init(void)
 void snes_term(void) {}
 
 void snes_power(void)
-{}
+{
+   PowerNES();
+}
 
 void snes_reset(void)
-{}
+{
+   ResetNES();
+}
 
 
 struct keymap
