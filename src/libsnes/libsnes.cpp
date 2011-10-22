@@ -489,17 +489,19 @@ void snes_run(void)
 
 unsigned snes_serialize_size(void)
 {
-   return 0;
+   return FCEUSS_SizeMemory();
 }
 
 bool snes_serialize(uint8_t *data, unsigned size)
 {
-   return false;
+   FCEUSS_SaveMemory(data, size);
+   return true;
 }
 
 bool snes_unserialize(const uint8_t *data, unsigned size)
 {
-   return false;
+   FCEUSS_LoadMemory(data, size);
+   return true;
 }
 
 void snes_cheat_reset(void)

@@ -26,11 +26,17 @@ enum ENUM_SSLOADPARAMS
 
 void FCEUSS_Save(const char *);
 bool FCEUSS_Load(const char *);
+#ifdef __LIBSNES__
+void FCEUSS_SaveMemory(uint8_t *data, unsigned size);
+void FCEUSS_LoadMemory(const uint8_t *data, unsigned size);
+unsigned FCEUSS_SizeMemory();
+#endif
 
  //zlib values: 0 (none) through 9 (max) or -1 (default)
+#ifndef __LIBSNES__ // FIXME: Pre-existing function prototypes seem to be broken!
 bool FCEUSS_SaveMS(EMUFILE* outstream, int compressionLevel);
-
 bool FCEUSS_LoadFP(EMUFILE* is, ENUM_SSLOADPARAMS params);
+#endif
 
 extern int CurrentState;
 void FCEUSS_CheckStates(void);

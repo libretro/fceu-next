@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "emufile.h"
 
-size_t EMUFILE_MEMORY::_fread(const void *ptr, size_t bytes){
+size_t EMUFILE_MEMORY::_fread(void *ptr, size_t bytes){
 	u32 remain = len-pos;
 	u32 todo = std::min<u32>(remain,(u32)bytes);
 	if(len==0)
@@ -39,7 +39,7 @@ size_t EMUFILE_MEMORY::_fread(const void *ptr, size_t bytes){
 	}
 	else
 	{
-		memcpy((void*)ptr,buf()+pos,todo);
+		memcpy(ptr,buf()+pos,todo);
 	}
 	pos += todo;
 	if(todo<bytes)

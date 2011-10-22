@@ -369,6 +369,80 @@ static bool FCEUSS_SaveMS(EMUFILE* outstream)
 	return error == Z_OK;
 }
 
+#ifdef __LIBSNES__
+void FCEUSS_SaveMemory(uint8_t *data, unsigned size)
+{
+   EMUFILE_MEMORY mem(size);
+   FCEUSS_SaveMS(&mem);
+   std::copy(mem.buf(), mem.buf() + size, data);
+
+#if 0
+   const char *tmp = tmpnam(NULL);
+   if (!tmp)
+      return;
+   FCEUSS_Save(tmp);
+   FILE *file = fopen(tmp, "rb");
+   if (!file)
+      return;
+
+   fseek(file, 0, SEEK_END);
+   unsigned len = ftell(file);
+   if (len != size)
+   {
+      fclose(file);
+      return;
+   }
+
+   rewind(file);
+   fread(data, 1, len, file);
+   fclose(file);
+   unlink(tmp);
+#endif
+}
+
+static bool FCEUSS_LoadFP(EMUFILE* is);
+void FCEUSS_LoadMemory(const uint8_t *data, unsigned size)
+{
+   EMUFILE_MEMORY mem(data, size);
+   FCEUSS_LoadFP(&mem);
+
+#if 0
+   const char *tmp = tmpnam(NULL);
+   FILE *file = fopen(tmp, "wb");
+   if (!file)
+      return;
+
+   fwrite(data, 1, size, file);
+   fclose(file);
+   FCEUSS_Load(tmp);
+   unlink(tmp);
+#endif
+}
+
+unsigned FCEUSS_SizeMemory()
+{
+   EMUFILE_MEMORY mem;
+   FCEUSS_SaveMS(&mem);
+   return mem.size();
+
+#if 0
+   const char *tmp = tmpnam(NULL);
+   FCEUSS_Save(tmp);
+   FILE *file = fopen(tmp, "rb");
+   if (!file)
+   {
+      unlink(tmp);
+      return 0;
+   }
+
+   fseek(file, 0, SEEK_END);
+   unsigned len = ftell(file);
+   fclose(file);
+   unlink(tmp);
+   return len;
+#endif
+}
+#endif
 
 void FCEUSS_Save(const char *fname)
 {

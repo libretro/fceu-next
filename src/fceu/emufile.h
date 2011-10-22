@@ -56,7 +56,7 @@ class EMUFILE
 
 	bool fail(bool unset=false) { bool ret = failbit; if(unset) failbit = false; return ret; }
 
-	size_t fread(const void *ptr, size_t bytes){
+	size_t fread(void *ptr, size_t bytes){
 		return _fread(ptr,bytes);
 	}
 
@@ -69,7 +69,7 @@ class EMUFILE
 	virtual int fgetc() = 0;
 	virtual int fputc(int c) = 0;
 
-	virtual size_t _fread(const void *ptr, size_t bytes) = 0;
+	virtual size_t _fread(void *ptr, size_t bytes) = 0;
 
 	//removing these return values for now so we can find any code that might be using them and make sure
 	//they handle the return values correctly
@@ -105,10 +105,12 @@ class EMUFILE_MEMORY : public EMUFILE
 		len = preallocate;
 	}
 	EMUFILE_MEMORY() : vec(new std::vector<u8>()), ownvec(true), pos(0), len(0) { vec->reserve(1024); }
-	EMUFILE_MEMORY(void* buf, s32 size) : vec(new std::vector<u8>()), ownvec(true), pos(0), len(size) { 
+
+	EMUFILE_MEMORY(const void* buf, s32 size) : vec(new std::vector<u8>()), ownvec(true), pos(0), len(size)
+   { 
 		vec->resize(size);
 		if(size != 0)
-			memcpy(&vec[0],buf,size);
+			memcpy(&(*vec)[0],buf,size);
 	}
 
 	~EMUFILE_MEMORY() {
@@ -156,7 +158,7 @@ class EMUFILE_MEMORY : public EMUFILE
 		return 0;
 	}
 
-	virtual size_t _fread(const void *ptr, size_t bytes);
+	virtual size_t _fread(void *ptr, size_t bytes);
 
 	//removing these return values for now so we can find any code that might be using them and make sure
 	//they handle the return values correctly
@@ -234,7 +236,7 @@ class EMUFILE_FILE : public EMUFILE
 		return ::fputc(c, fp);
 	}
 
-	virtual size_t _fread(const void *ptr, size_t bytes){
+	virtual size_t _fread(void *ptr, size_t bytes){
 		size_t ret = ::fread((void*)ptr, 1, bytes, fp);
 		if(ret < bytes)
 			failbit = true;

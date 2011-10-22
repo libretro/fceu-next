@@ -348,7 +348,7 @@ FCEUGI *FCEUI_LoadGameVirtual(const char *name, int OverwriteVidMode)
 	GameInfo->archiveCount = fp->archiveCount;
 
 #ifdef __LIBSNES__
-	GameInfo->soundrate = 32000;
+	GameInfo->soundrate = 31950;
 #else
 	GameInfo->soundrate = 48200;
 #endif
