@@ -85,9 +85,7 @@ class PS3Graphics
 		};
 		float aspectratios[LAST_ASPECT_RATIO];
 		uint32_t aspect_x, aspect_y;
-		unsigned char palette_r[256];
-		unsigned char palette_g[256];
-		unsigned char palette_b[256];
+		uint32_t palette[256];
 		uint32_t frame_count;
 
 		/* PSGL functions */

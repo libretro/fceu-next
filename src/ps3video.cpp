@@ -423,9 +423,9 @@ void PS3Graphics::Draw(uint8_t *XBuf, int nesw, int nesh)
 
 		uint32_t* texture = (uint32_t*)glMapBuffer(GL_TEXTURE_REFERENCE_BUFFER_SCE, GL_WRITE_ONLY);
 
-		for(int i = 0; i != size; i ++)
+		for(int i = 0; i < size; i ++)
 		{
-			texture[i] = (palette_r[XBuf[i]] << 16) | (palette_g[XBuf[i]] << 8) | (palette_b[XBuf[i]] << 0);
+			texture[i] = palette[XBuf[i]];
 		}
 
 		glUnmapBuffer(GL_TEXTURE_REFERENCE_BUFFER_SCE);
@@ -492,8 +492,8 @@ void PS3Graphics::Draw(uint8_t *XBuf, int nesw, int nesh)
 
 		uint32_t* texture = (uint32_t*)glMapBuffer(GL_TEXTURE_REFERENCE_BUFFER_SCE, GL_WRITE_ONLY);
 
-		for(int i = 0; i != size; i ++)
-			texture[i] = (palette_r[XBuf[i]] << 16) | (palette_g[XBuf[i]] << 8) | (palette_b[XBuf[i]] << 0);
+		for(int i = 0; i < size; i ++)
+			texture[i] = palette[XBuf[i]];
 
 		glUnmapBuffer(GL_TEXTURE_REFERENCE_BUFFER_SCE);
 
