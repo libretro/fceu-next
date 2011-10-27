@@ -742,7 +742,10 @@ void emulator_toggle_sound(uint64_t soundmode)
 void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b)
 {
 	// Make PC compatible copy
-	Graphics->palette[index] = (r << 16) | (g << 8) | (b << 0);
+	r >>= 3;
+	g >>= 3;
+	b >>= 3;
+	Graphics->palette[index] = (r << 10) | (g << 5) | (b << 0);
 }
 
 void FCEUD_VideoChanged()

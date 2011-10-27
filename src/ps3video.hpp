@@ -32,8 +32,8 @@
 
 #define SCREEN_RENDER_TEXTURE_WIDTH 256
 #define SCREEN_RENDER_TEXTURE_HEIGHT 240
-#define SCREEN_RENDER_PIXEL_FORMAT GL_ARGB_SCE
-#define SCREEN_RENDER_TEXTURE_BYTES_PER_PIXEL 4
+#define SCREEN_RENDER_PIXEL_FORMAT GL_RGB5_A1
+#define SCREEN_RENDER_TEXTURE_BYTES_PER_PIXEL 2
 #define SCREEN_RENDER_TEXTURE_PITCH 256
 
 /* resolution constants */
@@ -85,7 +85,7 @@ class PS3Graphics
 		};
 		float aspectratios[LAST_ASPECT_RATIO];
 		uint32_t aspect_x, aspect_y;
-		uint32_t palette[256];
+		uint16_t palette[256];
 		uint32_t frame_count;
 
 		/* PSGL functions */

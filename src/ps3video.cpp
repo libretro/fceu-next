@@ -421,7 +421,7 @@ void PS3Graphics::Draw(uint8_t *XBuf, int nesw, int nesh)
 
 		frame_count += 1;
 
-		uint32_t* texture = (uint32_t*)glMapBuffer(GL_TEXTURE_REFERENCE_BUFFER_SCE, GL_WRITE_ONLY);
+		uint16_t* texture = (uint16_t*)glMapBuffer(GL_TEXTURE_REFERENCE_BUFFER_SCE, GL_WRITE_ONLY);
 
 		for(int i = 0; i < size; i ++)
 		{
