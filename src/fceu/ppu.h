@@ -28,7 +28,7 @@ extern uint8 (FASTCALL *FFCEUX_PPURead)(uint32 A);
 extern void (*FFCEUX_PPUWrite)(uint32 A, uint8 V);
 extern uint8 FASTCALL FFCEUX_PPURead_Default(uint32 A);
 void FFCEUX_PPUWrite_Default(uint32 A, uint8 V);
-extern void ppudead_loop(int newppu);
+extern void ppudead_loop();
 
 extern int ppudead;
 extern int scanline;

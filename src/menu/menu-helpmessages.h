@@ -10,7 +10,6 @@ static void DisplayHelpMessage(int currentsetting)
 	switch(currentsetting)
 	{
 		case SETTING_FCEU_DISABLE_SPRITE_LIMIT:
-		case SETTING_FCEU_PPU_MODE:
 			print_help_message_yesno(menu_emu_videosettings, currentsetting);
 			break;
 		case SETTING_FCEU_GAME_GENIE:
@@ -244,9 +243,6 @@ static void producelabelvalue(uint64_t switchvalue)
 			//emulator-specific
 		case SETTING_FCEU_DISABLE_SPRITE_LIMIT:
 			cellDbgFontPuts(0.5f, menu_emu_videosettings.items[menu_emu_videosettings.items[switchvalue].enum_id].text_ypos, Emulator_GetFontSize(), *(menu_emu_videosettings.items[switchvalue].setting_ptr) ? GREEN : ORANGE, *(menu_emu_videosettings.items[switchvalue].setting_ptr) ? "ON" : "OFF");
-			break;
-		case SETTING_FCEU_PPU_MODE:
-			cellDbgFontPuts(0.5f, menu_emu_videosettings.items[menu_emu_videosettings.items[switchvalue].enum_id].text_ypos, Emulator_GetFontSize(), *(menu_emu_videosettings.items[switchvalue].setting_ptr) ? ORANGE : GREEN, *(menu_emu_videosettings.items[switchvalue].setting_ptr) ? "New" : "Old");
 			break;
 		case SETTING_FCEU_GAME_GENIE:
 			cellDbgFontPuts(0.5f, menu_emu_settings.items[menu_emu_settings.items[switchvalue].enum_id].text_ypos, Emulator_GetFontSize(), *(menu_emu_settings.items[switchvalue].setting_ptr) ? ORANGE : GREEN, *(menu_emu_settings.items[switchvalue].setting_ptr) ? "ON" : "OFF");
