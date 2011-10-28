@@ -365,7 +365,18 @@ void snes_set_cartridge_basename(const char* path_)
       g_basename = path_;
 }
 
-void snes_init(void) {}
+// SSNES extension.
+static snes_environment_t environ_cb;
+void snes_set_environment(snes_environment_t cb) { environ_cb = cb; }
+
+void snes_init(void)
+{
+   if (environ_cb)
+   {
+      snes_geometry geom = { 256, 240, 256, 240 };
+      environ_cb(SNES_ENVIRONMENT_SET_GEOMETRY, &geom);
+   }
+}
 
 static unsigned serialize_size = 0;
 
