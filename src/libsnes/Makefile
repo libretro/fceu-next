@@ -23,7 +23,7 @@ else
    TARGET := snes.dll
    CC = gcc
    CXX = g++
-   SHARED := -shared -static-libgcc -static-libstdc++ -s --version-script=link.T
+   SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=link.T
 endif
 
 FCEU_DIR := ../fceu
