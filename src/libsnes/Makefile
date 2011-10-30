@@ -14,7 +14,7 @@ endif
 ifeq ($(platform), unix)
    TARGET := libsnes.so
    fpic := -fPIC
-   SHARED := -shared
+   SHARED := -shared -Wl,--version-script=link.T
 else ifeq ($(platform), osx)
    TARGET := libsnes.dylib
    fpic := -fPIC
@@ -23,7 +23,7 @@ else
    TARGET := snes.dll
    CC = gcc
    CXX = g++
-   SHARED := -shared -static-libgcc -static-libstdc++ -s
+   SHARED := -shared -static-libgcc -static-libstdc++ -s --version-script=link.T
 endif
 
 FCEU_DIR := ../fceu
