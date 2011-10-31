@@ -424,8 +424,10 @@ static void fceu_init(void)
 
 	FCEUD_SoundToggle();
 
+	newppu = 1; //for now, just use new PPU mode
+	
 	if(ppudead)
-		ppudead_loop();
+		ppudead_loop(newppu);
 }
 
 void snes_term(void) {}
@@ -477,7 +479,7 @@ void snes_run(void)
 
    update_input();
 
-	FCEUX_PPU_Loop(0);
+	FCEUX_PPU_Loop(0);			//for now, just use new PPU
 
 	ssize = FlushEmulateSound();
 	timestampbase += timestamp;

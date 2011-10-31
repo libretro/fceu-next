@@ -521,6 +521,7 @@ static void emulator_init_settings(void)
 	/* emulator-specific settings */
 
 	init_setting_uint("FCEU::ControlStyle",Settings.FCEUControlstyle, CONTROL_STYLE_ORIGINAL);
+	init_setting_uint("FCEU::FCEUPPUMode", Settings.FCEUPPUMode, 1);
 	init_setting_uint("FCEU::DisableSpriteLimitation", Settings.FCEUDisableSpriteLimitation, 0);
 	init_setting_uint("FCEU::GameGenie", Settings.FCEUGameGenie, 0);
 	init_setting_uint("FCEU::ScanlineNTSCStart", Settings.FCEUScanlineNTSCStart, 8);
@@ -634,6 +635,7 @@ void emulator_save_settings(uint64_t filetosave)
 				config_set_string(currentconfig, "PS3Paths::PathBaseDirectory",Settings.PS3PathBaseDirectory);
 				config_set_uint(currentconfig, "FCEU::Controlstyle",Settings.FCEUControlstyle);
 				config_set_uint(currentconfig, "FCEU::DisableSpriteLimitation",Settings.FCEUDisableSpriteLimitation);
+				config_set_uint(currentconfig, "FCEU::FCEUPPUMode",Settings.FCEUPPUMode);
 				config_set_uint(currentconfig, "FCEU::ScanlineNTSCStart",Settings.FCEUScanlineNTSCStart);
 				config_set_int(currentconfig, "FCEU::ScanlineNTSCEnd",Settings.FCEUScanlineNTSCEnd);
 				config_set_int(currentconfig, "FCEU::ScanlinePALStart",Settings.FCEUScanlinePALStart);
@@ -1105,6 +1107,7 @@ static void emulator_set_input(void)
 	} \
 	if(specialbuttonmap & BTN_EXITTOMENU) \
 	{ \
+		Settings.FCEUPPUMode = newppu; \
 		Emulator_StopROMRunning(); \
 		mode_switch = MODE_MENU; \
 	} \
@@ -1123,6 +1126,11 @@ static void emulator_set_input(void)
 	if(specialbuttonmap & BTN_QUICKLOAD) \
 	{ \
 		emulator_load_current_save_state_slot(); \
+	} \
+	if(specialbuttonmap & BTN_TOGGLEPPU) \
+	{ \
+		FCEU_TogglePPU(); \
+		snprintf(special_action_msg, sizeof(special_action_msg), "%s", newppu ? "New PPU Mode enabled" : "Old PPU mode enabled"); \
 	} \
 	if(specialbuttonmap & BTN_DECREMENT_PALETTE) \
 	{ \
@@ -1673,11 +1681,38 @@ extern uint8 *XBuf;
 	gfx = XBuf; \
 	sound = WaveFinal;
 
+#define emulation_loop(loop) \
+	if(geniestage != 1) \
+		FCEU_ApplyPeriodicCheats(); \
+	\
+	loop(fskip); \
+	\
+	FCEUI_Emulate(gfx, sound, ssize); \
+	\
+	Graphics->Draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT); \
+	if(Graphics->frame_count < special_action_msg_expired) \
+	{ \
+		cellDbgFontPrintf (0.09f, 0.90f, 1.51f, BLUE,	special_action_msg); \
+		cellDbgFontPrintf (0.09f, 0.90f, 1.50f, WHITE,	special_action_msg); \
+		cellDbgFontDraw(); \
+	} \
+	else \
+		special_action_msg_expired = 0; \
+	psglSwap(); \
+	\
+	if(Settings.Throttled) \
+		audio_driver->write(audio_handle, (int16_t*)sound, ssize << 1); \
+	\
+	EMULATOR_INPUT_LOOP(); \
+	FCEU_UpdateInput(); \
+	cell_console_poll(); \
+	cellSysutilCheckCallback();
+
 // emulator-specific - FCEU functionality hosed out of main emulation loop because it was a reset/poweron specific quirk
 // no big if then else block this way for every frame
 #define ppudead_function() \
 	if(ppudead) \
-		ppudead_loop();
+		ppudead_loop(newppu);
 
 static void emulator_set_paths()
 {
@@ -1766,6 +1801,8 @@ static void emulator_start()
 
 	FCEUD_SoundToggle();
 
+	newppu = Settings.FCEUPPUMode;
+
 	if(hack_prevent_game_sram_from_being_erased)
 	{
 		hack_prevent_game_sram_from_being_erased = 0;
@@ -1774,32 +1811,20 @@ static void emulator_start()
 
 	ppudead_function();
 
-	do
+	if(newppu)
 	{
-		if(geniestage != 1)
-			FCEU_ApplyPeriodicCheats();
-
-		FCEUX_PPU_Loop(fskip);
-		FCEUI_Emulate(gfx, sound, ssize);
-		Graphics->Draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
-		if(Graphics->frame_count < special_action_msg_expired)
+		do
 		{
-			cellDbgFontPrintf (0.09f, 0.90f, 1.51f, BLUE,	special_action_msg);
-			cellDbgFontPrintf (0.09f, 0.90f, 1.50f, WHITE,	special_action_msg);
-			cellDbgFontDraw();
-		}
-		else
-			special_action_msg_expired = 0;
-		psglSwap();
-
-		if(Settings.Throttled)
-			audio_driver->write(audio_handle, (int16_t*)sound, ssize << 1);
-
-		EMULATOR_INPUT_LOOP();
-		FCEU_UpdateInput();
-		cell_console_poll();
-		cellSysutilCheckCallback();
-	}while (is_running);
+			emulation_loop(FCEUX_PPU_Loop);
+		}while (is_running);
+	}
+	else
+	{
+		do
+		{
+			emulation_loop(FCEUPPU_Loop);
+		}while (is_running);
+	}
 }
 
 /* PS3 Frontend - Main ROM loading function */

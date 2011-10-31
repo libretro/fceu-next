@@ -505,6 +505,18 @@ static void producesettingentry(uint64_t switchvalue)
 				sys_timer_usleep(FILEBROWSER_DELAY);
 			}
 			break;
+		case SETTING_FCEU_PPU_MODE:
+			if(CTRL_LEFT(state) || CTRL_LSTICK_LEFT(state) || CTRL_RIGHT(state) || CTRL_LSTICK_RIGHT(state) || CTRL_CROSS(state))
+			{
+				Settings.FCEUPPUMode = !Settings.FCEUPPUMode;
+				sys_timer_usleep(FILEBROWSER_DELAY);
+			}
+			if(CTRL_START(state))
+			{
+				Settings.FCEUPPUMode = 0;
+				sys_timer_usleep(FILEBROWSER_DELAY);
+			}
+			break;
 		case SETTING_FCEU_GAME_GENIE:
 			if(CTRL_LEFT(state) || CTRL_LSTICK_LEFT(state) || CTRL_RIGHT(state) || CTRL_LSTICK_RIGHT(state) || CTRL_CROSS(state))
 			{

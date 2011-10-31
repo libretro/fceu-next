@@ -585,6 +585,24 @@ static item items_generalsettings[MAX_NO_OF_CONTROLS_SETTINGS] =
 		1
 	},
 	{
+		SETTING_FCEU_PPU_MODE, 
+		"PPU Mode", 
+		0.0f,
+		0.0f,
+		YELLOW,
+		WHITE,
+		"INFO - [PPU Mode] is set to 'Old'.",
+		LIGHTBLUE,
+		0.86f,
+		0.09f,
+		0.83f,
+		&Settings.FCEUPPUMode,
+		"INFO - [PPU Mode] is set to 'New'. Graphics are more accurate\nat some speed loss.",
+		"INFO - [PPU Mode] is set to 'Old'. Less accurate graphics but\nfaster overall.",
+		1,
+		1
+	},
+	{
 		SETTING_EMU_VIDEO_DEFAULT_ALL,
 		"DEFAULT",
 		0.0f,
