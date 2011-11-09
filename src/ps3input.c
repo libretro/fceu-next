@@ -54,20 +54,6 @@ const char * Input_PrintMappedButton(uint32_t mappedbutton)
 			return "Previous Palette";
 		case BTN_INGAME_MENU:
 			return "Ingame Menu";
-/*
-		case BTN_END_RECORDING_MOVIE:
-			return "End recording movie";
-		case BTN_LOAD_MOVIE:
-			return "Load movie";
-		case BTN_FASTFORWARD:
-			return "Fast forward";
-		case BTN_INCREMENTTURBO:
-			return "Increment Fast-forward speed";
-		case BTN_DECREMENTTURBO:
-			return "Decrement Fast-forward speed";
-		case BTN_SWAPJOYPADS:
-			return "Swap Joypads";
-*/
 		default:
 			return "Unknown";
 	}
@@ -112,28 +98,6 @@ int Input_GetAdjacentButtonmap(uint32_t buttonmap, uint32_t next)
 			return next ? BTN_INCREMENTSAVE : BTN_CHEATDISABLE;
 		case BTN_INCREMENTSAVE:
 			return next ? BTN_TOGGLEPPU : BTN_DECREMENTSAVE;
-/*
-		case BTN_FASTFORWARD:
-			return next ? BTN_DECREMENTTURBO : BTN_INCREMENTSAVE;
-		case BTN_DECREMENTTURBO:
-			return next ? BTN_INCREMENTTURBO : BTN_FASTFORWARD;
-		case BTN_INCREMENTTURBO:
-			return next ? BTN_RESET : BTN_DECREMENTTURBO;
-		case BTN_RESET:
-			return next ? BTN_SOFTRESET : BTN_INCREMENTTURBO;
-		case BTN_SOFTRESET:
-			return next ? BTN_PAUSE : BTN_RESET;
-		case BTN_PAUSE:
-			return next ? BTN_BEGIN_RECORDING_MOVIE : BTN_SOFTRESET;
-		case BTN_BEGIN_RECORDING_MOVIE:
-			return next ? BTN_END_RECORDING_MOVIE : BTN_PAUSE;
-		case BTN_END_RECORDING_MOVIE:
-			return next ? BTN_LOAD_MOVIE : BTN_BEGIN_RECORDING_MOVIE;
-		case BTN_LOAD_MOVIE:
-			return next ? BTN_SWAPJOYPADS : BTN_END_RECORDING_MOVIE;
-		case BTN_SWAPJOYPADS:
-			return next ? BTN_NONE : BTN_LOAD_MOVIE;
-*/
 		case BTN_TOGGLEPPU:
 			return next ? BTN_DECREMENT_PALETTE : BTN_INCREMENTSAVE;
 		case BTN_DECREMENT_PALETTE:
