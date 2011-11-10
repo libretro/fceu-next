@@ -52,7 +52,6 @@ char SYS_CONFIG_FILE[MAX_PATH_LENGTH];
 char DEFAULT_GAME_HACK[MAX_PATH_LENGTH];
 char MULTIMAN_GAME_TO_BOOT[MAX_PATH_LENGTH];
 
-PS3Graphics* Graphics = NULL;
 cell_audio_handle_t audio_handle;
 const struct cell_audio_driver *audio_driver = &cell_audio_audioport;
 oskutil_params oskutil_handle;
@@ -95,7 +94,7 @@ static unsigned int myzappers[2][3];
 		FCEUI_SelectState(Settings.CurrentSaveStateSlot, true); \
 	} \
 	snprintf(special_action_msg, sizeof(special_action_msg), "Save state slot changed to: #%d", Settings.CurrentSaveStateSlot); \
-	special_action_msg_expired = Graphics->SetTextMessageSpeed();
+	special_action_msg_expired = ps3graphics_set_text_message_speed(60);
 
 #define emulator_increment_current_save_state_slot() \
 	Settings.CurrentSaveStateSlot++; \
@@ -103,7 +102,7 @@ static unsigned int myzappers[2][3];
 	FCEUI_SelectState(Settings.CurrentSaveStateSlot, true); \
 	\
 	snprintf(special_action_msg, sizeof(special_action_msg), "Save state slot changed to: #%d", Settings.CurrentSaveStateSlot); \
-	special_action_msg_expired = Graphics->SetTextMessageSpeed();
+	special_action_msg_expired = ps3graphics_set_text_message_speed(60);
 
 #define emulator_save_sram() \
 	/* emulator-specific */ \
@@ -128,13 +127,13 @@ static unsigned int myzappers[2][3];
 		snprintf(special_action_msg, sizeof(special_action_msg), "Loaded save state slot #%d", Settings.CurrentSaveStateSlot); \
 	else \
 		snprintf(special_action_msg, sizeof(special_action_msg), "Can't load from save state slot #%d", Settings.CurrentSaveStateSlot); \
-	special_action_msg_expired = Graphics->SetTextMessageSpeed();
+	special_action_msg_expired = ps3graphics_set_text_message_speed(60);
 
 #define emulator_save_current_save_state_slot() \
 	/* emulator-specific */ \
 	FCEUI_SaveState(NULL); \
 	snprintf(special_action_msg, sizeof(special_action_msg), "Saved to save state slot #%d", Settings.CurrentSaveStateSlot); \
-	special_action_msg_expired = Graphics->SetTextMessageSpeed();
+	special_action_msg_expired = ps3graphics_set_text_message_speed(60);
 
 /* PS3 frontend - cheat position related functions */
 
@@ -570,13 +569,13 @@ void emulator_implementation_set_shader_preset(const char * fname)
 	init_setting_uint("ViewportY", Settings.ViewportY, Settings.ViewportY);
 	init_setting_uint("ViewportWidth", Settings.ViewportWidth, Settings.ViewportWidth);
 	init_setting_uint("ViewportHeight", Settings.ViewportHeight, Settings.ViewportHeight);
-	Graphics->LoadFragmentShader(Settings.PS3CurrentShader);
-	Graphics->LoadFragmentShader(Settings.PS3CurrentShader2, 1);
-	Graphics->SetFBOScale(Settings.ScaleEnabled,Settings.ScaleFactor);
-	//Graphics->set_aspect_ratio(Settings.PS3KeepAspect, srcWidth, srcHeight, 1);
-	Graphics->SetOverscan(Settings.PS3OverscanEnabled, (float)Settings.PS3OverscanAmount/100);
-	Graphics->SetSmooth(Settings.PS3Smooth);
-	Graphics->SetSmooth(Settings.PS3Smooth2, 1);
+	ps3graphics_load_fragment_shader(Settings.PS3CurrentShader, 0);
+	ps3graphics_load_fragment_shader(Settings.PS3CurrentShader2, 1);
+	ps3graphics_set_fbo_scale(Settings.ScaleEnabled,Settings.ScaleFactor);
+	//ps3graphics_set_aspect_ratio(Settings.PS3KeepAspect, srcWidth, srcHeight, 1);
+	ps3graphics_set_overscan(Settings.PS3OverscanEnabled, (float)Settings.PS3OverscanAmount/100, 1);
+	ps3graphics_set_smooth(Settings.PS3Smooth, 0);
+	ps3graphics_set_smooth(Settings.PS3Smooth2, 1);
 }
 
 void emulator_save_settings(uint64_t filetosave)
@@ -593,10 +592,10 @@ void emulator_save_settings(uint64_t filetosave)
 			config_set_uint(currentconfig, "PS3General::CurrentSaveStateSlot",Settings.CurrentSaveStateSlot);
 			config_set_uint(currentconfig, "PS3General::KeepAspect",Settings.PS3KeepAspect);
 			config_set_uint(currentconfig, "PS3General::ApplyShaderPresetOnStartup", Settings.ApplyShaderPresetOnStartup);
-			config_set_uint(currentconfig, "PS3General::ViewportX", Graphics->get_viewport_x());
-			config_set_uint(currentconfig, "PS3General::ViewportY", Graphics->get_viewport_y());
-			config_set_uint(currentconfig, "PS3General::ViewportWidth", Graphics->get_viewport_width());
-			config_set_uint(currentconfig, "PS3General::ViewportHeight", Graphics->get_viewport_height());
+			config_set_uint(currentconfig, "PS3General::ViewportX", ps3graphics_get_viewport_x());
+			config_set_uint(currentconfig, "PS3General::ViewportY", ps3graphics_get_viewport_y());
+			config_set_uint(currentconfig, "PS3General::ViewportWidth", ps3graphics_get_viewport_width());
+			config_set_uint(currentconfig, "PS3General::ViewportHeight", ps3graphics_get_viewport_height());
 			config_set_uint(currentconfig, "PS3General::Smooth", Settings.PS3Smooth);
 			config_set_uint(currentconfig, "PS3General::Smooth2", Settings.PS3Smooth2);
 			config_set_uint(currentconfig, "PS3General::ScaleFactor", Settings.ScaleFactor);
@@ -608,11 +607,11 @@ void emulator_save_settings(uint64_t filetosave)
 			config_set_uint(currentconfig, "PS3General::PS3TripleBuffering",Settings.TripleBuffering);
 			config_set_uint(currentconfig, "PS3General::ScreenshotsEnabled",Settings.ScreenshotsEnabled);
 			config_set_uint(currentconfig, "Sound::SoundMode",Settings.SoundMode);
-			config_set_uint(currentconfig, "PS3General::PS3CurrentResolution",Graphics->GetCurrentResolution());
+			config_set_uint(currentconfig, "PS3General::PS3CurrentResolution",ps3graphics_get_current_resolution());
 			config_set_string(currentconfig, "PS3General::ShaderPresetPath", Settings.ShaderPresetPath);
 			config_set_string(currentconfig, "PS3General::ShaderPresetTitle", Settings.ShaderPresetTitle);
-			config_set_string(currentconfig, "PS3General::PS3CurrentShader",Graphics->GetFragmentShaderPath());
-			config_set_string(currentconfig, "PS3General::PS3CurrentShader2", Graphics->GetFragmentShaderPath(1));
+			config_set_string(currentconfig, "PS3General::PS3CurrentShader",ps3graphics_get_fragment_shader_path(0));
+			config_set_string(currentconfig, "PS3General::PS3CurrentShader2", ps3graphics_get_fragment_shader_path(1));
 			config_set_string(currentconfig, "PS3General::Border", Settings.PS3CurrentBorder);
 			config_set_string(currentconfig, "PS3General::GameAwareShaderPath", Settings.GameAwareShaderPath);
 			config_set_string(currentconfig, "PS3Paths::PathSaveStates", Settings.PS3PathSaveStates);
@@ -640,17 +639,17 @@ void emulator_save_settings(uint64_t filetosave)
 			snprintf(filepath, sizeof(filepath), "%s/test.conf", usrDirPath);
 			currentconfig = config_file_new(filepath);
 
-			config_set_string(currentconfig, "PS3General::PS3CurrentShader", Graphics->GetFragmentShaderPath());
-			config_set_string(currentconfig, "PS3General::PS3CurrentShader2", Graphics->GetFragmentShaderPath(1));
+			config_set_string(currentconfig, "PS3General::PS3CurrentShader", ps3graphics_get_fragment_shader_path(0));
+			config_set_string(currentconfig, "PS3General::PS3CurrentShader2", ps3graphics_get_fragment_shader_path(1));
 			config_set_string(currentconfig, "PS3General::Border", Settings.PS3CurrentBorder);
 			config_set_uint(currentconfig, "PS3General::Smooth", Settings.PS3Smooth);
 			config_set_uint(currentconfig, "PS3General::Smooth2", Settings.PS3Smooth2);
 			char tmp[10] = "Test";
 			config_set_string(currentconfig, "PS3General::ShaderPresetTitle", tmp);
-			config_set_uint(currentconfig, "PS3General::ViewportX", Graphics->get_viewport_x());
-			config_set_uint(currentconfig, "PS3General::ViewportY", Graphics->get_viewport_y());
-			config_set_uint(currentconfig, "PS3General::ViewportWidth", Graphics->get_viewport_width());
-			config_set_uint(currentconfig, "PS3General::ViewportHeight", Graphics->get_viewport_height());
+			config_set_uint(currentconfig, "PS3General::ViewportX", ps3graphics_get_viewport_x());
+			config_set_uint(currentconfig, "PS3General::ViewportY", ps3graphics_get_viewport_y());
+			config_set_uint(currentconfig, "PS3General::ViewportWidth", ps3graphics_get_viewport_width());
+			config_set_uint(currentconfig, "PS3General::ViewportHeight", ps3graphics_get_viewport_height());
 			config_set_uint(currentconfig, "PS3General::ScaleFactor", Settings.ScaleFactor);
 			config_set_uint(currentconfig, "PS3General::ScaleEnabled", Settings.ScaleEnabled);
 			config_set_uint(currentconfig, "PS3General::OverscanEnabled", Settings.PS3OverscanEnabled);
@@ -736,24 +735,24 @@ void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, uns
 	r >>= 3;
 	g >>= 3;
 	b >>= 3;
-	Graphics->palette[index] = (r << 10) | (g << 5) | (b << 0);
+	ps3graphics_palette[index] = (r << 10) | (g << 5) | (b << 0);
 }
 
 void FCEUD_VideoChanged()
 {
-	if (Graphics->GetCurrentResolution() == CELL_VIDEO_OUT_RESOLUTION_576)
+	if (ps3graphics_get_current_resolution() == CELL_VIDEO_OUT_RESOLUTION_576)
 	{
-		if(Graphics->CheckResolution(CELL_VIDEO_OUT_RESOLUTION_576))
+		if(ps3graphics_check_resolution(CELL_VIDEO_OUT_RESOLUTION_576))
 		{
-			switch(Graphics->GetPAL60Hz())
+			switch(ps3graphics_get_pal60hz())
 			{
 				case 0:
 					//PAL60 is OFF
 					if(GameInfo->vidsys == 0)
 					{
 						Settings.PS3PALTemporalMode60Hz = true;
-						Graphics->SetPAL60Hz(Settings.PS3PALTemporalMode60Hz);
-						Graphics->SwitchResolution(Graphics->GetCurrentResolution(), Settings.PS3PALTemporalMode60Hz, Settings.TripleBuffering, Settings.ScaleEnabled, Settings.ScaleFactor);
+						ps3graphics_set_pal60hz(Settings.PS3PALTemporalMode60Hz);
+						ps3graphics_switch_resolution(ps3graphics_get_current_resolution(), Settings.PS3PALTemporalMode60Hz, Settings.TripleBuffering, Settings.ScaleEnabled, Settings.ScaleFactor);
 					}
 					break;
 				case 1:
@@ -761,8 +760,8 @@ void FCEUD_VideoChanged()
 					if(GameInfo->vidsys == 1)
 					{
 						Settings.PS3PALTemporalMode60Hz = false;
-						Graphics->SetPAL60Hz(Settings.PS3PALTemporalMode60Hz);
-						Graphics->SwitchResolution(Graphics->GetCurrentResolution(), Settings.PS3PALTemporalMode60Hz, Settings.TripleBuffering, Settings.ScaleEnabled, Settings.ScaleFactor);
+						ps3graphics_set_pal60hz(Settings.PS3PALTemporalMode60Hz);
+						ps3graphics_switch_resolution(ps3graphics_get_current_resolution(), Settings.PS3PALTemporalMode60Hz, Settings.TripleBuffering, Settings.ScaleEnabled, Settings.ScaleFactor);
 					}
 					break;
 			}
@@ -1082,19 +1081,19 @@ static void emulator_set_input(void)
 			snprintf(special_action_msg, sizeof(special_action_msg), "Activated cheat: %d", Settings.CurrentCheatPosition); \
 		else \
 			snprintf(special_action_msg, sizeof(special_action_msg), "Disabled cheat: %d", Settings.CurrentCheatPosition); \
-		special_action_msg_expired = Graphics->SetTextMessageSpeed(); \
+		special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
 	} \
 	if(specialbuttonmap & BTN_INCREMENTCHEAT) \
 	{ \
 		emulator_increment_current_cheat_position(); \
 		snprintf(special_action_msg, sizeof(special_action_msg), "Cheat pos. changed to: %d (%s)", Settings.CurrentCheatPosition, FCEUI_GetCheatLabel(Settings.CurrentCheatPosition)); \
-		special_action_msg_expired = Graphics->SetTextMessageSpeed(); \
+		special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
 	} \
 	if(specialbuttonmap & BTN_DECREMENTCHEAT) \
 	{ \
 		emulator_decrement_current_cheat_position(); \
 		snprintf(special_action_msg, sizeof(special_action_msg), "Cheat pos. changed to: %d (%s)", Settings.CurrentCheatPosition, FCEUI_GetCheatLabel(Settings.CurrentCheatPosition)); \
-		special_action_msg_expired = Graphics->SetTextMessageSpeed(); \
+		special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
 	} \
 	if(specialbuttonmap & BTN_EXITTOMENU) \
 	{ \
@@ -1130,7 +1129,7 @@ static void emulator_set_input(void)
 			Settings.FCEUPalette--; \
 			emulator_set_custom_palette(); \
 			snprintf(special_action_msg, sizeof(special_action_msg), "Palette #%d (%s)", Settings.FCEUPalette, palettes[Settings.FCEUPalette].desc); \
-			special_action_msg_expired = Graphics->SetTextMessageSpeed(); \
+			special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
 		} \
 	} \
 	if(specialbuttonmap & BTN_INCREMENT_PALETTE) \
@@ -1138,7 +1137,7 @@ static void emulator_set_input(void)
 		Settings.FCEUPalette++; \
 		emulator_set_custom_palette(); \
 		snprintf(special_action_msg, sizeof(special_action_msg), "Palette #%d (%s)", Settings.FCEUPalette, palettes[Settings.FCEUPalette].desc); \
-		special_action_msg_expired = Graphics->SetTextMessageSpeed(); \
+		special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
 	} \
 	if(specialbuttonmap & BTN_INGAME_MENU) \
 	{ \
@@ -1326,7 +1325,7 @@ static  void ingame_menu(void)
 			Emulator_StartROMRunning(0);
 		}
 
-		Graphics->Draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
+		ps3graphics_draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
 
 		switch(ingame_menu_item)
 		{
@@ -1382,7 +1381,7 @@ static  void ingame_menu(void)
 					if(Settings.PS3KeepAspect > 0)
 					{
 						Settings.PS3KeepAspect--;
-						Graphics->set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
+						ps3graphics_set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
 					}
 				}
 				if(CTRL_RIGHT(button_was_pressed)  || CTRL_LSTICK_RIGHT(button_was_pressed))
@@ -1390,13 +1389,13 @@ static  void ingame_menu(void)
 					if(Settings.PS3KeepAspect < LAST_ASPECT_RATIO)
 					{
 						Settings.PS3KeepAspect++;
-						Graphics->set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
+						ps3graphics_set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
 					}
 				}
 				if(CTRL_START(button_was_pressed))
 				{
 					Settings.PS3KeepAspect = ASPECT_RATIO_4_3;
-					Graphics->set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
+					ps3graphics_set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
 				}
 				ingame_menu_reset_entry_colors (ingame_menu_item);
 				strcpy(comment,"Press LEFT or RIGHT to change the [Aspect Ratio].\nPress START to reset back to default values.");
@@ -1409,7 +1408,7 @@ static  void ingame_menu(void)
 
 					if(Settings.PS3OverscanAmount == 0)
 						Settings.PS3OverscanEnabled = 0;
-					Graphics->SetOverscan(Settings.PS3OverscanEnabled, (float)Settings.PS3OverscanAmount/100);
+					ps3graphics_set_overscan(Settings.PS3OverscanEnabled, (float)Settings.PS3OverscanAmount/100, 1);
 				}
 
 				if(CTRL_RIGHT(button_was_pressed) || CTRL_LSTICK_RIGHT(button_was_pressed) || CTRL_CROSS(button_was_pressed) || CTRL_LSTICK_RIGHT(button_was_held))
@@ -1419,14 +1418,14 @@ static  void ingame_menu(void)
 
 					if(Settings.PS3OverscanAmount == 0)
 						Settings.PS3OverscanEnabled = 0;
-					Graphics->SetOverscan(Settings.PS3OverscanEnabled, (float)Settings.PS3OverscanAmount/100);
+					ps3graphics_set_overscan(Settings.PS3OverscanEnabled, (float)Settings.PS3OverscanAmount/100, 1);
 				}
 
 				if(CTRL_START(button_was_pressed))
 				{
 					Settings.PS3OverscanAmount = 0;
 					Settings.PS3OverscanEnabled = 0;
-					Graphics->SetOverscan(Settings.PS3OverscanEnabled, (float)Settings.PS3OverscanAmount/100);
+					ps3graphics_set_overscan(Settings.PS3OverscanEnabled, (float)Settings.PS3OverscanAmount/100, 1);
 				}
 				ingame_menu_reset_entry_colors (ingame_menu_item);
 				strcpy(comment,"Press LEFT or RIGHT to change the [Overscan] settings.\nPress START to reset back to default values.");
@@ -1446,12 +1445,12 @@ static  void ingame_menu(void)
 				ingame_menu_reset_entry_colors (ingame_menu_item);
 				if(CTRL_CROSS(state))
 				{
-					Graphics->set_aspect_ratio(ASPECT_RATIO_CUSTOM, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
+					ps3graphics_set_aspect_ratio(ASPECT_RATIO_CUSTOM, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
 					do
 					{
-						Graphics->Draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
+						ps3graphics_draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
 						state = cell_pad_input_poll_device(0);
-						Graphics->resize_aspect_mode_input_loop(state);
+						ps3graphics_resize_aspect_mode_input_loop(state);
 						if(CTRL_CIRCLE(state))
 						{
 							sys_timer_usleep(FILEBROWSER_DELAY);
@@ -1477,7 +1476,7 @@ static  void ingame_menu(void)
 							stuck_in_loop = 0;
 						}
 
-						Graphics->Draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
+						ps3graphics_draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
 						psglSwap();
 						cellSysutilCheckCallback();
 						old_state = state;
@@ -1602,8 +1601,8 @@ static  void ingame_menu(void)
 		cellDbgFontPrintf	(x_position,	ypos+(ypos_increment*MENU_ITEM_SAVE_STATE),	font_size+0.01f,	BLUE,	"Save State #%d", Settings.CurrentSaveStateSlot);
 		cellDbgFontPrintf	(x_position,	ypos+(ypos_increment*MENU_ITEM_SAVE_STATE),	font_size,	menuitem_colors[MENU_ITEM_SAVE_STATE],	"Save State #%d", Settings.CurrentSaveStateSlot);
 
-		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_KEEP_ASPECT_RATIO)),	font_size+0.01f,	BLUE,	"Aspect Ratio: %s %s %d:%d", Graphics->calculate_aspect_ratio_before_game_load() ?"(Auto)" : "", Settings.PS3KeepAspect == LAST_ASPECT_RATIO ? "Custom" : "", (int)Graphics->get_aspect_ratio_int(0), (int)Graphics->get_aspect_ratio_int(1));
-		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_KEEP_ASPECT_RATIO)),	font_size,	menuitem_colors[MENU_ITEM_KEEP_ASPECT_RATIO],	"Aspect Ratio: %s %s %d:%d", Graphics->calculate_aspect_ratio_before_game_load() ?"(Auto)" : "", Settings.PS3KeepAspect == LAST_ASPECT_RATIO ? "Custom" : "", (int)Graphics->get_aspect_ratio_int(0), (int)Graphics->get_aspect_ratio_int(1));
+		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_KEEP_ASPECT_RATIO)),	font_size+0.01f,	BLUE,	"Aspect Ratio: %s %s %d:%d", ps3graphics_calculate_aspect_ratio_before_game_load() ?"(Auto)" : "", Settings.PS3KeepAspect == LAST_ASPECT_RATIO ? "Custom" : "", (int)ps3graphics_get_aspect_ratio_int(0), (int)ps3graphics_get_aspect_ratio_int(1));
+		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_KEEP_ASPECT_RATIO)),	font_size,	menuitem_colors[MENU_ITEM_KEEP_ASPECT_RATIO],	"Aspect Ratio: %s %s %d:%d", ps3graphics_calculate_aspect_ratio_before_game_load() ?"(Auto)" : "", Settings.PS3KeepAspect == LAST_ASPECT_RATIO ? "Custom" : "", (int)ps3graphics_get_aspect_ratio_int(0), (int)ps3graphics_get_aspect_ratio_int(1));
 
 		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_KEEP_ASPECT_RATIO)),	font_size+0.01f,	BLUE,	"Aspect Ratio: %s", aspectratio);
 		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_KEEP_ASPECT_RATIO)),	font_size,	menuitem_colors[MENU_ITEM_KEEP_ASPECT_RATIO],	"Aspect Ratio: %s", aspectratio);
@@ -1642,7 +1641,7 @@ static  void ingame_menu(void)
 		cellDbgFontPuts	(x_position,	(ypos+(ypos_increment*MENU_ITEM_RETURN_TO_XMB)),	font_size+0.01f,	BLUE,	"Return to XMB");
 		cellDbgFontPuts	(x_position,	(ypos+(ypos_increment*MENU_ITEM_RETURN_TO_XMB)),	font_size,	menuitem_colors[MENU_ITEM_RETURN_TO_XMB],	"Return to XMB");
 
-		if(Graphics->frame_count < special_action_msg_expired)
+		if(frame_count < special_action_msg_expired)
 		{
 			cellDbgFontPrintf (0.09f, 0.90f, 1.51f, BLUE,	special_action_msg);
 			cellDbgFontPrintf (0.09f, 0.90f, 1.50f, WHITE,	special_action_msg);
@@ -1680,8 +1679,8 @@ extern uint8 *XBuf;
 	\
 	FCEUI_Emulate(gfx, sound, ssize); \
 	\
-	Graphics->Draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT); \
-	if(Graphics->frame_count < special_action_msg_expired) \
+	ps3graphics_draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT); \
+	if(frame_count < special_action_msg_expired) \
 	{ \
 		cellDbgFontPrintf (0.09f, 0.90f, 1.51f, BLUE,	special_action_msg); \
 		cellDbgFontPrintf (0.09f, 0.90f, 1.50f, WHITE,	special_action_msg); \
@@ -1720,8 +1719,8 @@ static void emulator_shutdown()
 
 #ifdef PS3_PROFILING
 	// shutdown everything
-	Graphics->DeinitDbgFont();
-	Graphics->Deinit();
+	ps3graphics_DeinitDbgFont();
+	ps3graphics_Deinit();
 
 	if (Graphics)
 		delete Graphics;
@@ -1784,8 +1783,8 @@ static void emulator_start()
 	// FIXME: implement for real
 	int fskip = 0;
 
-	if(Graphics->calculate_aspect_ratio_before_game_load())
-		Graphics->set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
+	if(ps3graphics_calculate_aspect_ratio_before_game_load())
+		ps3graphics_set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
 
 	if(Settings.Throttled)
 		audio_driver->unpause(audio_handle);
@@ -1844,8 +1843,8 @@ void Emulator_RequestLoadROM(const char * filename, uint32_t forceReload)
 void emulator_implementation_set_texture(const char * fname)
 {
 	strcpy(Settings.PS3CurrentBorder, fname);
-	Graphics->LoadMenuTexture(PS3Graphics::TEXTURE_BACKDROP, fname);
-	Graphics->LoadMenuTexture(PS3Graphics::TEXTURE_MENU, DEFAULT_MENU_BORDER_FILE);
+	ps3graphics_load_menu_texture(TEXTURE_BACKDROP, fname);
+	ps3graphics_load_menu_texture(TEXTURE_MENU, DEFAULT_MENU_BORDER_FILE);
 }
 
 static void get_path_settings(bool multiman_support)
@@ -1953,20 +1952,19 @@ int main (int argc, char **argv)
 	}
 #endif
 
-	Graphics = new PS3Graphics((uint32_t)Settings.PS3CurrentResolution, Settings.PS3KeepAspect, Settings.PS3Smooth, Settings.PS3Smooth2, Settings.PS3CurrentShader, Settings.PS3CurrentShader2, Settings.PS3OverscanEnabled, (float)Settings.PS3OverscanAmount/100, Settings.PS3PALTemporalMode60Hz, Settings.Throttled, Settings.TripleBuffering, Settings.ViewportX, Settings.ViewportY, Settings.ViewportWidth, Settings.ViewportHeight);
-	Graphics->Init(Settings.ScaleEnabled, Settings.ScaleFactor);
+	ps3graphics_new((uint32_t)Settings.PS3CurrentResolution, Settings.PS3KeepAspect, Settings.PS3Smooth, Settings.PS3Smooth2, Settings.PS3CurrentShader, Settings.PS3CurrentShader2, DEFAULT_MENU_SHADER_FILE, Settings.PS3OverscanEnabled, (float)Settings.PS3OverscanAmount/100, Settings.PS3PALTemporalMode60Hz, Settings.Throttled, Settings.TripleBuffering, Settings.ViewportX, Settings.ViewportY, Settings.ViewportWidth, Settings.ViewportHeight, Settings.ScaleEnabled, Settings.ScaleFactor);
 
 	if(Settings.ApplyShaderPresetOnStartup)
 		emulator_implementation_set_shader_preset(Settings.ShaderPresetPath); 
 
-	Graphics->ResetFrameCounter();
-	Graphics->InitDbgFont();
+	frame_count = 0;
+	ps3graphics_init_dbgfont();
 
 	emulator_initialized = FCEUI_Initialize();
 
 	emulator_toggle_sound(Settings.SoundMode);
 
-	Graphics->LoadFragmentShader(DEFAULT_MENU_SHADER_FILE, 2);
+	ps3graphics_load_fragment_shader(DEFAULT_MENU_SHADER_FILE, 2);
 	emulator_implementation_set_texture(Settings.PS3CurrentBorder);
 
 #if(CELL_SDK_VERSION > 0x340000)

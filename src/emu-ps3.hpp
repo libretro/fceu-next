@@ -115,7 +115,6 @@ extern int FCEUX_PPU_Loop(int skip);
 
 extern cell_audio_handle_t audio_handle;			// cell audio handle
 extern const struct cell_audio_driver *audio_driver;		// cell audio driver opaque pointer
-extern PS3Graphics* Graphics;					// object graphics class
 extern uint32_t rom_loaded;
 
 extern char contentInfoPath[MAX_PATH_LENGTH];
