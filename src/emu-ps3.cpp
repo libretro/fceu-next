@@ -1970,6 +1970,7 @@ int main (int argc, char **argv)
 #if(CELL_SDK_VERSION > 0x340000)
 	cellSysutilEnableBgmPlayback();
 #endif
+	MenuInit();
 
 	do
 	{

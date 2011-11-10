@@ -97,7 +97,7 @@ static void producesettingentry(uint64_t switchvalue)
 				menuStackindex++;
 				menuStack[menuStackindex] = menu_filebrowser;
 				menuStack[menuStackindex].enum_id = GAME_AWARE_SHADER_CHOICE;
-				tmpBrowser = NULL;
+				set_initial_dir_tmpbrowser = true;
 			}
 			if(CTRL_START(state) && Settings.ScaleEnabled)
 			{
@@ -115,7 +115,7 @@ static void producesettingentry(uint64_t switchvalue)
 					menuStackindex++;
 					menuStack[menuStackindex] = menu_filebrowser;
 					menuStack[menuStackindex].enum_id = PRESET_CHOICE;
-					tmpBrowser = NULL;
+					set_initial_dir_tmpbrowser = true;
 				}
 			}
 			if(CTRL_START(state) && Settings.ScaleEnabled)
@@ -131,7 +131,7 @@ static void producesettingentry(uint64_t switchvalue)
 				menuStackindex++;
 				menuStack[menuStackindex] = menu_filebrowser;
 				menuStack[menuStackindex].enum_id = BORDER_CHOICE;
-				tmpBrowser = NULL;
+				set_initial_dir_tmpbrowser = true;
 			}
 			if(CTRL_START(state))
 			{
@@ -146,7 +146,7 @@ static void producesettingentry(uint64_t switchvalue)
 				menuStack[menuStackindex] = menu_filebrowser;
 				menuStack[menuStackindex].enum_id = SHADER_CHOICE;
 				set_shader = 0;
-				tmpBrowser = NULL;
+				set_initial_dir_tmpbrowser = true;
 			}
 			if(CTRL_START(state))
 			{
@@ -162,7 +162,7 @@ static void producesettingentry(uint64_t switchvalue)
 					menuStackindex++;
 					menuStack[menuStackindex] = menu_filebrowser;
 					menuStack[menuStackindex].enum_id = SHADER_CHOICE;
-					tmpBrowser = NULL;
+					set_initial_dir_tmpbrowser = true;
 				}
 			}
 			if(CTRL_START(state))
@@ -697,9 +697,8 @@ static void producesettingentry(uint64_t switchvalue)
 				{
 					menuStackindex++;
 					menuStack[menuStackindex] = menu_filebrowser;
-					menuStack[menuStackindex].enum_id = PATH_CHOICE;
-					tmpBrowser = NULL;
-					sys_timer_usleep(FILEBROWSER_DELAY);
+					menuStack[menuStackindex].enum_id = PATH_DEFAULT_ROM_DIR_CHOICE;
+					set_initial_dir_tmpbrowser = true;
 				}
 
 				if(CTRL_START(state))
@@ -711,9 +710,8 @@ static void producesettingentry(uint64_t switchvalue)
 				{
 					menuStackindex++;
 					menuStack[menuStackindex] = menu_filebrowser;
-					menuStack[menuStackindex].enum_id = PATH_CHOICE;
-					tmpBrowser = NULL;
-					sys_timer_usleep(FILEBROWSER_DELAY);
+					menuStack[menuStackindex].enum_id = PATH_SAVESTATES_DIR_CHOICE;
+					set_initial_dir_tmpbrowser = true;
 				}
 
 				if(CTRL_START(state))
@@ -725,9 +723,8 @@ static void producesettingentry(uint64_t switchvalue)
 				{
 					menuStackindex++;
 					menuStack[menuStackindex] = menu_filebrowser;
-					menuStack[menuStackindex].enum_id = PATH_CHOICE;
-					tmpBrowser = NULL;
-					sys_timer_usleep(FILEBROWSER_DELAY);
+					menuStack[menuStackindex].enum_id = PATH_SRAM_DIR_CHOICE;
+					set_initial_dir_tmpbrowser = true;
 				}
 
 				if(CTRL_START(state))
@@ -739,9 +736,8 @@ static void producesettingentry(uint64_t switchvalue)
 				{
 					menuStackindex++;
 					menuStack[menuStackindex] = menu_filebrowser;
-					menuStack[menuStackindex].enum_id = PATH_CHOICE;
-					tmpBrowser = NULL;
-					sys_timer_usleep(FILEBROWSER_DELAY);
+					menuStack[menuStackindex].enum_id = PATH_CHEATS_DIR_CHOICE;
+					set_initial_dir_tmpbrowser = true;
 				}
 
 				if(CTRL_START(state))
@@ -753,9 +749,8 @@ static void producesettingentry(uint64_t switchvalue)
 				{
 					menuStackindex++;
 					menuStack[menuStackindex] = menu_filebrowser;
-					menuStack[menuStackindex].enum_id = PATH_CHOICE;
-					tmpBrowser = NULL;
-					sys_timer_usleep(FILEBROWSER_DELAY);
+					menuStack[menuStackindex].enum_id = PATH_BASE_DIR_CHOICE;
+					set_initial_dir_tmpbrowser = true;
 				}
 
 				if(CTRL_START(state))

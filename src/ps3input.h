@@ -14,38 +14,35 @@ extern "C" {
 #include <string.h>
 
 /* Input bitmasks */
-#define BTN_A				1 << 0
-#define BTN_B				1 << 1
-#define BTN_SELECT			1 << 2
-#define BTN_START			1 << 3
-#define BTN_UP				1 << 4
-#define BTN_DOWN			1 << 5
-#define BTN_LEFT			1 << 6
-#define BTN_RIGHT			1 << 7
+#define BTN_A				1
+#define BTN_B				2
+#define BTN_SELECT			4
+#define BTN_START			8
+#define BTN_UP				16
+#define BTN_DOWN			32
+#define BTN_LEFT			64
+#define BTN_RIGHT			128
 
 #define BTN_LASTGAMEBUTTON BTN_RIGHT
 
-#define BTN_QUICKSAVE			1 << 8
-#define BTN_QUICKLOAD			1 << 9
-#define BTN_INCREMENTSAVE		1 << 10
-#define BTN_DECREMENTSAVE		1 << 11
-#define BTN_INCREMENTCHEAT		1 << 12
-#define BTN_DECREMENTCHEAT		1 << 13
-#define BTN_EXITTOMENU			1 << 14
-#define BTN_CHEATENABLE			1 << 15
-#define BTN_CHEATDISABLE		1 << 16
-#define BTN_LOAD_MOVIE			1 << 17
-#define BTN_SOFTRESET			1 << 18
-#define BTN_RESET			1 << 19
-#define BTN_PAUSE			1 << 20
-#define BTN_FASTFORWARD			1 << 21
-#define BTN_INCREMENTTURBO		1 << 22
-#define BTN_DECREMENTTURBO		1 << 23
-#define BTN_NONE			1 << 24
-#define BTN_TOGGLEPPU			1 << 25
-#define BTN_INCREMENT_PALETTE		1 << 26
-#define BTN_DECREMENT_PALETTE		1 << 27
-#define BTN_INGAME_MENU			1 << 28
+#define BTN_QUICKSAVE			256
+#define BTN_QUICKLOAD			512
+#define BTN_INCREMENTSAVE		1024
+#define BTN_DECREMENTSAVE		2048
+#define BTN_INCREMENTCHEAT		4096
+#define BTN_DECREMENTCHEAT		8192
+#define BTN_EXITTOMENU			16384
+#define BTN_CHEATENABLE			32768
+#define BTN_CHEATDISABLE		65536
+#define BTN_SOFTRESET			131072
+#define BTN_RESET			262144
+#define BTN_PAUSE			524288
+#define BTN_FASTFORWARD			1048576
+#define BTN_NONE			2097152
+#define BTN_TOGGLEPPU			4194304
+#define BTN_INCREMENT_PALETTE		8388608
+#define BTN_DECREMENT_PALETTE		16777216
+#define BTN_INGAME_MENU			33554432
 
 #define BTN_FIRSTEXTRABUTTON BTN_QUICKSAVE
 
