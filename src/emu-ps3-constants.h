@@ -15,6 +15,7 @@
 
 #define CONFIG_FILE			0
 #define SHADER_PRESET_FILE		1
+#define INPUT_PRESET_FILE		2
 
 #define EMULATOR_VERSION	"1.50"
 #define EMULATOR_NAME		"FCEUNext PS3"

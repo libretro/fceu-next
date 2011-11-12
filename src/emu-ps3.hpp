@@ -77,10 +77,9 @@ enum {
 #define AUDIO_INPUT_RATE		(48000)
 #define AUDIO_BUFFER_SAMPLES		(4096)
 
-#define MAP_BUTTONS_OPTION_SETTER	0
-#define MAP_BUTTONS_OPTION_GETTER	1
-#define MAP_BUTTONS_OPTION_DEFAULT	2
-#define MAP_BUTTONS_OPTION_NEW		3
+#define WRITE_CONTROLS			0
+#define READ_CONTROLS			1
+#define SET_ALL_CONTROLS_TO_DEFAULT	2
 
 #define CONTROL_STYLE_ORIGINAL		0
 #define CONTROL_STYLE_BETTER		1
@@ -97,8 +96,7 @@ enum {
 
 float Emulator_GetFontSize();
 void emulator_save_settings(uint64_t filetosave);
-void emulator_implementation_save_custom_controls(bool showdialog);
-void emulator_implementation_button_mapping_settings(int map_button_option_enum);
+void emulator_set_controls(const char * config_file, int mapping_enum, const char * title);
 void emulator_implementation_switch_control_scheme();
 void emulator_implementation_set_shader_preset(const char * fname);
 void emulator_implementation_set_texture(const char * fname);
@@ -124,6 +122,7 @@ extern char DEFAULT_BORDER_FILE[MAX_PATH_LENGTH];
 extern char DEFAULT_MENU_BORDER_FILE[MAX_PATH_LENGTH];
 extern char GAME_AWARE_SHADER_DIR_PATH[MAX_PATH_LENGTH];
 extern char PRESETS_DIR_PATH[MAX_PATH_LENGTH];
+extern char INPUT_PRESETS_DIR_PATH[MAX_PATH_LENGTH];
 extern char BORDERS_DIR_PATH[MAX_PATH_LENGTH];
 extern char SHADERS_DIR_PATH[MAX_PATH_LENGTH];
 extern char DEFAULT_SHADER_FILE[MAX_PATH_LENGTH];

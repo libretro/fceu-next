@@ -35,7 +35,7 @@ filebrowser_t tmpBrowser;			// tmp file browser->for everything else
 
 #define ROM_EXTENSIONS "fds|FDS|zip|ZIP|nes|NES|unif|UNIF"
 
-void UpdateBrowser(filebrowser_t * b)
+static void UpdateBrowser(filebrowser_t * b)
 {
 	static uint64_t old_state = 0;
 	uint64_t state = cell_pad_input_poll_device(0);
@@ -140,8 +140,6 @@ static void RenderBrowser(filebrowser_t * b)
 #include "menu/menu-helpmessages.h"
 
 #define do_controls_settings_entry(settingsptr, defaultvalue) \
-	if(Settings.ControlScheme == CONTROL_SCHEME_CUSTOM) \
-	{ \
 		if(CTRL_LEFT(state) | CTRL_LSTICK_LEFT(state)) \
 		{ \
 			Input_MapButton(settingsptr,false,NULL); \
@@ -157,8 +155,7 @@ static void RenderBrowser(filebrowser_t * b)
 		{ \
 			Input_MapButton(settingsptr,true,defaultvalue); \
 		} \
-		old_state = state; \
-	}
+		old_state = state;
 
 #define do_controls_refreshpage(beginvalue, endvalue) \
 { \
@@ -177,8 +174,8 @@ static void RenderBrowser(filebrowser_t * b)
 
 static void do_controls_settings(void)
 {
-	static uint64_t old_state = 0;
 	uint64_t state = cell_pad_input_poll_device(0);
+	static uint64_t old_state = 0;
 	uint64_t diff_state = old_state ^ state;
 	uint64_t button_was_pressed = old_state & diff_state;
 
@@ -206,20 +203,13 @@ static void do_controls_settings(void)
 
 			menu_controlssettings.page = 0;
 		}
-		else if(menu_controlssettings.selected < FIRST_CONTROLS_SETTING_PAGE_3)
+		else if(menu_controlssettings.selected < MAX_NO_OF_CONTROLS_SETTINGS)
 		{
 			if(menu_controlssettings.page != 1)
 				menu_controlssettings.refreshpage = 1;
 
 			menu_controlssettings.page = 1;
-		}
-		else if(menu_controlssettings.selected < MAX_NO_OF_CONTROLS_SETTINGS)
-		{
-			if(menu_controlssettings.page != 2)
-				menu_controlssettings.refreshpage = 1;
-
-			menu_controlssettings.page = 2;
-		}
+               }
 	}
 
 	if (CTRL_UP(state)  || CTRL_LSTICK_UP(state))	// up to previous setting
@@ -238,19 +228,12 @@ static void do_controls_settings(void)
 
 			menu_controlssettings.page = 0;
 		}
-		else if(menu_controlssettings.selected < FIRST_CONTROLS_SETTING_PAGE_3)
+		else if(menu_controlssettings.selected < MAX_NO_OF_CONTROLS_SETTINGS)
 		{
 			if(menu_controlssettings.page != 1)
 				menu_controlssettings.refreshpage = 1;
 
 			menu_controlssettings.page = 1;
-		}
-		else if(menu_controlssettings.selected < MAX_NO_OF_CONTROLS_SETTINGS)
-		{
-			if(menu_controlssettings.page != 2)
-				menu_controlssettings.refreshpage = 1;
-
-			menu_controlssettings.page = 2;
 		}
 	}
 
@@ -262,14 +245,11 @@ static void do_controls_settings(void)
 				do_controls_refreshpage(FIRST_CONTROLS_SETTING_PAGE_1,SETTING_CONTROLS_BUTTON_L2_BUTTON_L3+1);
 				break;
 			case 1:
-				do_controls_refreshpage(SETTING_CONTROLS_BUTTON_L2_BUTTON_L3,SETTING_CONTROLS_SAVE_CUSTOM_CONTROLS+1);
-				break;
-			case 2:
-				do_controls_refreshpage(SETTING_CONTROLS_SAVE_CUSTOM_CONTROLS,SETTING_CONTROLS_DEFAULT_ALL+1);
+				do_controls_refreshpage(SETTING_CONTROLS_BUTTON_L2_BUTTON_L3,SETTING_CONTROLS_DEFAULT_ALL+1);
 				break;
 		}
-		menu_controlssettings.refreshpage = 0;
-	}
+            menu_controlssettings.refreshpage = 0;
+         }
 
 	if (CTRL_L2(state) && CTRL_R2(state))
 	{
@@ -286,43 +266,23 @@ static void do_controls_settings(void)
 	switch(menu_controlssettings.selected)
 	{
 		case SETTING_CONTROLS_SCHEME:
-			if(CTRL_RIGHT(state) | CTRL_LSTICK_RIGHT(state))
+			if(CTRL_LEFT(state) || CTRL_LSTICK_LEFT(state) || CTRL_CROSS(button_was_pressed) | CTRL_RIGHT(state)  || CTRL_LSTICK_RIGHT(state) || CTRL_CROSS(button_was_pressed))
 			{
-				switch(Settings.ControlScheme)
-				{
-					case CONTROL_SCHEME_DEFAULT:
-						Settings.ControlScheme = CONTROL_SCHEME_CUSTOM;
-						break;
-					case CONTROL_SCHEME_CUSTOM:
-						break;
-				}
-				emulator_implementation_switch_control_scheme();
-				sys_timer_usleep(FILEBROWSER_DELAY);
+				menuStackindex++;
+				menuStack[menuStackindex] = menu_filebrowser;
+				menuStack[menuStackindex].enum_id = INPUT_PRESET_CHOICE;
+				set_initial_dir_tmpbrowser = true;
 			}
-
-			if(CTRL_LEFT(state) | CTRL_LSTICK_LEFT(state))
-			{
-				switch(Settings.ControlScheme)
-				{
-					case CONTROL_SCHEME_CUSTOM:
-						Settings.ControlScheme = CONTROL_SCHEME_DEFAULT;
-						break;
-					case CONTROL_SCHEME_DEFAULT:
-						break;
-				}
-				emulator_implementation_switch_control_scheme();
-				sys_timer_usleep(FILEBROWSER_DELAY);
-			}
-
 			if(CTRL_START(state))
-				Settings.ControlScheme = CONTROL_SCHEME_DEFAULT;
+			{
+				snprintf(Settings.PS3CurrentInputPresetTitle, sizeof(Settings.PS3CurrentInputPresetTitle), "%s", "Default");
+				emulator_set_controls("", SET_ALL_CONTROLS_TO_DEFAULT, "Default");
+			}
 			break;
 		case SETTING_CONTROLS_NUMBER:
 			if(CTRL_LEFT(state) || CTRL_LSTICK_LEFT(state) || CTRL_CROSS(button_was_pressed))
 			{
-				if(currently_selected_controller_menu == 0)
-					break;
-				else
+				if(currently_selected_controller_menu != 0)
 					currently_selected_controller_menu--;
 				sys_timer_usleep(FILEBROWSER_DELAY);
 			}
@@ -351,10 +311,10 @@ static void do_controls_settings(void)
 			do_controls_settings_entry(PS3Input.DPad_Right[currently_selected_controller_menu],BTN_RIGHT);
 			break;
 		case SETTING_CONTROLS_BUTTON_CIRCLE:
-			do_controls_settings_entry(PS3Input.ButtonCircle[currently_selected_controller_menu],BTN_A);
+			do_controls_settings_entry(PS3Input.ButtonCircle[currently_selected_controller_menu],BTN_B);
 			break;
 		case SETTING_CONTROLS_BUTTON_CROSS:
-			do_controls_settings_entry(PS3Input.ButtonCross[currently_selected_controller_menu],BTN_B);
+			do_controls_settings_entry(PS3Input.ButtonCross[currently_selected_controller_menu],BTN_A);
 			break;
 		case SETTING_CONTROLS_BUTTON_TRIANGLE:
 			do_controls_settings_entry(PS3Input.ButtonTriangle[currently_selected_controller_menu],BTN_NONE);
@@ -389,9 +349,6 @@ static void do_controls_settings(void)
 		case SETTING_CONTROLS_BUTTON_L2_BUTTON_L3:
 			do_controls_settings_entry(PS3Input.ButtonL2_ButtonL3[currently_selected_controller_menu],BTN_NONE);
 			break;
-		case SETTING_CONTROLS_BUTTON_L2_BUTTON_R2:
-			do_controls_settings_entry(PS3Input.ButtonL2_ButtonR2[currently_selected_controller_menu],BTN_NONE);
-			break;
 		case SETTING_CONTROLS_BUTTON_L2_BUTTON_R3:
 			do_controls_settings_entry(PS3Input.ButtonL2_ButtonR3[currently_selected_controller_menu],BTN_QUICKLOAD);
 			break;
@@ -399,30 +356,30 @@ static void do_controls_settings(void)
 			do_controls_settings_entry(PS3Input.ButtonR2_ButtonR3[currently_selected_controller_menu],BTN_QUICKSAVE);
 			break;
 		case SETTING_CONTROLS_ANALOG_R_UP:
-			do_controls_settings_entry(PS3Input.AnalogR_Up[currently_selected_controller_menu],BTN_CHEATENABLE);
+			do_controls_settings_entry(PS3Input.AnalogR_Up[currently_selected_controller_menu],BTN_NONE);
 			if(CTRL_SELECT(button_was_pressed))
 				PS3Input.AnalogR_Up_Type[currently_selected_controller_menu] = !PS3Input.AnalogR_Up_Type[currently_selected_controller_menu];
 			break;
 		case SETTING_CONTROLS_ANALOG_R_DOWN:
-			do_controls_settings_entry(PS3Input.AnalogR_Down[currently_selected_controller_menu],BTN_CHEATDISABLE);
+			do_controls_settings_entry(PS3Input.AnalogR_Down[currently_selected_controller_menu], BTN_NONE);
 			if(CTRL_SELECT(button_was_pressed))
 				PS3Input.AnalogR_Down_Type[currently_selected_controller_menu] = !PS3Input.AnalogR_Down_Type[currently_selected_controller_menu];
 			break;
 		case SETTING_CONTROLS_ANALOG_R_LEFT:
-			do_controls_settings_entry(PS3Input.AnalogR_Left[currently_selected_controller_menu],BTN_DECREMENTSAVE);
+			do_controls_settings_entry(PS3Input.AnalogR_Left[currently_selected_controller_menu],BTN_NONE);
 			if(CTRL_SELECT(button_was_pressed))
 				PS3Input.AnalogR_Left_Type[currently_selected_controller_menu] = !PS3Input.AnalogR_Left_Type[currently_selected_controller_menu];
 			break;
 		case SETTING_CONTROLS_ANALOG_R_RIGHT:
-			do_controls_settings_entry(PS3Input.AnalogR_Right[currently_selected_controller_menu],BTN_INCREMENTSAVE);
+			do_controls_settings_entry(PS3Input.AnalogR_Right[currently_selected_controller_menu],BTN_NONE);
 			if(CTRL_SELECT(button_was_pressed))
 				PS3Input.AnalogR_Right_Type[currently_selected_controller_menu] = !PS3Input.AnalogR_Right_Type[currently_selected_controller_menu];
 			break;
 		case SETTING_CONTROLS_BUTTON_L2_ANALOG_R_RIGHT:
-			do_controls_settings_entry(PS3Input.ButtonL2_AnalogR_Right[currently_selected_controller_menu],BTN_INCREMENTCHEAT);
+			do_controls_settings_entry(PS3Input.ButtonL2_AnalogR_Right[currently_selected_controller_menu],BTN_NONE);
 			break;
 		case SETTING_CONTROLS_BUTTON_L2_ANALOG_R_LEFT:
-			do_controls_settings_entry(PS3Input.ButtonL2_AnalogR_Left[currently_selected_controller_menu],BTN_DECREMENTCHEAT);
+			do_controls_settings_entry(PS3Input.ButtonL2_AnalogR_Left[currently_selected_controller_menu],BTN_NONE);
 			break;
 		case SETTING_CONTROLS_BUTTON_L2_ANALOG_R_UP:
 			do_controls_settings_entry(PS3Input.ButtonL2_AnalogR_Up[currently_selected_controller_menu],BTN_NONE);
@@ -431,180 +388,165 @@ static void do_controls_settings(void)
 			do_controls_settings_entry(PS3Input.ButtonL2_AnalogR_Down[currently_selected_controller_menu],BTN_NONE);
 			break;
 		case SETTING_CONTROLS_BUTTON_R2_ANALOG_R_RIGHT:
-			do_controls_settings_entry(PS3Input.ButtonR2_AnalogR_Right[currently_selected_controller_menu],BTN_NONE);
+			do_controls_settings_entry(PS3Input.ButtonR2_AnalogR_Right[currently_selected_controller_menu],BTN_INCREMENTSAVE);
 			break;
 		case SETTING_CONTROLS_BUTTON_R2_ANALOG_R_LEFT:
-			do_controls_settings_entry(PS3Input.ButtonR2_AnalogR_Left[currently_selected_controller_menu],BTN_NONE);
+			do_controls_settings_entry(PS3Input.ButtonR2_AnalogR_Left[currently_selected_controller_menu],BTN_DECREMENTSAVE);
 			break;
 		case SETTING_CONTROLS_BUTTON_R2_ANALOG_R_UP:
-			do_controls_settings_entry(PS3Input.ButtonR2_AnalogR_Up[currently_selected_controller_menu],BTN_NONE);
+			do_controls_settings_entry(PS3Input.ButtonR2_AnalogR_Up[currently_selected_controller_menu],BTN_QUICKLOAD);
 			break;
 		case SETTING_CONTROLS_BUTTON_R2_ANALOG_R_DOWN:
-			do_controls_settings_entry(PS3Input.ButtonR2_AnalogR_Down[currently_selected_controller_menu],BTN_NONE);
+			do_controls_settings_entry(PS3Input.ButtonR2_AnalogR_Down[currently_selected_controller_menu],BTN_QUICKSAVE);
 			break;
 		case SETTING_CONTROLS_BUTTON_R3_BUTTON_L3:
 			do_controls_settings_entry(PS3Input.ButtonR3_ButtonL3[currently_selected_controller_menu],BTN_EXITTOMENU);
 			break;
-		case SETTING_CONTROLS_BUTTON_L2_BUTTON_R2_ANALOG_R_DOWN:
-			do_controls_settings_entry(PS3Input.ButtonL2_ButtonR2_AnalogR_Down[currently_selected_controller_menu],BTN_NONE);
-			break;
 		case SETTING_CONTROLS_SAVE_CUSTOM_CONTROLS:
 			if(CTRL_LEFT(button_was_pressed) || CTRL_LSTICK_LEFT(button_was_pressed) || CTRL_RIGHT(button_was_pressed) ||  CTRL_LSTICK_RIGHT(button_was_pressed) || CTRL_CROSS(button_was_pressed) || CTRL_START(state))
-				emulator_implementation_save_custom_controls(1);
+				emulator_save_settings(INPUT_PRESET_FILE);
 			break;
 		case SETTING_CONTROLS_DEFAULT_ALL:
 			if(CTRL_LEFT(button_was_pressed)  || CTRL_LSTICK_LEFT(button_was_pressed) || CTRL_RIGHT(button_was_pressed)  || CTRL_LSTICK_RIGHT(button_was_pressed) || CTRL_CROSS(button_was_pressed) || CTRL_START(state))
 			{
-				Settings.ControlScheme = CONTROL_SCHEME_DEFAULT;
-				emulator_implementation_button_mapping_settings(MAP_BUTTONS_OPTION_DEFAULT);
+				emulator_set_controls("", SET_ALL_CONTROLS_TO_DEFAULT, "Default");
 			}
 			break;
-	} // end of switch
-
+	} // end of switch 
 	produce_menubar(menu_controlssettings.enum_id);
 	cellDbgFontDraw();
 
-	//PAGE 1
-	if(menu_controlssettings.page == 0)
-	{
-		cellDbgFontPuts(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_SCHEME].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_SCHEME ? YELLOW : WHITE,	menu_controlssettings.items[SETTING_CONTROLS_SCHEME].text);
-		cellDbgFontPrintf(0.5f,   menu_controlssettings.items[SETTING_CONTROLS_SCHEME].text_ypos,   Emulator_GetFontSize(), Settings.ControlScheme == CONTROL_SCHEME_DEFAULT ? GREEN : ORANGE, Settings.ControlScheme == CONTROL_SCHEME_DEFAULT ? "Default" : "Custom");
+//PAGE 1
+if(menu_controlssettings.page == 0)
+{
+	cellDbgFontPuts(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_SCHEME].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_SCHEME ? YELLOW : WHITE,	menu_controlssettings.items[SETTING_CONTROLS_SCHEME].text);
+	cellDbgFontPrintf(0.5f,   menu_controlssettings.items[SETTING_CONTROLS_SCHEME].text_ypos,   Emulator_GetFontSize(), Settings.ControlScheme == CONTROL_SCHEME_DEFAULT ? GREEN : ORANGE, Settings.PS3CurrentInputPresetTitle);
 
-		cellDbgFontPuts(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_NUMBER].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_NUMBER ? YELLOW : WHITE,	menu_controlssettings.items[SETTING_CONTROLS_NUMBER].text);
-		cellDbgFontPrintf(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_NUMBER].text_ypos,	Emulator_GetFontSize(),	currently_selected_controller_menu == 0 ? GREEN : ORANGE, "%d", currently_selected_controller_menu+1);
+	cellDbgFontPuts(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_NUMBER].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_NUMBER ? YELLOW : WHITE,	menu_controlssettings.items[SETTING_CONTROLS_NUMBER].text);
+	cellDbgFontPrintf(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_NUMBER].text_ypos,	Emulator_GetFontSize(),	currently_selected_controller_menu == 0 ? GREEN : ORANGE, "%d", currently_selected_controller_menu+1);
 
-		for(int i = SETTING_CONTROLS_DPAD_UP; i < FIRST_CONTROLS_SETTING_PAGE_2; i++)
-			cellDbgFontPuts(0.09f,	menu_controlssettings.items[i].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == menu_controlssettings.items[i].enum_id ? YELLOW : WHITE,	menu_controlssettings.items[i].text);
+	for(int i = SETTING_CONTROLS_DPAD_UP; i < FIRST_CONTROLS_SETTING_PAGE_2; i++)
+	cellDbgFontPuts(0.09f,	menu_controlssettings.items[i].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == menu_controlssettings.items[i].enum_id ? YELLOW : WHITE,	menu_controlssettings.items[i].text);
 
-		cellDbgFontPuts(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_DPAD_UP].text_ypos,	Emulator_GetFontSize(),	PS3Input.DPad_Up[currently_selected_controller_menu] == BTN_UP ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.DPad_Up[currently_selected_controller_menu]));
+	cellDbgFontPuts(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_DPAD_UP].text_ypos,	Emulator_GetFontSize(),	PS3Input.DPad_Up[currently_selected_controller_menu] == BTN_UP ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.DPad_Up[currently_selected_controller_menu]));
 
-		cellDbgFontPuts	(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_DPAD_DOWN].text_ypos,	Emulator_GetFontSize(),	PS3Input.DPad_Down[currently_selected_controller_menu] == BTN_DOWN ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.DPad_Down[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts	(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_DPAD_DOWN].text_ypos,	Emulator_GetFontSize(),	PS3Input.DPad_Down[currently_selected_controller_menu] == BTN_DOWN ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.DPad_Down[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_DPAD_LEFT].text_ypos,	Emulator_GetFontSize(),	PS3Input.DPad_Left[currently_selected_controller_menu] == BTN_LEFT ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.DPad_Left[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_DPAD_LEFT].text_ypos,	Emulator_GetFontSize(),	PS3Input.DPad_Left[currently_selected_controller_menu] == BTN_LEFT ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.DPad_Left[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_DPAD_RIGHT].text_ypos,	Emulator_GetFontSize(),	PS3Input.DPad_Right[currently_selected_controller_menu] == BTN_RIGHT ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.DPad_Right[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_DPAD_RIGHT].text_ypos,	Emulator_GetFontSize(),	PS3Input.DPad_Right[currently_selected_controller_menu] == BTN_RIGHT ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.DPad_Right[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_CIRCLE].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonCircle[currently_selected_controller_menu] == BTN_A ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonCircle[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_CIRCLE].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonCircle[currently_selected_controller_menu] == BTN_B ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonCircle[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_CROSS].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonCross[currently_selected_controller_menu] == BTN_B ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonCross[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_CROSS].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonCross[currently_selected_controller_menu] == BTN_A ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonCross[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_TRIANGLE].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonTriangle[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonTriangle[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_TRIANGLE].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonTriangle[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonTriangle[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_SQUARE].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonSquare[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonSquare[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_SQUARE].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonSquare[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonSquare[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_SELECT].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonSelect[currently_selected_controller_menu] == BTN_SELECT ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonSelect[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_SELECT].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonSelect[currently_selected_controller_menu] == BTN_SELECT ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonSelect[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_START].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonStart[currently_selected_controller_menu] == BTN_START ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonStart[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_START].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonStart[currently_selected_controller_menu] == BTN_START ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonStart[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L1].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL1[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL1[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L1].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL1[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL1[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R1].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR1[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR1[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R1].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR1[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR1[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL3[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL3[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL3[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL3[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR3[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR3[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR3[currently_selected_controller_menu] == BTN_INGAME_MENU ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR3[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-	}
+}
 
-	//PAGE 2
-	if(menu_controlssettings.page == 1)
-	{
-		for(int i = FIRST_CONTROLS_SETTING_PAGE_2; i < SETTING_CONTROLS_ANALOG_R_UP; i++)
-			cellDbgFontPuts		(0.09f,	menu_controlssettings.items[i].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == menu_controlssettings.items[i].enum_id ? YELLOW : WHITE,	menu_controlssettings.items[i].text);
+//PAGE 2
+if(menu_controlssettings.page == 1)
+{
+	for(int i = FIRST_CONTROLS_SETTING_PAGE_2; i < SETTING_CONTROLS_ANALOG_R_UP; i++)
+		cellDbgFontPuts		(0.09f,	menu_controlssettings.items[i].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == menu_controlssettings.items[i].enum_id ? YELLOW : WHITE,	menu_controlssettings.items[i].text);
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_BUTTON_L3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_ButtonL3[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_ButtonL3[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_BUTTON_L3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_ButtonL3[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_ButtonL3[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_BUTTON_R2].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_ButtonR2[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_ButtonR2[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_BUTTON_R3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_ButtonR3[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_ButtonR3[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_BUTTON_R3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_ButtonR3[currently_selected_controller_menu] == BTN_QUICKLOAD ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_ButtonR3[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_ANALOG_R_RIGHT].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_AnalogR_Right[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_AnalogR_Right[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_ANALOG_R_RIGHT].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_AnalogR_Right[currently_selected_controller_menu] == BTN_INCREMENTCHEAT ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_AnalogR_Right[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_ANALOG_R_LEFT].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_AnalogR_Left[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_AnalogR_Left[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_ANALOG_R_LEFT].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_AnalogR_Left[currently_selected_controller_menu] == BTN_DECREMENTCHEAT ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_AnalogR_Left[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_ANALOG_R_UP].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_AnalogR_Up[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_AnalogR_Up[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_ANALOG_R_UP].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_AnalogR_Up[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_AnalogR_Up[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_ANALOG_R_DOWN].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_AnalogR_Down[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_AnalogR_Down[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_ANALOG_R_DOWN].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_AnalogR_Down[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_AnalogR_Down[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2_ANALOG_R_RIGHT].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2_AnalogR_Right[currently_selected_controller_menu] == BTN_INCREMENTSAVE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2_AnalogR_Right[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2_ANALOG_R_RIGHT].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2_AnalogR_Right[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2_AnalogR_Right[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2_ANALOG_R_LEFT].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2_AnalogR_Left[currently_selected_controller_menu] == BTN_DECREMENTSAVE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2_AnalogR_Left[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2_ANALOG_R_LEFT].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2_AnalogR_Left[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2_AnalogR_Left[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2_ANALOG_R_UP].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2_AnalogR_Up[currently_selected_controller_menu] == BTN_QUICKLOAD ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2_AnalogR_Up[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2_ANALOG_R_UP].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2_AnalogR_Up[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2_AnalogR_Up[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2_ANALOG_R_DOWN].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2_AnalogR_Down[currently_selected_controller_menu] == BTN_QUICKSAVE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2_AnalogR_Down[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2_ANALOG_R_DOWN].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2_AnalogR_Down[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2_AnalogR_Down[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2_BUTTON_R3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2_ButtonR3[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2_ButtonR3[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R2_BUTTON_R3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR2_ButtonR3[currently_selected_controller_menu] == BTN_QUICKSAVE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR2_ButtonR3[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R3_BUTTON_L3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR3_ButtonL3[currently_selected_controller_menu] == BTN_EXITTOMENU ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR3_ButtonL3[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_R3_BUTTON_L3].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonR3_ButtonL3[currently_selected_controller_menu] == BTN_EXITTOMENU ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonR3_ButtonL3[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPrintf		(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_UP].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_ANALOG_R_UP ? YELLOW : WHITE,	"%s %s", menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_UP].text, PS3Input.AnalogR_Up_Type[currently_selected_controller_menu] ? "(IsPressed)" : "(WasPressed)");
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_UP].text_ypos,	Emulator_GetFontSize(),	PS3Input.AnalogR_Up[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.AnalogR_Up[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_BUTTON_L2_BUTTON_R2_ANALOG_R_DOWN].text_ypos,	Emulator_GetFontSize(),	PS3Input.ButtonL2_ButtonR2_AnalogR_Down[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.ButtonL2_ButtonR2_AnalogR_Down[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPrintf		(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_DOWN].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_ANALOG_R_DOWN ? YELLOW : WHITE,	"%s %s", menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_DOWN].text, PS3Input.AnalogR_Down_Type[currently_selected_controller_menu] ? "(IsPressed)" : "(WasPressed)");
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_DOWN].text_ypos,	Emulator_GetFontSize(),	PS3Input.AnalogR_Down[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.AnalogR_Down[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPrintf		(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_UP].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_ANALOG_R_UP ? YELLOW : WHITE,	"%s %s", menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_UP].text, PS3Input.AnalogR_Up_Type[currently_selected_controller_menu] ? "(IsPressed)" : "(WasPressed)");
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_UP].text_ypos,	Emulator_GetFontSize(),	PS3Input.AnalogR_Up[currently_selected_controller_menu] == BTN_CHEATENABLE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.AnalogR_Up[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPrintf		(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_LEFT].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_ANALOG_R_LEFT ? YELLOW : WHITE,	"%s %s", menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_LEFT].text, PS3Input.AnalogR_Left_Type[currently_selected_controller_menu] ? "(IsPressed)" : "(WasPressed)");
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_LEFT].text_ypos,	Emulator_GetFontSize(),	PS3Input.AnalogR_Left[currently_selected_controller_menu] == BTN_NONE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.AnalogR_Left[currently_selected_controller_menu]));
+	cellDbgFontDraw();
 
-		cellDbgFontPrintf		(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_DOWN].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_ANALOG_R_DOWN ? YELLOW : WHITE,	"%s %s", menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_DOWN].text, PS3Input.AnalogR_Down_Type[currently_selected_controller_menu] ? "(IsPressed)" : "(WasPressed)");
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_DOWN].text_ypos,	Emulator_GetFontSize(),	PS3Input.AnalogR_Down[currently_selected_controller_menu] == BTN_CHEATDISABLE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.AnalogR_Down[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPrintf		(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_RIGHT].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_ANALOG_R_RIGHT ? YELLOW : WHITE,	"%s %s", menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_RIGHT].text, PS3Input.AnalogR_Right_Type[currently_selected_controller_menu] ? "(IsPressed)" : "(WasPressed)");
+	cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_RIGHT].text_ypos,	Emulator_GetFontSize(),	PS3Input.AnalogR_Right[currently_selected_controller_menu] == BTN_NONE? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.AnalogR_Right[currently_selected_controller_menu]));
 
-		cellDbgFontPrintf		(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_LEFT].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_ANALOG_R_LEFT ? YELLOW : WHITE,	"%s %s", menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_LEFT].text, PS3Input.AnalogR_Left_Type[currently_selected_controller_menu] ? "(IsPressed)" : "(WasPressed)");
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_LEFT].text_ypos,	Emulator_GetFontSize(),	PS3Input.AnalogR_Left[currently_selected_controller_menu] == BTN_DECREMENTSAVE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.AnalogR_Left[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPrintf(0.09f, menu_controlssettings.items[SETTING_CONTROLS_SAVE_CUSTOM_CONTROLS].text_ypos, Emulator_GetFontSize(), menu_controlssettings.selected == SETTING_CONTROLS_SAVE_CUSTOM_CONTROLS ? YELLOW : GREEN, menu_controlssettings.items[SETTING_CONTROLS_SAVE_CUSTOM_CONTROLS].text);
 
-		cellDbgFontPrintf		(0.09f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_RIGHT].text_ypos,	Emulator_GetFontSize(),	menu_controlssettings.selected == SETTING_CONTROLS_ANALOG_R_RIGHT ? YELLOW : WHITE,	"%s %s", menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_RIGHT].text, PS3Input.AnalogR_Right_Type[currently_selected_controller_menu] ? "(IsPressed)" : "(WasPressed)");
-		cellDbgFontPuts		(0.5f,	menu_controlssettings.items[SETTING_CONTROLS_ANALOG_R_RIGHT].text_ypos,	Emulator_GetFontSize(),	PS3Input.AnalogR_Right[currently_selected_controller_menu] == BTN_INCREMENTSAVE ? GREEN : ORANGE, Input_PrintMappedButton(PS3Input.AnalogR_Right[currently_selected_controller_menu]));
-		cellDbgFontDraw();
+	cellDbgFontPrintf(0.09f, menu_controlssettings.items[SETTING_CONTROLS_DEFAULT_ALL].text_ypos, Emulator_GetFontSize(), menu_controlssettings.selected == SETTING_CONTROLS_DEFAULT_ALL ? YELLOW : GREEN, menu_controlssettings.items[SETTING_CONTROLS_DEFAULT_ALL].text);
+	cellDbgFontDraw();
 
-	}
-
-	//PAGE 3
-	if (menu_controlssettings.page == 2)
-	{
-		cellDbgFontPrintf(0.09f, menu_controlssettings.items[SETTING_CONTROLS_SAVE_CUSTOM_CONTROLS].text_ypos, Emulator_GetFontSize(), menu_controlssettings.selected == SETTING_CONTROLS_SAVE_CUSTOM_CONTROLS ? YELLOW : GREEN, menu_controlssettings.items[SETTING_CONTROLS_SAVE_CUSTOM_CONTROLS].text);
-
-		cellDbgFontPrintf(0.09f, menu_controlssettings.items[SETTING_CONTROLS_DEFAULT_ALL].text_ypos, Emulator_GetFontSize(), menu_controlssettings.selected == SETTING_CONTROLS_DEFAULT_ALL ? YELLOW : GREEN, menu_controlssettings.items[SETTING_CONTROLS_DEFAULT_ALL].text);
-	}
+}
 
 	DisplayHelpMessage(menu_controlssettings.selected);
 
 	cellDbgFontPuts(0.09f, 0.91f, Emulator_GetFontSize(), YELLOW,
-			"UP/DOWN - select  L2+R2 - resume game   X/LEFT/RIGHT - change");
+	"UP/DOWN - select  L2+R2 - resume game   X/LEFT/RIGHT - change");
 	cellDbgFontPuts(0.09f, 0.95f, Emulator_GetFontSize(), YELLOW,
-			"START - default   L1/CIRCLE - go back");
+	"START - default   L1/CIRCLE - go back");
 	cellDbgFontDraw();
 	old_state = state;
 }
@@ -851,6 +793,7 @@ static void do_ROMMenu(void)
 		case SHADER_CHOICE: \
 		case PRESET_CHOICE: \
 		case BORDER_CHOICE: \
+		case INPUT_PRESET_CHOICE: \
 			do_select_file(menuStack[menuStackindex].enum_id); \
 			break; \
 		case PATH_SAVESTATES_DIR_CHOICE: \

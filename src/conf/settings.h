@@ -61,6 +61,7 @@ struct SSettings
 	char			PS3CurrentBorder[MAX_PATH_LENGTH];
 	char			PS3PathCheats[MAX_PATH_LENGTH];
 	char			GameAwareShaderPath[MAX_PATH_LENGTH];
+	char			PS3CurrentInputPresetTitle[MAX_PATH_LENGTH];
 	EMULATOR_SETTINGS_STD_STRING();
 };
 

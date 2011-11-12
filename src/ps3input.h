@@ -68,7 +68,6 @@ typedef struct{
 	uint32_t		DPad_Right[MAX_PADS];
 	uint32_t		ButtonR2_ButtonR3[MAX_PADS];
 	uint32_t		ButtonL2_ButtonR3[MAX_PADS];
-	uint32_t		ButtonL2_ButtonR2[MAX_PADS];
 	uint32_t		AnalogR_Right[MAX_PADS];
 	uint32_t		AnalogR_Left[MAX_PADS];
 	uint32_t		AnalogR_Up[MAX_PADS];
@@ -80,7 +79,6 @@ typedef struct{
 	uint32_t		ButtonR2_AnalogR_Right[MAX_PADS];
 	uint32_t		ButtonR2_AnalogR_Left[MAX_PADS];
 	uint32_t		ButtonR2_AnalogR_Up[MAX_PADS];
-	uint32_t		ButtonL2_ButtonR2_AnalogR_Down[MAX_PADS];
 	uint32_t		ButtonR2_AnalogR_Down[MAX_PADS];
 	uint32_t		ButtonL2_ButtonL3[MAX_PADS];
 	uint32_t		ButtonR3_ButtonL3[MAX_PADS];
