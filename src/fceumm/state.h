@@ -22,8 +22,6 @@
 
 void FCEUSS_Save(char *);
 int FCEUSS_Load(char *);
-int FCEUSS_SaveFP(FILE *);
-int FCEUSS_LoadFP(FILE *);
 
 void FCEUSS_CheckStates(void);
 

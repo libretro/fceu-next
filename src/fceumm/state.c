@@ -132,7 +132,8 @@ static int WriteStateChunk(FILE *st, int type, SFORMAT *sf)
 	bsize=SubWrite(0,sf);
 	write32le(bsize,st);
 
-	if(!SubWrite(st,sf)) return(0);
+	if(!SubWrite(st,sf))
+		return(0);
 	return (bsize+5);
 }
 
@@ -227,7 +228,7 @@ endo:
 static int CurrentState=0;
 extern int geniestage;
 
-int FCEUSS_SaveFP(FILE *st)
+static int FCEUSS_SaveFP(FILE *st)
 {
 	static uint32 totalsize;
 	static uint8 header[16]="FCS";
@@ -283,7 +284,7 @@ void FCEUSS_Save(char *fname)
 	//FCEU_DispMessage("State %d saved.",CurrentState);
 }
 
-int FCEUSS_LoadFP(FILE *st)
+static int FCEUSS_LoadFP(FILE *st)
 {
 	int x;
 	uint8 header[16];
@@ -296,12 +297,16 @@ int FCEUSS_LoadFP(FILE *st)
 	if(header[3] == 0xFF)
 		stateversion = FCEU_de32lsb(header + 8);
 	else
-		stateversion=header[3] * 100;
+		stateversion = header[3] * 100;
 
-	x=ReadStateChunks(st,*(uint32*)(header+4));
-	if(stateversion<9500) X.IRQlow=0;
+	x = ReadStateChunks(st,*(uint32*)(header+4));
 
-	if(GameStateRestore) GameStateRestore(stateversion);
+	if(stateversion < 9500)
+		X.IRQlow=0;
+
+	if(GameStateRestore)
+		GameStateRestore(stateversion);
+
 	if(x)
 	{
 		FCEUPPU_LoadState(stateversion);

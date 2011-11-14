@@ -66,65 +66,65 @@ static DECLFW(BNull)
 
 static DECLFR(ANull)
 {
- return(X.DB);
+	return(X.DB);
 }
 
 int AllocGenieRW(void)
 {
- if(!(AReadG=(readfunc *)FCEU_malloc(0x8000*sizeof(readfunc))))
-  return 0;
- if(!(BWriteG=(writefunc *)FCEU_malloc(0x8000*sizeof(writefunc))))
-  return 0;
- RWWrap=1;
- return 1;
+	if(!(AReadG=(readfunc *)FCEU_malloc(0x8000*sizeof(readfunc))))
+		return 0;
+	if(!(BWriteG=(writefunc *)FCEU_malloc(0x8000*sizeof(writefunc))))
+		return 0;
+	RWWrap=1;
+	return 1;
 }
 
 void FlushGenieRW(void)
 {
- int32 x;
+	int32 x;
 
- if(RWWrap)
- {
-  for(x=0;x<0x8000;x++)
-  {
-   ARead[x+0x8000]=AReadG[x];
-   BWrite[x+0x8000]=BWriteG[x];
-  }
-  free(AReadG);
-  free(BWriteG);
-  AReadG=0;
-  BWriteG=0;
-  RWWrap=0;
- }
+	if(RWWrap)
+	{
+		for(x=0;x<0x8000;x++)
+		{
+			ARead[x+0x8000]=AReadG[x];
+			BWrite[x+0x8000]=BWriteG[x];
+		}
+		free(AReadG);
+		free(BWriteG);
+		AReadG=0;
+		BWriteG=0;
+		RWWrap=0;
+	}
 }
 
 readfunc FASTAPASS(1) GetReadHandler(int32 a)
 {
-  if(a>=0x8000 && RWWrap)
-   return AReadG[a-0x8000];
-  else
-   return ARead[a];
+	if(a>=0x8000 && RWWrap)
+		return AReadG[a-0x8000];
+	else
+		return ARead[a];
 }
 
 void FASTAPASS(3) SetReadHandler(int32 start, int32 end, readfunc func)
 {
-  int32 x;
+	int32 x;
 
-  if(!func)
-   func=ANull;
+	if(!func)
+		func=ANull;
 
-  if(RWWrap)
-   for(x=end;x>=start;x--)
-   {
-    if(x>=0x8000)
-     AReadG[x-0x8000]=func;
-    else
-     ARead[x]=func;
-   }
-  else
+	if(RWWrap)
+		for(x=end;x>=start;x--)
+		{
+			if(x>=0x8000)
+				AReadG[x-0x8000]=func;
+			else
+				ARead[x]=func;
+		}
+	else
 
-   for(x=end;x>=start;x--)
-    ARead[x]=func;
+		for(x=end;x>=start;x--)
+			ARead[x]=func;
 }
 
 writefunc FASTAPASS(1) GetWriteHandler(int32 a)
@@ -137,22 +137,22 @@ writefunc FASTAPASS(1) GetWriteHandler(int32 a)
 
 void FASTAPASS(3) SetWriteHandler(int32 start, int32 end, writefunc func)
 {
-  int32 x;
+	int32 x;
 
-  if(!func)
-   func=BNull;
+	if(!func)
+		func=BNull;
 
-  if(RWWrap)
-   for(x=end;x>=start;x--)
-   {
-    if(x>=0x8000)
-     BWriteG[x-0x8000]=func;
-    else
-     BWrite[x]=func;
-   }
-  else
-   for(x=end;x>=start;x--)
-    BWrite[x]=func;
+	if(RWWrap)
+		for(x=end;x>=start;x--)
+		{
+			if(x>=0x8000)
+				BWriteG[x-0x8000]=func;
+			else
+				BWrite[x]=func;
+		}
+	else
+		for(x=end;x>=start;x--)
+			BWrite[x]=func;
 }
 
 uint8 GameMemBlock[131072];
@@ -207,17 +207,18 @@ static void CloseGame(void)
 
 void ResetGameLoaded(void)
 {
-  if(FCEUGameInfo) CloseGame();
-  GameStateRestore=0;
-  PPU_hook=0;
-  GameHBIRQHook=0;
-  if(GameExpSound.Kill)
-   GameExpSound.Kill();
-  memset(&GameExpSound,0,sizeof(GameExpSound));
-  MapIRQHook=0;
-  MMC5Hack=0;
-  PAL&=1;
-  pale=0;
+	if(FCEUGameInfo)
+		CloseGame();
+	GameStateRestore=0;
+	PPU_hook=0;
+	GameHBIRQHook=0;
+	if(GameExpSound.Kill)
+		GameExpSound.Kill();
+	memset(&GameExpSound,0,sizeof(GameExpSound));
+	MapIRQHook=0;
+	MMC5Hack=0;
+	PAL&=1;
+	pale=0;
 }
 
 int UNIFLoad(const char *name, FCEUFILE *fp);
@@ -335,23 +336,23 @@ FCEUGI *FCEUI_CopyFamiStart(void)
 
 int FCEUI_Initialize(void)
 {
-  if(!FCEU_InitVirtualVideo())
-   return 0;
-  memset(&FSettings,0,sizeof(FSettings));
-  FSettings.UsrFirstSLine[0]=8;
-  FSettings.UsrFirstSLine[1]=0;
-  FSettings.UsrLastSLine[0]=231;
-  FSettings.UsrLastSLine[1]=239;
-  FSettings.SoundVolume=100;
-  FCEUPPU_Init();
-  X6502_Init();
-  return 1;
+	if(!FCEU_InitVirtualVideo())
+		return 0;
+	memset(&FSettings,0,sizeof(FSettings));
+	FSettings.UsrFirstSLine[0]=8;
+	FSettings.UsrFirstSLine[1]=0;
+	FSettings.UsrLastSLine[0]=231;
+	FSettings.UsrLastSLine[1]=239;
+	FSettings.SoundVolume=100;
+	FCEUPPU_Init();
+	X6502_Init();
+	return 1;
 }
 
 void FCEUI_Kill(void)
 {
- FCEU_KillVirtualVideo();
- FCEU_KillGenie();
+	FCEU_KillVirtualVideo();
+	FCEU_KillGenie();
 }
 
 void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize)
@@ -376,16 +377,17 @@ void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize)
 
 void FCEUI_CloseGame(void)
 {
-  CloseGame();
+	CloseGame();
 }
 
 void ResetNES(void)
 {
-  if(!FCEUGameInfo) return;
-  GameInterface(GI_RESETM2);
-  FCEUSND_Reset();
-  FCEUPPU_Reset();
-  X6502_Reset();
+	if(!FCEUGameInfo)
+		return;
+	GameInterface(GI_RESETM2);
+	FCEUSND_Reset();
+	FCEUPPU_Reset();
+	X6502_Reset();
 }
 
 static void FCEU_MemoryRand(uint8 *ptr, uint32 size)
@@ -400,155 +402,151 @@ static void FCEU_MemoryRand(uint8 *ptr, uint32 size)
 	}
 }
 
-void hand(X6502 *X, int type, unsigned int A)
-{
-
-}
-
 void PowerNES(void)
 {
-  if(!FCEUGameInfo) return;
+	if(!FCEUGameInfo)
+		return;
 
-  FCEU_CheatResetRAM();
-  FCEU_CheatAddRAM(2,0,RAM);
+	FCEU_CheatResetRAM();
+	FCEU_CheatAddRAM(2,0,RAM);
 
-  GeniePower();
+	GeniePower();
 
 #ifndef COPYFAMI
-  FCEU_MemoryRand(RAM,0x800);
+	FCEU_MemoryRand(RAM,0x800);
 #endif
 
-  SetReadHandler(0x0000,0xFFFF,ANull);
-  SetWriteHandler(0x0000,0xFFFF,BNull);
+	SetReadHandler(0x0000,0xFFFF,ANull);
+	SetWriteHandler(0x0000,0xFFFF,BNull);
 
 #ifdef COPYFAMI
-  SetReadHandler(0,0x3FFF,ARAML);
-  SetWriteHandler(0,0x3FFF,BRAML);
+	SetReadHandler(0,0x3FFF,ARAML);
+	SetWriteHandler(0,0x3FFF,BRAML);
 #else
-  SetReadHandler(0,0x7FF,ARAML);
-  SetWriteHandler(0,0x7FF,BRAML);
+	SetReadHandler(0,0x7FF,ARAML);
+	SetWriteHandler(0,0x7FF,BRAML);
 
-  SetReadHandler(0x800,0x1FFF,ARAMH);  /* Part of a little */
-  SetWriteHandler(0x800,0x1FFF,BRAMH); /* hack for a small speed boost. */
+	SetReadHandler(0x800,0x1FFF,ARAMH);  /* Part of a little */
+	SetWriteHandler(0x800,0x1FFF,BRAMH); /* hack for a small speed boost. */
 #endif
-  InitializeInput();
-  FCEUSND_Power();
-  FCEUPPU_Power();
+	InitializeInput();
+	FCEUSND_Power();
+	FCEUPPU_Power();
 
-  /* Have the external game hardware "powered" after the internal NES stuff.
-     Needed for the NSF code and VS System code.
-  */
-  GameInterface(GI_POWER);
-  if(FCEUGameInfo->type==GIT_VSUNI)
-   FCEU_VSUniPower();
+	/* Have the external game hardware "powered" after the internal NES stuff.
+	   Needed for the NSF code and VS System code.
+	 */
+	GameInterface(GI_POWER);
+	if(FCEUGameInfo->type==GIT_VSUNI)
+		FCEU_VSUniPower();
 
 
-  timestampbase=0;
-  X6502_Power();
-  FCEU_PowerCheats();
+	timestampbase=0;
+	X6502_Power();
+	FCEU_PowerCheats();
 }
 
 void FCEU_ResetVidSys(void)
 {
- int w;
+	int w;
 
- if(FCEUGameInfo->vidsys==GIV_NTSC)
-  w=0;
- else if(FCEUGameInfo->vidsys==GIV_PAL)
-  w=1;
- else
-  w=FSettings.PAL;
+	if(FCEUGameInfo->vidsys==GIV_NTSC)
+		w=0;
+	else if(FCEUGameInfo->vidsys==GIV_PAL)
+		w=1;
+	else
+		w=FSettings.PAL;
 
- PAL=w?1:0;
- FCEUPPU_SetVideoSystem(w);
- SetSoundVariables();
+	PAL=w?1:0;
+	FCEUPPU_SetVideoSystem(w);
+	SetSoundVariables();
 }
 
 FCEUS FSettings;
 
 void FCEU_printf(char *format, ...)
 {
- char temp[2048];
+	char temp[2048];
 
- va_list ap;
+	va_list ap;
 
- va_start(ap,format);
- vsprintf(temp,format,ap);
- FCEUD_Message(temp);
+	va_start(ap,format);
+	vsprintf(temp,format,ap);
+	FCEUD_Message(temp);
 
- FILE *ofile;
- ofile=fopen("stdout.txt","ab");
- fwrite(temp,1,strlen(temp),ofile);
- fclose(ofile);
+	FILE *ofile;
+	ofile=fopen("stdout.txt","ab");
+	fwrite(temp,1,strlen(temp),ofile);
+	fclose(ofile);
 
- va_end(ap);
+	va_end(ap);
 }
 
 void FCEU_PrintError(char *format, ...)
 {
- char temp[2048];
+	char temp[2048];
 
- va_list ap;
+	va_list ap;
 
- va_start(ap,format);
- vsprintf(temp,format,ap);
- FCEUD_PrintError(temp);
+	va_start(ap,format);
+	vsprintf(temp,format,ap);
+	FCEUD_PrintError(temp);
 
- va_end(ap);
+	va_end(ap);
 }
 
 void FCEUI_SetRenderedLines(int ntscf, int ntscl, int palf, int pall)
 {
- FSettings.UsrFirstSLine[0]=ntscf;
- FSettings.UsrLastSLine[0]=ntscl;
- FSettings.UsrFirstSLine[1]=palf;
- FSettings.UsrLastSLine[1]=pall;
- if(PAL)
- {
-  FSettings.FirstSLine=FSettings.UsrFirstSLine[1];
-  FSettings.LastSLine=FSettings.UsrLastSLine[1];
- }
- else
- {
-  FSettings.FirstSLine=FSettings.UsrFirstSLine[0];
-  FSettings.LastSLine=FSettings.UsrLastSLine[0];
- }
+	FSettings.UsrFirstSLine[0]=ntscf;
+	FSettings.UsrLastSLine[0]=ntscl;
+	FSettings.UsrFirstSLine[1]=palf;
+	FSettings.UsrLastSLine[1]=pall;
+	if(PAL)
+	{
+		FSettings.FirstSLine=FSettings.UsrFirstSLine[1];
+		FSettings.LastSLine=FSettings.UsrLastSLine[1];
+	}
+	else
+	{
+		FSettings.FirstSLine=FSettings.UsrFirstSLine[0];
+		FSettings.LastSLine=FSettings.UsrLastSLine[0];
+	}
 
 }
 
 void FCEUI_SetVidSystem(int a)
 {
- FSettings.PAL=a?1:0;
- if(FCEUGameInfo)
- {
-  FCEU_ResetVidSys();
-  FCEU_ResetPalette();
- }
+	FSettings.PAL=a?1:0;
+	if(FCEUGameInfo)
+	{
+		FCEU_ResetVidSys();
+		FCEU_ResetPalette();
+	}
 }
 
 int FCEUI_GetCurrentVidSystem(int *slstart, int *slend)
 {
- if(slstart)
-  *slstart=FSettings.FirstSLine;
- if(slend)
-  *slend=FSettings.LastSLine;
- return(PAL);
+	if(slstart)
+		*slstart=FSettings.FirstSLine;
+	if(slend)
+		*slend=FSettings.LastSLine;
+	return(PAL);
 }
 
 void FCEUI_SetGameGenie(int a)
 {
- FSettings.GameGenie=a?1:0;
+	FSettings.GameGenie=a?1:0;
 }
 
 void FCEUI_SetSnapName(int a)
 {
- FSettings.SnapName=a;
+	FSettings.SnapName=a;
 }
 
 int32 FCEUI_GetDesiredFPS(void)
 {
-  if(PAL)
-   return(838977920); // ~50.007
-  else
-   return(1008307711);  // ~60.1
+	if(PAL)
+		return(838977920); // ~50.007
+	else
+		return(1008307711);  // ~60.1
 }
