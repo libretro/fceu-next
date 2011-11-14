@@ -40,31 +40,31 @@ static uint8 *xbsave=NULL;
 
 void FCEU_KillVirtualVideo(void)
 {
- if(xbsave)
- {
-  free(xbsave);
-  xbsave=0;
- }
+	if(xbsave)
+	{
+		free(xbsave);
+		xbsave=0;
+	}
 }
 
 int FCEU_InitVirtualVideo(void)
 {
- if(!XBuf)    /* Some driver code may allocate XBuf externally. */
-      /* 256 bytes per scanline, * 240 scanline maximum, +8 for alignment,
-      */
- if(!(XBuf= (uint8*) (FCEU_malloc(256 * 256 + 8))))
-  return 0;
- xbsave=XBuf;
+	if(!XBuf)    /* Some driver code may allocate XBuf externally. */
+		/* 256 bytes per scanline, * 240 scanline maximum, +8 for alignment,
+		 */
+		if(!(XBuf= (uint8*) (FCEU_malloc(256 * 256 + 8))))
+			return 0;
+	xbsave=XBuf;
 
- if(sizeof(uint8*)==4)
- {
-  uint32 m;
-  m=(uint32)XBuf;
-  m=(4-m)&3;
-  XBuf+=m;
- }
- memset(XBuf,128,256*256); //*240);
- return 1;
+	if(sizeof(uint8*)==4)
+	{
+		uint32 m;
+		m=(uint32)XBuf;
+		m=(4-m)&3;
+		XBuf+=m;
+	}
+	memset(XBuf,128,256*256); //*240);
+	return 1;
 }
 
 static int howlong;

@@ -1254,11 +1254,6 @@ SFORMAT FCEUSND_STATEINFO[]={
  { 0 }
 };
 
-void FCEUSND_SaveState(void)
-{
-
-}
-
 void FCEUSND_LoadState(int version)
 {
  LoadDMCPeriod(DMCFormat&0xF);

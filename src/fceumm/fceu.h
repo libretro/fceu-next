@@ -84,7 +84,6 @@ void FCEU_printf(char *format, ...);
 void FCEU_DispMessage(char *format, ...);
 
 void SetNESDeemph(uint8 d, int force);
-void DrawTextTrans(uint8 *dest, uint32 width, uint8 *textmsg, uint8 fgcolor);
 void FCEU_PutImage(void);
 
 extern uint8 Exit;

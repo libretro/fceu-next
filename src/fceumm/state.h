@@ -25,7 +25,6 @@ int FCEUSS_Load(char *);
 int FCEUSS_SaveFP(FILE *);
 int FCEUSS_LoadFP(FILE *);
 
-extern int CurrentState;
 void FCEUSS_CheckStates(void);
 
 typedef struct {
@@ -38,6 +37,3 @@ void ResetExState(void (*PreSave)(void),void (*PostSave)(void));
 void AddExState(void *v, uint32 s, int type, char *desc);
 
 #define FCEUSTATE_RLSB      0x80000000
-
-void FCEU_DrawSaveStates(uint8 *XBuf);
-
