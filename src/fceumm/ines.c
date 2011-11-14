@@ -625,6 +625,21 @@ int iNESLoad(const char *name, FCEUFILE *fp)
 #ifdef FCEU_LOG
 	FCEU_printf("\n");
 #endif
+	// since apparently the iNES format doesn't store this information,
+	// guess if the settings should be PAL or NTSC from the ROM name
+	// TODO: MD5 check against a list of all known PAL games instead?
+	if(strstr(name,"(E)") || strstr(name,"(e)")
+			|| strstr(name,"(F)") || strstr(name,"(f)")
+			|| strstr(name,"(G)") || strstr(name,"(g)")
+			|| strstr(name,"(I)") || strstr(name,"(i)")
+			|| strstr(name, "(Europe)") || strstr(name, "(Australia)")
+			|| strstr(name, "(France)") || strstr(name, "(Germany)")
+			|| strstr(name, "(Sweden)") || strstr(name, "(En, Fr, De)")
+			|| strstr(name, "(Italy)"))
+		FCEUI_SetVidSystem(1);
+	else
+		FCEUI_SetVidSystem(0);
+
 	return 1;
 }
 
