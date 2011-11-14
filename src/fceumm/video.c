@@ -70,8 +70,6 @@ int FCEU_InitVirtualVideo(void)
 static int howlong;
 static char errmsg[65];
 
-#include "drawing.h"
-
 void FCEU_DispMessage(char *format, ...)
 {
  va_list ap;
