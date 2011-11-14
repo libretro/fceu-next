@@ -97,7 +97,6 @@ static void makeppulut(void)
 
 static int ppudead=1;
 static int kook = 0;
-int fceuindbg=0;
 
 int MMC5Hack;
 uint32 MMC5HackVROMMask;
@@ -1309,15 +1308,11 @@ int FCEUPPU_Loop(int skip)
 				}
 				deempcnt[x]=0;
 			}
-			//FCEU_DispMessage("%2x:%2x:%2x:%2x:%2x:%2x:%2x:%2x %d",deempcnt[0],deempcnt[1],deempcnt[2],deempcnt[3],deempcnt[4],deempcnt[5],deempcnt[6],deempcnt[7],maxref);
-			//memset(deempcnt,0,sizeof(deempcnt));
 			SetNESDeemph(maxref,0);
 		}
 	} /* else... to if(ppudead) */
 
-	{
-		return(1);
-	}   
+	return(1);
 }
 
 static uint16 TempAddrT,RefreshAddrT;

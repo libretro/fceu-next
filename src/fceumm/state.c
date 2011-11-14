@@ -257,7 +257,6 @@ int FCEUSS_SaveFP(FILE *st)
 
 void FCEUSS_Save(char *fname)
 {
-#if 0
 	FILE *st=NULL;
 	char *fn;
 
@@ -268,10 +267,10 @@ void FCEUSS_Save(char *fname)
 	}
 
 	if(fname)
-		st=FCEUD_UTF8fopen(fname, "wb");
+		st=fopen(fname, "wb");
 	else
 	{
-		st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0),"wb");
+		st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0),"wb");
 		free(fn);
 	}
 
@@ -286,7 +285,6 @@ void FCEUSS_Save(char *fname)
 	SaveStateStatus[CurrentState]=1;
 	fclose(st);
 	FCEU_DispMessage("State %d saved.",CurrentState);
-#endif
 }
 
 int FCEUSS_LoadFP(FILE *st)
@@ -318,7 +316,6 @@ int FCEUSS_LoadFP(FILE *st)
 
 int FCEUSS_Load(char *fname)
 {
-#if 0
   FILE *st;
   char *fn;
 
@@ -329,10 +326,10 @@ int FCEUSS_Load(char *fname)
   }
 
   if(fname)
-   st=FCEUD_UTF8fopen(fname, "rb");
+   st=fopen(fname, "rb");
   else
   {
-   st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname),"rb");
+   st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname),"rb");
    free(fn);
   }
 
@@ -358,45 +355,42 @@ int FCEUSS_Load(char *fname)
    fclose(st);
    return(0);
   }
-  #endif
 }
 
 void FCEUSS_CheckStates(void)
 {
-#if 0
-  FILE *st=NULL;
-  char *fn;
-  int ssel;
+	FILE *st=NULL;
+	char *fn;
+	int ssel;
 
-  for(ssel=0;ssel<10;ssel++)
-  {
-   st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,ssel,0),"rb");
-   free(fn);
-   if(st)
-   {
-    SaveStateStatus[ssel]=1;
-    fclose(st);
-   }
-   else
-    SaveStateStatus[ssel]=0;
-  }
+	for(ssel=0;ssel<10;ssel++)
+	{
+		st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,ssel,0),"rb");
+		free(fn);
+		if(st)
+		{
+			SaveStateStatus[ssel]=1;
+			fclose(st);
+		}
+		else
+			SaveStateStatus[ssel]=0;
+	}
 
-  CurrentState=0;
-  StateShow=0;
-  #endif
+	CurrentState=0;
+	StateShow=0;
 }
 
 void ResetExState(void (*PreSave)(void), void (*PostSave)(void))
 {
- int x;
- for(x=0;x<SFEXINDEX;x++)
- {
-  if(SFMDATA[x].desc)
-   free(SFMDATA[x].desc);
- }
- SPreSave = PreSave;
- SPostSave = PostSave;
- SFEXINDEX=0;
+	int x;
+	for(x=0;x<SFEXINDEX;x++)
+	{
+		if(SFMDATA[x].desc)
+			free(SFMDATA[x].desc);
+	}
+	SPreSave = PreSave;
+	SPostSave = PostSave;
+	SFEXINDEX=0;
 }
 
 void AddExState(void *v, uint32 s, int type, char *desc)
@@ -438,9 +432,9 @@ void FCEUI_LoadState(char *fname)
 
 void FCEU_DrawSaveStates(uint8 *XBuf)
 {
- if(!StateShow) return;
+	if(!StateShow) return;
 
- FCEU_DrawNumberRow(XBuf,SaveStateStatus,CurrentState);
- StateShow--;
+	FCEU_DrawNumberRow(XBuf,SaveStateStatus,CurrentState);
+	StateShow--;
 }
 

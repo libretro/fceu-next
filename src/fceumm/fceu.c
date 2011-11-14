@@ -369,7 +369,7 @@ void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize, int ski
 
  FCEU_UpdateInput();
  if(geniestage!=1) FCEU_ApplyPeriodicCheats();
- r=FCEUPPU_Loop(skip);
+ r=FCEUPPU_Loop(0);
 
  ssize=FlushEmulateSound();
 

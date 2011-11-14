@@ -193,17 +193,18 @@ static uint32 bytes_count = 0;
 
 static DECLFW(MCopyFamiWriteReg)
 {
-  if(((A&3) == USB)&&!fceuindbg) {
-    if(direction != 0) {
-      direction = 0;
-      bytes_count = 0;
-      FCEU_printf(" >");
-    }
+  if(((A&3) == USB))
+  {
+	  if(direction != 0) {
+		  direction = 0;
+		  bytes_count = 0;
+		  FCEU_printf(" >");
+	  }
 #ifndef DEBUG_SERIAL
-    while (!SerialSendChar(V)) {};
+	  while (!SerialSendChar(V)) {};
 #endif
-    bytes_count++;
-//    FCEU_printf(" %02X",V);
+	  bytes_count++;
+	  //    FCEU_printf(" %02X",V);
   }
   else
   {
@@ -220,8 +221,6 @@ static DECLFR(MCopyFamiReadReg)
   else
     regs[STATUS] &= ~SRX;
 #endif
-  if (!fceuindbg) 
-  {
 #ifndef DEBUG_SERIAL
     if((A&3) == STATUS)
     {
@@ -246,7 +245,6 @@ static DECLFR(MCopyFamiReadReg)
       }
     FCEU_printf(" %02X",regs[USB]);
     }
-  }
   return regs[A&3];
 }
 

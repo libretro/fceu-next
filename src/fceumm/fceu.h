@@ -1,6 +1,5 @@
 #ifndef _FCEUH
 
-extern int fceuindbg;
 void ResetGameLoaded(void);
 
 #define DECLFR(x) uint8 FP_FASTAPASS(1) x (uint32 A)
