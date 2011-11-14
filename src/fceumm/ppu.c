@@ -163,32 +163,6 @@ static DECLFR(A200x)	/* Not correct for $2004 reads. */
   return PPUGenLatch;
 }
 
-/*
-static DECLFR(A2004)
-{
-			uint8 ret;
-
-			FCEUPPU_LineUpdate();
-			ret = SPRAM[PPU[3]];
-
-	                if(PPUSPL>=8) 
-        	        {
-                	 if(PPU[3]>=8)
-	                  ret = SPRAM[PPU[3]];
-	                }
-	                else
-	                {
-	                 //printf("$%02x:$%02x\n",PPUSPL,V);
-	                 ret = SPRAM[PPUSPL];
-	                }
-	                PPU[3]++;
-	                PPUSPL++;
-			PPUGenLatch = ret;
-			printf("%d, %02x\n",scanline,ret);
-			return(ret);
-}
-*/
-
 static DECLFR(A2007)
 {
 	uint8 ret;
@@ -435,31 +409,7 @@ void FCEUI_SetRenderDisable(int sprites, int bg)
   else rendis = (rendis &~2) | bg?2:0;
  }
 }
-/* 
-static void TileView(void)
-{
- uint8 *P=XBuf+16*256;
- int bgh;
- int y;  
- int X1; 
- for(bgh=0;bgh<2;bgh++)
- for(y=0;y<16*8;y++)   
- for(P=XBuf+bgh*128+(16+y)*256,X1=16;X1;X1--,P+=8)
- {
-  uint8 *C;
-  register uint8 cc;
-  uint32 vadr;
-  
-  vadr=((((16-X1)|((y>>3)<<4))<<4)|(y&7))+bgh*0x1000;
-  //C= ROM+vadr+turt*8192;
-  C = VRAMADR(vadr);
-  //if((vadr+turt*8192)>=524288)
-  //printf("%d ",vadr+turt*8192);
-  cc=0;
-  //#include "pputile.h"
- }
-} 
-*/
+
 static void CheckSpriteHit(int p);
 
 static void EndRL(void)
@@ -747,79 +697,79 @@ static void Fixit1(void)
 void MMC5_hb(int);     /* Ugh ugh ugh. */
 static void DoLine(void)
 {
- int x;
- uint8 *target=XBuf+(scanline<<8);
+	int x;
+	uint8 *target=XBuf+(scanline<<8);
 
- if(MMC5Hack && (ScreenON || SpriteON)) MMC5_hb(scanline);
+	if(MMC5Hack && (ScreenON || SpriteON)) MMC5_hb(scanline);
 
- X6502_Run(256);
- EndRL();
+	X6502_Run(256);
+	EndRL();
 
- if(rendis & 2)	/* User asked to not display background data. */
- {
-  uint32 tem;
-  tem=Pal[0]|(Pal[0]<<8)|(Pal[0]<<16)|(Pal[0]<<24);
-  tem|=0x40404040;
-  FCEU_dwmemset(target,tem,256);
- }
+	if(rendis & 2)	/* User asked to not display background data. */
+	{
+		uint32 tem;
+		tem=Pal[0]|(Pal[0]<<8)|(Pal[0]<<16)|(Pal[0]<<24);
+		tem|=0x40404040;
+		FCEU_dwmemset(target,tem,256);
+	}
 
- if(SpriteON)
-  CopySprites(target);
+	if(SpriteON)
+		CopySprites(target);
 
- if(ScreenON || SpriteON)        // Yes, very el-cheapo.
- {
-  if(PPU[1]&0x01)
-  {
-   for(x=63;x>=0;x--)
-   *(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2])&0x30303030;
-  }
- }
- if((PPU[1]>>5)==0x7)
- {
-  for(x=63;x>=0;x--)
-   *(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2])&0x3f3f3f3f)|0xc0c0c0c0;
- }
- else if(PPU[1]&0xE0)
-  for(x=63;x>=0;x--)
-   *(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2])|0x40404040;
- else
-  for(x=63;x>=0;x--)
-   *(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2])&0x3f3f3f3f)|0x80808080;
+	if(ScreenON || SpriteON)        // Yes, very el-cheapo.
+	{
+		if(PPU[1]&0x01)
+		{
+			for(x=63;x>=0;x--)
+				*(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2])&0x30303030;
+		}
+	}
+	if((PPU[1]>>5)==0x7)
+	{
+		for(x=63;x>=0;x--)
+			*(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2])&0x3f3f3f3f)|0xc0c0c0c0;
+	}
+	else if(PPU[1]&0xE0)
+		for(x=63;x>=0;x--)
+			*(uint32 *)&target[x<<2]=(*(uint32*)&target[x<<2])|0x40404040;
+	else
+		for(x=63;x>=0;x--)
+			*(uint32 *)&target[x<<2]=((*(uint32*)&target[x<<2])&0x3f3f3f3f)|0x80808080;
 
- sphitx=0x100;
+	sphitx=0x100;
 
- if(ScreenON || SpriteON)
-  FetchSpriteData();
+	if(ScreenON || SpriteON)
+		FetchSpriteData();
 
- if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
- {
-  X6502_Run(6);
-  Fixit2();
-  X6502_Run(4);
-  GameHBIRQHook();
-  X6502_Run(85-16-10);
- }
- else
- {
-  X6502_Run(6);        // Tried 65, caused problems with Slalom(maybe others)
-  Fixit2();
-  X6502_Run(85-6-16);
+	if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
+	{
+		X6502_Run(6);
+		Fixit2();
+		X6502_Run(4);
+		GameHBIRQHook();
+		X6502_Run(85-16-10);
+	}
+	else
+	{
+		X6502_Run(6);        // Tried 65, caused problems with Slalom(maybe others)
+		Fixit2();
+		X6502_Run(85-6-16);
 
-  // A semi-hack for Star Trek: 25th Anniversary
-  if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
-   GameHBIRQHook();
- }
+		// A semi-hack for Star Trek: 25th Anniversary
+		if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
+			GameHBIRQHook();
+	}
 
- if(SpriteON)
-  RefreshSprites();
- if(GameHBIRQHook2 && (ScreenON || SpriteON))
-  GameHBIRQHook2();
- scanline++;
- if(scanline<240)
- {
-  ResetRL(XBuf+(scanline<<8));
- }
- X6502_Run(16);
+	if(SpriteON)
+		RefreshSprites();
+	if(GameHBIRQHook2 && (ScreenON || SpriteON))
+		GameHBIRQHook2();
+	scanline++;
+	if(scanline<240)
+	{
+		ResetRL(XBuf+(scanline<<8));
+	}
+	X6502_Run(16);
 }
 
 #define V_FLIP  0x80
@@ -1282,122 +1232,92 @@ void FCEUPPU_Power(void)
 
 int FCEUPPU_Loop(int skip)
 {
-  if(ppudead) /* Needed for Knight Rider, possibly others. */
-  {
-   memset(XBuf, 0x80, 256*240);
-   X6502_Run(scanlines_per_frame*(256+85));
-   ppudead--;
-  }
-  else
-  {
-   X6502_Run(256+85);
-   PPU_status |= 0x80;
-   PPU[3]=PPUSPL=0;             /* Not sure if this is correct.  According
-                                  to Matt Conte and my own tests, it is.  Timing is probably
-                                  off, though.  NOTE:  Not having this here
-                                  breaks a Super Donkey Kong game. */
-                                /* I need to figure out the true nature and length
-                                   of this delay. 
-                                */
-   X6502_Run(12);
-   if(FCEUGameInfo->type==GIT_NSF)
-    DoNSFFrame();
-   else
-   {
-    if(VBlankON)
-     TriggerNMI();
-   }
-   X6502_Run((scanlines_per_frame-242)*(256+85)-12); //-12); 
-   PPU_status&=0x1f;
-   X6502_Run(256);
+	if(ppudead) /* Needed for Knight Rider, possibly others. */
+	{
+		memset(XBuf, 0x80, 256*240);
+		X6502_Run(scanlines_per_frame*(256+85));
+		ppudead--;
+	}
+	else
+	{
+		X6502_Run(256+85);
+		PPU_status |= 0x80;
+		PPU[3]=PPUSPL=0;             /* Not sure if this is correct.  According
+						to Matt Conte and my own tests, it is.  Timing is probably
+						off, though.  NOTE:  Not having this here
+						breaks a Super Donkey Kong game. */
+		/* I need to figure out the true nature and length
+		   of this delay. 
+		 */
+		X6502_Run(12);
+		if(FCEUGameInfo->type==GIT_NSF)
+			DoNSFFrame();
+		else
+		{
+			if(VBlankON)
+				TriggerNMI();
+		}
+		X6502_Run((scanlines_per_frame-242)*(256+85)-12); //-12); 
+		PPU_status&=0x1f;
+		X6502_Run(256);
 
-   {
-    int x;
+		{
+			int x;
 
-    if(ScreenON || SpriteON)
-    {
-     if(GameHBIRQHook && ((PPU[0]&0x38)!=0x18))
-      GameHBIRQHook();
-     if(PPU_hook)
-      for(x=0;x<42;x++) {PPU_hook(0x2000); PPU_hook(0);}
-     if(GameHBIRQHook2)
-      GameHBIRQHook2();
-    }
-    X6502_Run(85-16);
-    if(ScreenON || SpriteON)
-    {  
-     RefreshAddr=TempAddr;  
-     if(PPU_hook) PPU_hook(RefreshAddr&0x3fff);  
-    }
+			if(ScreenON || SpriteON)
+			{
+				if(GameHBIRQHook && ((PPU[0]&0x38)!=0x18))
+					GameHBIRQHook();
+				if(PPU_hook)
+					for(x=0;x<42;x++) {PPU_hook(0x2000); PPU_hook(0);}
+				if(GameHBIRQHook2)
+					GameHBIRQHook2();
+			}
+			X6502_Run(85-16);
+			if(ScreenON || SpriteON)
+			{  
+				RefreshAddr=TempAddr;  
+				if(PPU_hook) PPU_hook(RefreshAddr&0x3fff);  
+			}
 
-    /* Clean this stuff up later. */
-    spork=numsprites=0;
-    ResetRL(XBuf);
+			/* Clean this stuff up later. */
+			spork=numsprites=0;
+			ResetRL(XBuf);
 
-    X6502_Run(16-kook);
-    kook ^= 1;
-   }
-   if(FCEUGameInfo->type==GIT_NSF)
-    X6502_Run((256+85)*240);
-   #ifdef FRAMESKIP
-   else if(skip)
-   {
-    int y;
+			X6502_Run(16-kook);
+			kook ^= 1;
+		}
+		if(FCEUGameInfo->type==GIT_NSF)
+			X6502_Run((256+85)*240);
+		else
+		{
+			int x,max,maxref;
 
-    y=SPRAM[0];
-    y++;
+			deemp=PPU[1]>>5;
+			for(scanline=0;scanline<240;)       //scanline is incremented in  DoLine.  Evil. :/
+			{
+				deempcnt[deemp]++;
+				DoLine();
+			}
+			if(MMC5Hack && (ScreenON || SpriteON)) MMC5_hb(scanline);
+			for(x=1,max=0,maxref=0;x<7;x++)
+			{
+				if(deempcnt[x]>max)
+				{
+					max=deempcnt[x];
+					maxref=x;
+				}
+				deempcnt[x]=0;
+			}
+			//FCEU_DispMessage("%2x:%2x:%2x:%2x:%2x:%2x:%2x:%2x %d",deempcnt[0],deempcnt[1],deempcnt[2],deempcnt[3],deempcnt[4],deempcnt[5],deempcnt[6],deempcnt[7],maxref);
+			//memset(deempcnt,0,sizeof(deempcnt));
+			SetNESDeemph(maxref,0);
+		}
+	} /* else... to if(ppudead) */
 
-    PPU_status|=0x20;       // Fixes "Bee 52".  Does it break anything?
-    if(GameHBIRQHook)
-    {
-     X6502_Run(256);
-     for(scanline=0;scanline<240;scanline++)
-     {
-      if(ScreenON || SpriteON)
-       GameHBIRQHook();
-      if(scanline==y && SpriteON) PPU_status|=0x40;
-      X6502_Run((scanline==239)?85:(256+85));
-     }    
-    }
-    else if(y<240)
-    {
-     X6502_Run((256+85)*y);
-     if(SpriteON) PPU_status|=0x40; // Quick and very dirty hack.
-     X6502_Run((256+85)*(240-y));
-    }
-    else
-     X6502_Run((256+85)*240);
-   }
-   #endif
-   else
-   {
-    int x,max,maxref;
-
-    deemp=PPU[1]>>5;
-    for(scanline=0;scanline<240;)       //scanline is incremented in  DoLine.  Evil. :/
-    {
-     deempcnt[deemp]++;
-     DoLine();
-    }
-    if(MMC5Hack && (ScreenON || SpriteON)) MMC5_hb(scanline);
-    for(x=1,max=0,maxref=0;x<7;x++)
-    {
-     if(deempcnt[x]>max)
-     {
-      max=deempcnt[x];
-      maxref=x;
-     }
-     deempcnt[x]=0;
-    }
-    //FCEU_DispMessage("%2x:%2x:%2x:%2x:%2x:%2x:%2x:%2x %d",deempcnt[0],deempcnt[1],deempcnt[2],deempcnt[3],deempcnt[4],deempcnt[5],deempcnt[6],deempcnt[7],maxref);
-    //memset(deempcnt,0,sizeof(deempcnt));
-    SetNESDeemph(maxref,0);
-   }
-  } /* else... to if(ppudead) */
-
-  {
-   return(1);
-  }   
+	{
+		return(1);
+	}   
 }
 
 static uint16 TempAddrT,RefreshAddrT;
