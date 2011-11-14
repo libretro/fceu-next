@@ -258,7 +258,7 @@ void FCEUSS_Save(char *fname)
 
 	if(geniestage==1)
 	{
-		FCEU_DispMessage("Cannot save FCS in GG screen.");
+		//FCEU_DispMessage("Cannot save FCS in GG screen.");
 		return;
 	}
 
@@ -272,7 +272,7 @@ void FCEUSS_Save(char *fname)
 
 	if(st == NULL)
 	{
-		FCEU_DispMessage("State %d save error.",CurrentState);
+		//FCEU_DispMessage("State %d save error.",CurrentState);
 		return;
 	}
 
@@ -280,7 +280,7 @@ void FCEUSS_Save(char *fname)
 
 	SaveStateStatus[CurrentState]=1;
 	fclose(st);
-	FCEU_DispMessage("State %d saved.",CurrentState);
+	//FCEU_DispMessage("State %d saved.",CurrentState);
 }
 
 int FCEUSS_LoadFP(FILE *st)
@@ -317,7 +317,7 @@ int FCEUSS_Load(char *fname)
 
 	if(geniestage==1)
 	{
-		FCEU_DispMessage("Cannot load FCS in GG screen.");
+		//FCEU_DispMessage("Cannot load FCS in GG screen.");
 		return(0);
 	}
 
@@ -331,26 +331,18 @@ int FCEUSS_Load(char *fname)
 
 	if(st == NULL)
 	{
-		FCEU_DispMessage("State %d load error.",CurrentState);
+		//FCEU_DispMessage("State %d load error.",CurrentState);
 		SaveStateStatus[CurrentState]=0;
 		return(0);
 	}
 
-	if(FCEUSS_LoadFP(st))
-	{
-		SaveStateStatus[CurrentState]=1;
-		FCEU_DispMessage("State %d loaded.",CurrentState);
-		SaveStateStatus[CurrentState]=1;
-		fclose(st);
-		return(1);
-	}
+	int ret = FCEUSS_LoadFP(st);
+	SaveStateStatus[CurrentState]=1;
+	fclose(st);
+	if(ret)
+		return 1;
 	else
-	{
-		SaveStateStatus[CurrentState]=1;
-		FCEU_DispMessage("Error(s) reading state %d!",CurrentState);
-		fclose(st);
-		return(0);
-	}
+		return 0;
 }
 
 void FCEUSS_CheckStates(void)
@@ -416,7 +408,7 @@ void FCEUI_SelectState(int w)
 
 	CurrentState=w;
 	StateShow=180;
-	FCEU_DispMessage("-select state-");
+	//FCEU_DispMessage("-select state-");
 }
 
 void FCEUI_SaveState(char *fname)
