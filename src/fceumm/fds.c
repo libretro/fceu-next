@@ -593,64 +593,62 @@ void FDSSoundReset(void)
 
 static DECLFW(FDSWrite)
 {
- //extern int scanline;
- //FCEU_printf("$%04x:$%02x, %d\n",A,V,scanline);
- switch(A)
- {
-  case 0x4020:
-  X6502_IRQEnd(FCEU_IQEXT);
-  IRQLatch&=0xFF00;
-  IRQLatch|=V;
-//  printf("$%04x:$%02x\n",A,V);
-  break;
-  case 0x4021:
-  X6502_IRQEnd(FCEU_IQEXT);
-  IRQLatch&=0xFF;
-  IRQLatch|=V<<8;
-//  printf("$%04x:$%02x\n",A,V);
-  break;
-  case 0x4022:
-  X6502_IRQEnd(FCEU_IQEXT);
-  IRQCount=IRQLatch;
-  IRQa=V&3;
-//  printf("$%04x:$%02x\n",A,V);
-  break;
-  case 0x4023:break;
-  case 0x4024:
-  if(InDisk!=255 && !(FDSRegs[5]&0x4) && (FDSRegs[3]&0x1))
-  {
-   if(DiskPtr>=0 && DiskPtr<65500)
-   {
-    if(writeskip) writeskip--;
-    else if(DiskPtr>=2)
-    {
-     DiskWritten=1;
-     diskdata[InDisk][DiskPtr-2]=V;
-    }
-   }
-  }
-  break;
-  case 0x4025:
-  X6502_IRQEnd(FCEU_IQEXT2);
-  if(InDisk!=255)
-  {
-   if(!(V&0x40))
-   {
-    if(FDSRegs[5]&0x40 && !(V&0x10))
-    {
-     DiskSeekIRQ=200;
-     DiskPtr-=2;
-    }
-    if(DiskPtr<0) DiskPtr=0;
-   }
-   if(!(V&0x4)) writeskip=2;
-   if(V&2) {DiskPtr=0;DiskSeekIRQ=200;}
-   if(V&0x40) DiskSeekIRQ=200;
-  }
-  setmirror(((V>>3)&1)^1);
-  break;
- }
- FDSRegs[A&7]=V;
+	switch(A)
+	{
+		case 0x4020:
+			X6502_IRQEnd(FCEU_IQEXT);
+			IRQLatch&=0xFF00;
+			IRQLatch|=V;
+			//  printf("$%04x:$%02x\n",A,V);
+			break;
+		case 0x4021:
+			X6502_IRQEnd(FCEU_IQEXT);
+			IRQLatch&=0xFF;
+			IRQLatch|=V<<8;
+			//  printf("$%04x:$%02x\n",A,V);
+			break;
+		case 0x4022:
+			X6502_IRQEnd(FCEU_IQEXT);
+			IRQCount=IRQLatch;
+			IRQa=V&3;
+			//  printf("$%04x:$%02x\n",A,V);
+			break;
+		case 0x4023:break;
+		case 0x4024:
+			    if(InDisk!=255 && !(FDSRegs[5]&0x4) && (FDSRegs[3]&0x1))
+			    {
+				    if(DiskPtr>=0 && DiskPtr<65500)
+				    {
+					    if(writeskip) writeskip--;
+					    else if(DiskPtr>=2)
+					    {
+						    DiskWritten=1;
+						    diskdata[InDisk][DiskPtr-2]=V;
+					    }
+				    }
+			    }
+			    break;
+		case 0x4025:
+			    X6502_IRQEnd(FCEU_IQEXT2);
+			    if(InDisk!=255)
+			    {
+				    if(!(V&0x40))
+				    {
+					    if(FDSRegs[5]&0x40 && !(V&0x10))
+					    {
+						    DiskSeekIRQ=200;
+						    DiskPtr-=2;
+					    }
+					    if(DiskPtr<0) DiskPtr=0;
+				    }
+				    if(!(V&0x4)) writeskip=2;
+				    if(V&2) {DiskPtr=0;DiskSeekIRQ=200;}
+				    if(V&0x40) DiskSeekIRQ=200;
+			    }
+			    setmirror(((V>>3)&1)^1);
+			    break;
+	}
+	FDSRegs[A&7]=V;
 }
 
 static void FreeFDSMemory(void)
@@ -742,7 +740,6 @@ static void PostSave(void)
 
 int FDSLoad(const char *name, FCEUFILE *fp)
 {
-#if 0
 	FILE *zp;
 	int x;
 	char *fn;
@@ -755,7 +752,7 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 
 	fn = FCEU_MakeFName(FCEUMKF_FDSROM,0,0);
 
-	if(!(zp=FCEUD_UTF8fopen(fn,"rb")))
+	if(!(zp=fopen(fn,"rb")))
 	{
 		FCEU_PrintError("FDS BIOS ROM image missing!");
 		FreeFDSMemory();
@@ -837,37 +834,36 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 	memset(CHRRAM,0,8192);
 	memset(FDSRAM,0,32768);
 
+	#ifdef FCEU_LOG
 	FCEU_printf(" Sides: %d\n\n",TotalSides);
+	#endif
 	return 1;
-#endif
 }
 
 void FDSClose(void)
 {
-#if 0
- FILE *fp;
- int x;
- char *fn=FCEU_MakeFName(FCEUMKF_FDS,0,0);
+	FILE *fp;
+	int x;
+	char *fn=FCEU_MakeFName(FCEUMKF_FDS,0,0);
 
- if(!DiskWritten) return;
+	if(!DiskWritten) return;
 
- if(!(fp=FCEUD_UTF8fopen(fn,"wb")))
- {
-  free(fn);
-  return;
- }
- free(fn);
+	if(!(fp=fopen(fn,"wb")))
+	{
+		free(fn);
+		return;
+	}
+	free(fn);
 
- for(x=0;x<TotalSides;x++)
- {
-  if(fwrite(diskdata[x],1,65500,fp)!=65500)
-  {
-   FCEU_PrintError("Error saving FDS image!");
-   fclose(fp);
-   return;
-  }
- }
- FreeFDSMemory();
- fclose(fp);
- #endif
+	for(x=0;x<TotalSides;x++)
+	{
+		if(fwrite(diskdata[x],1,65500,fp)!=65500)
+		{
+			FCEU_PrintError("Error saving FDS image!");
+			fclose(fp);
+			return;
+		}
+	}
+	FreeFDSMemory();
+	fclose(fp);
 }

@@ -22,7 +22,6 @@
 
 #ifdef COPYFAMI
 
-#define MESSAGE_LOG
 #define NO_CACHE
 #define NO_RAM
 
@@ -200,7 +199,7 @@ static int CheckStatus(void)
   GetStatus(&state_new);
   if(state_cur.mirror != state_new.mirror) {
     state_cur.mirror = state_new.mirror;
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
     FCEU_printf(">> mirror changed to %s (%02X)\n",mirror_names[mirror_modes[state_cur.mirror]], state_cur.mirror);
 #endif
     ischanged = 1;
@@ -212,11 +211,11 @@ static int CheckStatus(void)
       state_cur.chrsum[i] = state_new.chrsum[i];
       if(CHRCUR(i) == -1) {
         CHRCUR(i) = FetchNewCHRBank(i);
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
         FCEU_printf(">> chr[%d] bank %d loaded\n", i, CHRCUR(i));
 #endif
       }
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
       else
         FCEU_printf(">> chr[%d] bank %d switched\n", i, CHRCUR(i));
 #endif
@@ -230,11 +229,11 @@ static int CheckStatus(void)
       state_cur.prgsum[i] = state_new.prgsum[i];                                
       if(PRGCUR(i) == -1) {
         PRGCUR(i) = FetchNewPRGBank(i);
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
         FCEU_printf(">> prg[%d] bank %d loaded\n", i, PRGCUR(i));
 #endif
       }
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
       else
         FCEU_printf(">> prg[%d] bank %d switched\n", i, PRGCUR(i));
 #endif
@@ -253,7 +252,7 @@ static void ApplyStatus()
   if ((cmds.states[cmd.found].mirror != -1) && (cmds.states[cmd.found].mirror != state_cur.mirror)) {
     state_cur.mirror = cmds.states[cmd.found].mirror;
     setmirror(mirror_modes[state_cur.mirror]);
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
     FCEU_printf(">> mirror changed to %s (%02X)\n",mirror_names[mirror_modes[state_cur.mirror]], state_cur.mirror);
 #endif
   }
@@ -263,12 +262,12 @@ static void ApplyStatus()
       if (sum != state_cur.chrsum[i]) {
         state_cur.chrsum[i] = sum;
         setchr1r(1, i * 1024, CHRCUR(i));
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
         FCEU_printf(">> chr[%d] bank %d switched\n", i, chr_bank[sum]);
 #endif
       }
       else
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
         FCEU_printf(">> chr[%d] bank %d switched the same\n", i, chr_bank[sum]);
     }
 #endif
@@ -279,12 +278,12 @@ static void ApplyStatus()
       if (sum != state_cur.prgsum[i]) {
         state_cur.prgsum[i] = sum;
         setprg8r(2, 0x8000 + (i * 8192), PRGCUR(i));
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
         FCEU_printf(">> prg[%d] bank %d switched\n", i, prg_bank[sum]);
 #endif
       }
       else
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
         FCEU_printf(">> prg[%d] bank %d switched the same\n", i, prg_bank[sum]);
     }
 #endif
@@ -358,7 +357,7 @@ static DECLFW(MCopyFamiWrite)
   int32 i;
 #endif
 
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
   FCEU_printf("> WRITE %04X:%02X\n",A,V);
 #endif
 
@@ -452,7 +451,7 @@ static DECLFR(MCopyFamiRead)
   PRGRBCmd[1] = A & 0xFF;
   PRGRBCmd[2] = A >> 8;
   SENDGET(PRGRBCmd, result, 1);
-#ifdef MESSAGE_LOG
+#ifdef FCEU_LOG
   FCEU_printf("> READ %04X:%02X\n",A,result);
 #endif
   return result;

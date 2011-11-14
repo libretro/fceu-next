@@ -127,69 +127,75 @@ static void MooMirroring(void)
 
 static int DoMirroring(FCEUFILE *fp)
 {
- uint8 t;
- t=FCEU_fgetc(fp);
- mirrortodo=t;
+	uint8 t;
+	t=FCEU_fgetc(fp);
+	mirrortodo=t;
 
- {
-  static char *stuffo[6]={"Horizontal","Vertical","$2000","$2400","\"Four-screen\"","Controlled by Mapper Hardware"};
-  if(t<6)
-    FCEU_printf(" Name/Attribute Table Mirroring: %s\n",stuffo[t]);
- }
- return(1);
+#ifdef FCEU_LOG
+	static char *stuffo[6]={"Horizontal","Vertical","$2000","$2400","\"Four-screen\"","Controlled by Mapper Hardware"};
+	if(t<6)
+		FCEU_printf(" Name/Attribute Table Mirroring: %s\n",stuffo[t]);
+#endif
+	return(1);
 }
 
 static int NAME(FCEUFILE *fp)
 {
- char namebuf[100];
- int index;
- int t;
+	char namebuf[100];
+	int index;
+	int t;
 
- FCEU_printf(" Name: ");
- index=0;
+	#ifdef FCEU_LOG
+	FCEU_printf(" Name: ");
+	#endif
+	index=0;
 
- while((t=FCEU_fgetc(fp))>0)
-  if(index<99)
-    namebuf[index++]=t;
+	while((t=FCEU_fgetc(fp))>0)
+		if(index<99)
+			namebuf[index++]=t;
 
- namebuf[index]=0;
- FCEU_printf("%s\n",namebuf);
+	namebuf[index]=0;
+	#ifdef FCEU_LOG
+	FCEU_printf("%s\n",namebuf);
+	#endif
 
- if(!FCEUGameInfo->name)
- {
-  FCEUGameInfo->name=malloc(strlen(namebuf)+1);
-  strcpy(FCEUGameInfo->name,namebuf);
- }
- return(1);
+	if(!FCEUGameInfo->name)
+	{
+		FCEUGameInfo->name=malloc(strlen(namebuf)+1);
+		strcpy(FCEUGameInfo->name,namebuf);
+	}
+	return(1);
 }
 static int DINF(FCEUFILE *fp)
 {
- char name[100], method[100];
- uint8 d, m;
- uint16 y;
- int t;
+	char name[100], method[100];
+	uint8 d, m;
+	uint16 y;
+	int t;
 
- if(FCEU_fread(name,1,100,fp)!=100)
-   return(0);
- if((t=FCEU_fgetc(fp))==EOF) return(0);
- d=t;
- if((t=FCEU_fgetc(fp))==EOF) return(0);
- m=t;
- if((t=FCEU_fgetc(fp))==EOF) return(0);
- y=t;
- if((t=FCEU_fgetc(fp))==EOF) return(0);
- y|=t<<8;
- if(FCEU_fread(method,1,100,fp)!=100)
-  return(0);
- name[99]=method[99]=0;
- FCEU_printf(" Dumped by: %s\n",name);
- FCEU_printf(" Dumped with: %s\n",method);
- {
-  char *months[12]={"January","February","March","April","May","June","July",
-        "August","September","October","November","December"};
-  FCEU_printf(" Dumped on: %s %d, %d\n",months[(m-1)%12],d,y);
- }
- return(1);
+	if(FCEU_fread(name,1,100,fp)!=100)
+		return(0);
+	if((t=FCEU_fgetc(fp))==EOF) return(0);
+	d=t;
+	if((t=FCEU_fgetc(fp))==EOF) return(0);
+	m=t;
+	if((t=FCEU_fgetc(fp))==EOF) return(0);
+	y=t;
+	if((t=FCEU_fgetc(fp))==EOF) return(0);
+	y|=t<<8;
+	if(FCEU_fread(method,1,100,fp)!=100)
+		return(0);
+	name[99]=method[99]=0;
+#ifdef FCEU_LOG
+	FCEU_printf(" Dumped by: %s\n",name);
+	FCEU_printf(" Dumped with: %s\n",method);
+	{
+		char *months[12]={"January","February","March","April","May","June","July",
+			"August","September","October","November","December"};
+		FCEU_printf(" Dumped on: %s %d, %d\n",months[(m-1)%12],d,y);
+	}
+#endif
+	return(1);
 }
 
 static int CTRL(FCEUFILE *fp)
@@ -213,94 +219,112 @@ static int CTRL(FCEUFILE *fp)
 
 static int TVCI(FCEUFILE *fp)
 {
- int t;
- if( (t=FCEU_fgetc(fp)) ==EOF)
-  return(0);
- if(t<=2)
- {
-  char *stuffo[3]={"NTSC","PAL","NTSC and PAL"};
-  if(t==0)
-   FCEUGameInfo->vidsys=GIV_NTSC;
-  else if(t==1)
-   FCEUGameInfo->vidsys=GIV_PAL;
-  FCEU_printf(" TV Standard Compatibility: %s\n",stuffo[t]);
- }
- return(1);
+	int t;
+	if( (t=FCEU_fgetc(fp)) ==EOF)
+		return(0);
+	if(t<=2)
+	{
+		char *stuffo[3]={"NTSC","PAL","NTSC and PAL"};
+		if(t==0)
+			FCEUGameInfo->vidsys=GIV_NTSC;
+		else if(t==1)
+			FCEUGameInfo->vidsys=GIV_PAL;
+		#ifdef FCEU_LOG
+		FCEU_printf(" TV Standard Compatibility: %s\n",stuffo[t]);
+		#endif
+	}
+	return(1);
 }
 
 static int EnableBattery(FCEUFILE *fp)
 {
- FCEU_printf(" Battery-backed.\n");
- if(FCEU_fgetc(fp)==EOF)
-  return(0);
- UNIFCart.battery=1;
- return(1);
+	#ifdef FCEU_LOG
+	FCEU_printf(" Battery-backed.\n");
+	#endif
+	if(FCEU_fgetc(fp)==EOF)
+		return(0);
+	UNIFCart.battery=1;
+	return(1);
 }
 
 static int LoadPRG(FCEUFILE *fp)
 {
- int z,t;
- z=uchead.ID[3]-'0';
+	int z,t;
+	z=uchead.ID[3]-'0';
 
- if(z<0 || z>15)
-  return(0);
- FCEU_printf(" PRG ROM %d size: %d",z,(int) uchead.info);
- if(malloced[z])
-  free(malloced[z]);
- t=FixRomSize(uchead.info,2048);
- if(!(malloced[z]=(uint8 *)FCEU_malloc(t)))
-  return(0);
- mallocedsizes[z]=t;
- memset(malloced[z]+uchead.info,0xFF,t-uchead.info);
- if(FCEU_fread(malloced[z],1,uchead.info,fp)!=uchead.info)
- {
-  FCEU_printf("Read Error!\n");
-  return(0);
- }
- else
-  FCEU_printf("\n");
+	if(z<0 || z>15)
+		return(0);
+#ifdef FCEU_LOG
+	FCEU_printf(" PRG ROM %d size: %d",z,(int) uchead.info);
+#endif
+	if(malloced[z])
+		free(malloced[z]);
+	t=FixRomSize(uchead.info,2048);
+	if(!(malloced[z]=(uint8 *)FCEU_malloc(t)))
+		return(0);
+	mallocedsizes[z]=t;
+	memset(malloced[z]+uchead.info,0xFF,t-uchead.info);
+	if(FCEU_fread(malloced[z],1,uchead.info,fp)!=uchead.info)
+	{
+#ifdef FCEU_LOG
+		FCEU_printf("Read Error!\n");
+#endif
+		return(0);
+	}
+#ifdef FCEU_LOG
+	else
+		FCEU_printf("\n");
+#endif
 
- SetupCartPRGMapping(z,malloced[z],t,0);
- return(1);
+	SetupCartPRGMapping(z,malloced[z],t,0);
+	return(1);
 }
 
 static int SetBoardName(FCEUFILE *fp)
 {
- if(!(boardname=(uint8 *)FCEU_malloc(uchead.info+1)))
-  return(0);
- FCEU_fread(boardname,1,uchead.info,fp);
- boardname[uchead.info]=0;
- FCEU_printf(" Board name: %s\n",boardname);
- sboardname=boardname;
- if(!memcmp(boardname,"NES-",4) || !memcmp(boardname,"UNL-",4) || !memcmp(boardname,"HVC-",4) || !memcmp(boardname,"BTL-",4) || !memcmp(boardname,"BMC-",4))
-  sboardname+=4;
- return(1);
+	if(!(boardname=(uint8 *)FCEU_malloc(uchead.info+1)))
+		return(0);
+	FCEU_fread(boardname,1,uchead.info,fp);
+	boardname[uchead.info]=0;
+	#ifdef FCEU_LOG
+	FCEU_printf(" Board name: %s\n",boardname);
+	#endif
+	sboardname=boardname;
+	if(!memcmp(boardname,"NES-",4) || !memcmp(boardname,"UNL-",4) || !memcmp(boardname,"HVC-",4) || !memcmp(boardname,"BTL-",4) || !memcmp(boardname,"BMC-",4))
+		sboardname+=4;
+	return(1);
 }
 
 static int LoadCHR(FCEUFILE *fp)
 {
- int z,t;
- z=uchead.ID[3]-'0';
- if(z<0 || z>15)
-  return(0);
- FCEU_printf(" CHR ROM %d size: %d",z,(int) uchead.info);
- if(malloced[16+z])
-  free(malloced[16+z]);
- t=FixRomSize(uchead.info,8192);
- if(!(malloced[16+z]=(uint8 *)FCEU_malloc(t)))
-  return(0);
- mallocedsizes[16+z]=t;
- memset(malloced[16+z]+uchead.info,0xFF,t-uchead.info);
- if(FCEU_fread(malloced[16+z],1,uchead.info,fp)!=uchead.info)
- {
-  FCEU_printf("Read Error!\n");
-  return(0);
- }
- else
-  FCEU_printf("\n");
+	int z,t;
+	z=uchead.ID[3]-'0';
+	if(z<0 || z>15)
+		return(0);
+#ifdef FCEU_LOG
+	FCEU_printf(" CHR ROM %d size: %d",z,(int) uchead.info);
+#endif
+	if(malloced[16+z])
+		free(malloced[16+z]);
+	t=FixRomSize(uchead.info,8192);
+	if(!(malloced[16+z]=(uint8 *)FCEU_malloc(t)))
+		return(0);
+	mallocedsizes[16+z]=t;
+	memset(malloced[16+z]+uchead.info,0xFF,t-uchead.info);
+	if(FCEU_fread(malloced[16+z],1,uchead.info,fp)!=uchead.info)
+	{
+#ifdef FCEU_LOG
+		FCEU_printf("Read Error!\n");
+#endif
+		return(0);
+	}
+#ifdef FCEU_LOG
+	else
+		FCEU_printf("\n");
+#endif
 
- SetupCartCHRMapping(z,malloced[16+z],t,0);
- return(1);
+	SetupCartCHRMapping(z,malloced[16+z],t,0);
+	return(1);
 }
 
 
@@ -573,49 +597,51 @@ static void UNIFGI(int h)
 
 int UNIFLoad(const char *name, FCEUFILE *fp)
 {
-  FCEU_fseek(fp,0,SEEK_SET);
-  FCEU_fread(&unhead,1,4,fp);
-  if(memcmp(&unhead,"UNIF",4))
-   return 0;
+	FCEU_fseek(fp,0,SEEK_SET);
+	FCEU_fread(&unhead,1,4,fp);
+	if(memcmp(&unhead,"UNIF",4))
+		return 0;
 
-  ResetCartMapping();
+	ResetCartMapping();
 
-  ResetExState(0,0);
-  ResetUNIF();
-  if(!FCEU_read32le(&unhead.info,fp))
-   goto aborto;
-  if(FCEU_fseek(fp,0x20,SEEK_SET)<0)
-   goto aborto;
-  if(!LoadUNIFChunks(fp))
-   goto aborto;
-  {
-   int x;
-   struct md5_context md5;
+	ResetExState(0,0);
+	ResetUNIF();
+	if(!FCEU_read32le(&unhead.info,fp))
+		goto aborto;
+	if(FCEU_fseek(fp,0x20,SEEK_SET)<0)
+		goto aborto;
+	if(!LoadUNIFChunks(fp))
+		goto aborto;
+	{
+		int x;
+		struct md5_context md5;
 
-   md5_starts(&md5);
+		md5_starts(&md5);
 
-   for(x=0;x<32;x++)
-    if(malloced[x])
-    {
-     md5_update(&md5,malloced[x],mallocedsizes[x]);
-    }
-    md5_finish(&md5,UNIFCart.MD5);
-    FCEU_printf(" ROM MD5:  0x%s\n",md5_asciistr(UNIFCart.MD5));
-    memcpy(FCEUGameInfo->MD5,UNIFCart.MD5,sizeof(UNIFCart.MD5));
-  }
+		for(x=0;x<32;x++)
+			if(malloced[x])
+			{
+				md5_update(&md5,malloced[x],mallocedsizes[x]);
+			}
+		md5_finish(&md5,UNIFCart.MD5);
+#ifdef FCEU_LOG
+		FCEU_printf(" ROM MD5:  0x%s\n",md5_asciistr(UNIFCart.MD5));
+#endif
+		memcpy(FCEUGameInfo->MD5,UNIFCart.MD5,sizeof(UNIFCart.MD5));
+	}
 
-  if(!InitializeBoard())
-   goto aborto;
+	if(!InitializeBoard())
+		goto aborto;
 
-  FCEU_LoadGameSave(&UNIFCart);
-  GameInterface=UNIFGI;
-  return 1;
+	FCEU_LoadGameSave(&UNIFCart);
+	GameInterface=UNIFGI;
+	return 1;
 
-  aborto:
+aborto:
 
-  FreeUNIF();
-  ResetUNIF();
-  return 0;
+	FreeUNIF();
+	ResetUNIF();
+	return 0;
 }
 
 int CopyFamiLoad()

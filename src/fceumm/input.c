@@ -97,7 +97,9 @@ uint8 serialROMautomat(uint8 chip, uint16 data)
 		{
 			uint8 state = serialROM[chip].state;
 			uint8 mask, i;
+			#ifdef FCEU_LOG
 			FCEU_printf("> state = %02x\n", serialROM[chip].state);
+			#endif
 			switch (serialROM[chip].cmd)
 			{
 				case 0x00:
@@ -106,8 +108,10 @@ uint8 serialROMautomat(uint8 chip, uint16 data)
 					{
 						serialROM[chip].addr &= mask;
 						serialROM[chip].addr |= ((data&1)<<(state&7));
+						#ifdef FCEU_LOG
 						if(state==7)
 							FCEU_printf("> addr = %02x\n", serialROM[chip].addr);
+						#endif
 					}
 					else if(state<15)
 					{
@@ -119,7 +123,9 @@ uint8 serialROMautomat(uint8 chip, uint16 data)
 						serialROM[chip].acc &= mask;
 						serialROM[chip].acc |= ((data&1)<<(state&7));
 						serialROM[chip].cmd = serialROM[chip].acc;
+						#ifdef FCEU_LOG
 						FCEU_printf("> cmd = %02x\n", serialROM[chip].cmd);
+						#endif
 					}
 					break;
 				case 0x01:

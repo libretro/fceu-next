@@ -278,174 +278,176 @@ struct CHINF {
 
 static void CheckHInfo(void)
 {
- /* ROM images that have the battery-backed bit set in the header that really
-    don't have battery-backed RAM is not that big of a problem, so I'll
-    treat this differently by only listing games that should have battery-backed RAM.
+	/* ROM images that have the battery-backed bit set in the header that really
+	   don't have battery-backed RAM is not that big of a problem, so I'll
+	   treat this differently by only listing games that should have battery-backed RAM.
 
-    Lower 64 bits of the MD5 hash.
- */
+	   Lower 64 bits of the MD5 hash.
+	 */
 
- static uint64 savie[]=
-  {
-   0x498c10dc463cfe95LL,  /* Battle Fleet */
-   0x6917ffcaca2d8466LL,  /* Famista '90 */
+	static uint64 savie[]=
+	{
+		0x498c10dc463cfe95LL,  /* Battle Fleet */
+		0x6917ffcaca2d8466LL,  /* Famista '90 */
 
-     0xd63dcc68c2b20adcLL,    /* Final Fantasy J */
-     0x012df596e2b31174LL,    /* Final Fantasy 1+2 */
-     0xf6b359a720549ecdLL,    /* Final Fantasy 2 */
-     0x5a30da1d9b4af35dLL,    /* Final Fantasy 3 */
+		0xd63dcc68c2b20adcLL,    /* Final Fantasy J */
+		0x012df596e2b31174LL,    /* Final Fantasy 1+2 */
+		0xf6b359a720549ecdLL,    /* Final Fantasy 2 */
+		0x5a30da1d9b4af35dLL,    /* Final Fantasy 3 */
 
-   0x2ee3417ba8b69706LL,  /* Hydlide 3*/
+		0x2ee3417ba8b69706LL,  /* Hydlide 3*/
 
-   0xebbce5a54cf3ecc0LL,  /* Justbreed */
+		0xebbce5a54cf3ecc0LL,  /* Justbreed */
 
-   0x6a858da551ba239eLL,  /* Kaijuu Monogatari */
-   0xa40666740b7d22feLL,  /* Mindseeker */
+		0x6a858da551ba239eLL,  /* Kaijuu Monogatari */
+		0xa40666740b7d22feLL,  /* Mindseeker */
 
-     0x77b811b2760104b9LL,    /* Mouryou Senki Madara */
+		0x77b811b2760104b9LL,    /* Mouryou Senki Madara */
 
-   0x11b69122efe86e8cLL,  /* RPG Jinsei Game */
+		0x11b69122efe86e8cLL,  /* RPG Jinsei Game */
 
-   0xa70b495314f4d075LL,  /* Ys 3 */
-
-
-   0xc04361e499748382LL,  /* AD&D Heroes of the Lance */
-   0xb72ee2337ced5792LL,  /* AD&D Hillsfar */
-   0x2b7103b7a27bd72fLL,  /* AD&D Pool of Radiance */
-
-    0x854d7947a3177f57LL,    /* Crystalis */
-
-   0xb0bcc02c843c1b79LL,  /* DW */
-   0x4a1f5336b86851b6LL,  /* DW */
-
-   0x2dcf3a98c7937c22LL,  /* DW 2 */
-   0x733026b6b72f2470LL,  /* Dw 3 */
-   0x98e55e09dfcc7533LL,  /* DW 4*/
-   0x8da46db592a1fcf4LL,  /* Faria */
-   0x91a6846d3202e3d6LL,  /* Final Fantasy */
-   0xedba17a2c4608d20LL,  /* ""    */
-
-     0x94b9484862a26cbaLL,    /* Legend of Zelda */
-     0x04a31647de80fdabLL,    /*      ""      */
-
-     0x9aa1dc16c05e7de5LL,    /* Startropics */
-     0x1b084107d0878bd0LL,    /* Startropics 2*/
-
-     0x836c0ff4f3e06e45LL,    /* Zelda 2 */
-
-     0x82000965f04a71bbLL,    /* Mirai Shinwa Jarvas */
-
-   0      /* Abandon all hope if the game has 0 in the lower 64-bits of its MD5 hash */
- };
-
- static struct CHINF moo[]=
-  {
-  #include "ines-correct.h"
-  };
- int tofix=0;
- int x;
- uint64 partialmd5=0;
-
- for(x=0;x<8;x++)
- {
-  partialmd5 |= (uint64)iNESCart.MD5[15-x] << (x*8);
-  //printf("%16llx\n",partialmd5);
- }
- CheckBad(partialmd5);
-
- x=0;
+		0xa70b495314f4d075LL,  /* Ys 3 */
 
 
- do
- {
-  if(moo[x].crc32==iNESGameCRC32)
-  {
-   if(moo[x].mapper>=0)
-   {
-    if(moo[x].mapper&0x800 && VROM_size)
-    {
-     VROM_size=0;
-     free(VROM);
-     VROM=0;
-     tofix|=8;
-    }
-    if(MapperNo!=(moo[x].mapper&0xFF))
-    {
-     tofix|=1;
-     MapperNo=moo[x].mapper&0xFF;
-    }
-   }
-   if(moo[x].mirror>=0)
-   {
-    if(moo[x].mirror==8)
-    {
-     if(Mirroring==2)  /* Anything but hard-wired(four screen). */
-     {
-      tofix|=2;
-      Mirroring=0;
-     }
-    }
-    else if(Mirroring!=moo[x].mirror)
-    {
-     if(Mirroring!=(moo[x].mirror&~4))
-      if((moo[x].mirror&~4)<=2)  /* Don't complain if one-screen mirroring
-           needs to be set(the iNES header can't
-           hold this information).
-        */
-       tofix|=2;
-     Mirroring=moo[x].mirror;
-    }
-   }
-   break;
-  }
-  x++;
- } while(moo[x].mirror>=0 || moo[x].mapper>=0);
+		0xc04361e499748382LL,  /* AD&D Heroes of the Lance */
+		0xb72ee2337ced5792LL,  /* AD&D Hillsfar */
+		0x2b7103b7a27bd72fLL,  /* AD&D Pool of Radiance */
 
- x=0;
- while(savie[x] != 0)
- {
-  if(savie[x] == partialmd5)
-  {
-   if(!(head.ROM_type&2))
-   {
-    tofix|=4;
-    head.ROM_type|=2;
-   }
-  }
-  x++;
- }
+		0x854d7947a3177f57LL,    /* Crystalis */
 
- /* Games that use these iNES mappers tend to have the four-screen bit set
-    when it should not be.
- */
- if((MapperNo==118 || MapperNo==24 || MapperNo==26) && (Mirroring==2))
- {
-  Mirroring=0;
-  tofix|=2;
- }
+		0xb0bcc02c843c1b79LL,  /* DW */
+		0x4a1f5336b86851b6LL,  /* DW */
 
- /* Four-screen mirroring implicitly set. */
- if(MapperNo==99)
-  Mirroring=2;
+		0x2dcf3a98c7937c22LL,  /* DW 2 */
+		0x733026b6b72f2470LL,  /* Dw 3 */
+		0x98e55e09dfcc7533LL,  /* DW 4*/
+		0x8da46db592a1fcf4LL,  /* Faria */
+		0x91a6846d3202e3d6LL,  /* Final Fantasy */
+		0xedba17a2c4608d20LL,  /* ""    */
 
- if(tofix)
- {
-  char gigastr[768];
-  strcpy(gigastr,"The iNES header contains incorrect information.  For now, the information will be corrected in RAM.  ");
-  if(tofix&1)
-   sprintf(gigastr+strlen(gigastr),"The mapper number should be set to %d.  ",MapperNo);
-  if(tofix&2)
-  {
-   char *mstr[3]={"Horizontal","Vertical","Four-screen"};
-   sprintf(gigastr+strlen(gigastr),"Mirroring should be set to \"%s\".  ",mstr[Mirroring&3]);
-  }
-  if(tofix&4)
-   strcat(gigastr,"The battery-backed bit should be set.  ");
-  if(tofix&8)
-   strcat(gigastr,"This game should not have any CHR ROM.  ");
-  strcat(gigastr,"\n");
-  FCEU_printf("%s",gigastr);
- }
+		0x94b9484862a26cbaLL,    /* Legend of Zelda */
+		0x04a31647de80fdabLL,    /*      ""      */
+
+		0x9aa1dc16c05e7de5LL,    /* Startropics */
+		0x1b084107d0878bd0LL,    /* Startropics 2*/
+
+		0x836c0ff4f3e06e45LL,    /* Zelda 2 */
+
+		0x82000965f04a71bbLL,    /* Mirai Shinwa Jarvas */
+
+		0      /* Abandon all hope if the game has 0 in the lower 64-bits of its MD5 hash */
+	};
+
+	static struct CHINF moo[]=
+	{
+#include "ines-correct.h"
+	};
+	int tofix=0;
+	int x;
+	uint64 partialmd5=0;
+
+	for(x=0;x<8;x++)
+	{
+		partialmd5 |= (uint64)iNESCart.MD5[15-x] << (x*8);
+		//printf("%16llx\n",partialmd5);
+	}
+	CheckBad(partialmd5);
+
+	x=0;
+
+
+	do
+	{
+		if(moo[x].crc32==iNESGameCRC32)
+		{
+			if(moo[x].mapper>=0)
+			{
+				if(moo[x].mapper&0x800 && VROM_size)
+				{
+					VROM_size=0;
+					free(VROM);
+					VROM=0;
+					tofix|=8;
+				}
+				if(MapperNo!=(moo[x].mapper&0xFF))
+				{
+					tofix|=1;
+					MapperNo=moo[x].mapper&0xFF;
+				}
+			}
+			if(moo[x].mirror>=0)
+			{
+				if(moo[x].mirror==8)
+				{
+					if(Mirroring==2)  /* Anything but hard-wired(four screen). */
+					{
+						tofix|=2;
+						Mirroring=0;
+					}
+				}
+				else if(Mirroring!=moo[x].mirror)
+				{
+					if(Mirroring!=(moo[x].mirror&~4))
+						if((moo[x].mirror&~4)<=2)  /* Don't complain if one-screen mirroring
+									      needs to be set(the iNES header can't
+									      hold this information).
+									    */
+							tofix|=2;
+					Mirroring=moo[x].mirror;
+				}
+			}
+			break;
+		}
+		x++;
+	} while(moo[x].mirror>=0 || moo[x].mapper>=0);
+
+	x=0;
+	while(savie[x] != 0)
+	{
+		if(savie[x] == partialmd5)
+		{
+			if(!(head.ROM_type&2))
+			{
+				tofix|=4;
+				head.ROM_type|=2;
+			}
+		}
+		x++;
+	}
+
+	/* Games that use these iNES mappers tend to have the four-screen bit set
+	   when it should not be.
+	 */
+	if((MapperNo==118 || MapperNo==24 || MapperNo==26) && (Mirroring==2))
+	{
+		Mirroring=0;
+		tofix|=2;
+	}
+
+	/* Four-screen mirroring implicitly set. */
+	if(MapperNo==99)
+		Mirroring=2;
+
+#ifdef FCEU_LOG
+	if(tofix)
+	{
+		char gigastr[768];
+		strcpy(gigastr,"The iNES header contains incorrect information.  For now, the information will be corrected in RAM.  ");
+		if(tofix&1)
+			sprintf(gigastr+strlen(gigastr),"The mapper number should be set to %d.  ",MapperNo);
+		if(tofix&2)
+		{
+			char *mstr[3]={"Horizontal","Vertical","Four-screen"};
+			sprintf(gigastr+strlen(gigastr),"Mirroring should be set to \"%s\".  ",mstr[Mirroring&3]);
+		}
+		if(tofix&4)
+			strcat(gigastr,"The battery-backed bit should be set.  ");
+		if(tofix&8)
+			strcat(gigastr,"This game should not have any CHR ROM.  ");
+		strcat(gigastr,"\n");
+		FCEU_printf("%s",gigastr);
+	}
+#endif
 }
 
 typedef struct {
@@ -455,171 +457,175 @@ typedef struct {
 
 int iNESLoad(const char *name, FCEUFILE *fp)
 {
-  struct md5_context md5;
-  
-  if(FCEU_fread(&head,1,16,fp)!=16)
-    return 0;
+	struct md5_context md5;
 
-  if(memcmp(&head,"NES\x1a",4))
-   return 0;
+	if(FCEU_fread(&head,1,16,fp)!=16)
+		return 0;
 
-  memset(&iNESCart,0,sizeof(iNESCart));
+	if(memcmp(&head,"NES\x1a",4))
+		return 0;
 
-  if(!memcmp((char *)(&head)+0x7,"DiskDude",8))
-  {
-   memset((char *)(&head)+0x7,0,0x9);
-  }
+	memset(&iNESCart,0,sizeof(iNESCart));
 
-  if(!memcmp((char *)(&head)+0x7,"demiforce",9))
-  {
-   memset((char *)(&head)+0x7,0,0x9);
-  }
+	if(!memcmp((char *)(&head)+0x7,"DiskDude",8))
+	{
+		memset((char *)(&head)+0x7,0,0x9);
+	}
 
-  if(!memcmp((char *)(&head)+0xA,"Ni03",4))
-  {
-   if(!memcmp((char *)(&head)+0x7,"Dis",3))
-    memset((char *)(&head)+0x7,0,0x9);
-   else
-    memset((char *)(&head)+0xA,0,0x6);
-  }
+	if(!memcmp((char *)(&head)+0x7,"demiforce",9))
+	{
+		memset((char *)(&head)+0x7,0,0x9);
+	}
 
-//  int ROM_size=0;
-  if(!head.ROM_size)
-  {
-//   FCEU_PrintError("No PRG ROM!");
-//   return(0);
-   ROM_size=256;
-//   head.ROM_size=255;
-   //head.ROM_size++;
-  }
-  else
-   ROM_size=head.ROM_size;
+	if(!memcmp((char *)(&head)+0xA,"Ni03",4))
+	{
+		if(!memcmp((char *)(&head)+0x7,"Dis",3))
+			memset((char *)(&head)+0x7,0,0x9);
+		else
+			memset((char *)(&head)+0xA,0,0x6);
+	}
 
-//    ROM_size = head.ROM_size;
-    VROM_size = head.VROM_size;
+	//  int ROM_size=0;
+	if(!head.ROM_size)
+	{
+		//   FCEU_PrintError("No PRG ROM!");
+		//   return(0);
+		ROM_size=256;
+		//   head.ROM_size=255;
+		//head.ROM_size++;
+	}
+	else
+		ROM_size=head.ROM_size;
 
-    ROM_size=uppow2(ROM_size);
-    if(VROM_size)
-      VROM_size=uppow2(VROM_size);
+	//    ROM_size = head.ROM_size;
+	VROM_size = head.VROM_size;
 
-    MapperNo = (head.ROM_type>>4);
-    MapperNo|=(head.ROM_type2&0xF0);
-    Mirroring = (head.ROM_type&1);
+	ROM_size=uppow2(ROM_size);
+	if(VROM_size)
+		VROM_size=uppow2(VROM_size);
 
-  if(head.ROM_type&8) Mirroring=2;
+	MapperNo = (head.ROM_type>>4);
+	MapperNo|=(head.ROM_type2&0xF0);
+	Mirroring = (head.ROM_type&1);
 
-  if(!(ROM=(uint8 *)FCEU_malloc(ROM_size<<14)))
-   return 0;
+	if(head.ROM_type&8) Mirroring=2;
 
-  if(VROM_size)
-   if(!(VROM=(uint8 *)FCEU_malloc(VROM_size<<13)))
-   {
-    free(ROM);
-    ROM=0;
-    return 0;
-   }
+	if(!(ROM=(uint8 *)FCEU_malloc(ROM_size<<14)))
+		return 0;
 
-  memset(ROM,0xFF,ROM_size<<14);
-  if(VROM_size) memset(VROM,0xFF,VROM_size<<13);
-  if(head.ROM_type&4)   /* Trainer */
-  {
-   trainerpoo=(uint8 *)FCEU_gmalloc(512);
-    FCEU_fread(trainerpoo,512,1,fp);
-  }
+	if(VROM_size)
+		if(!(VROM=(uint8 *)FCEU_malloc(VROM_size<<13)))
+		{
+			free(ROM);
+			ROM=0;
+			return 0;
+		}
 
-  ResetCartMapping();
-  ResetExState(0,0);
+	memset(ROM,0xFF,ROM_size<<14);
+	if(VROM_size) memset(VROM,0xFF,VROM_size<<13);
+	if(head.ROM_type&4)   /* Trainer */
+	{
+		trainerpoo=(uint8 *)FCEU_gmalloc(512);
+		FCEU_fread(trainerpoo,512,1,fp);
+	}
 
-  SetupCartPRGMapping(0,ROM,ROM_size*0x4000,0);
-//    SetupCartPRGMapping(1,WRAM,8192,1);
+	ResetCartMapping();
+	ResetExState(0,0);
 
-  if(head.ROM_size)
-   FCEU_fread(ROM,0x4000,head.ROM_size,fp);
-  else
-   FCEU_fread(ROM,0x4000,ROM_size,fp);
-     
-  if(VROM_size)
-   FCEU_fread(VROM,0x2000,head.VROM_size,fp);
+	SetupCartPRGMapping(0,ROM,ROM_size*0x4000,0);
+	//    SetupCartPRGMapping(1,WRAM,8192,1);
 
-    md5_starts(&md5);
-    md5_update(&md5,ROM,ROM_size<<14);
+	if(head.ROM_size)
+		FCEU_fread(ROM,0x4000,head.ROM_size,fp);
+	else
+		FCEU_fread(ROM,0x4000,ROM_size,fp);
 
-  iNESGameCRC32=CalcCRC32(0,ROM,ROM_size<<14);
+	if(VROM_size)
+		FCEU_fread(VROM,0x2000,head.VROM_size,fp);
 
-  if(VROM_size)
-  {
-   iNESGameCRC32=CalcCRC32(iNESGameCRC32,VROM,VROM_size<<13);
-     md5_update(&md5,VROM,VROM_size<<13);
-  }
-  md5_finish(&md5,iNESCart.MD5);
-  memcpy(FCEUGameInfo->MD5,iNESCart.MD5,sizeof(iNESCart.MD5));
+	md5_starts(&md5);
+	md5_update(&md5,ROM,ROM_size<<14);
 
-  iNESCart.CRC32=iNESGameCRC32;
+	iNESGameCRC32=CalcCRC32(0,ROM,ROM_size<<14);
 
-  FCEU_printf(" PRG ROM:  %3d x 16KiB\n",ROM_size);
-  FCEU_printf(" CHR ROM:  %3d x  8KiB\n",head.VROM_size);
-  FCEU_printf(" ROM CRC32:  0x%08lx\n",iNESGameCRC32);
-  FCEU_printf(" ROM MD5:  0x%s\n",md5_asciistr(iNESCart.MD5));
-  FCEU_printf(" Mapper:  %d\n", MapperNo);
-  FCEU_printf(" Mirroring: %s\n", Mirroring==2?"None(Four-screen)":Mirroring?"Vertical":"Horizontal");
+	if(VROM_size)
+	{
+		iNESGameCRC32=CalcCRC32(iNESGameCRC32,VROM,VROM_size<<13);
+		md5_update(&md5,VROM,VROM_size<<13);
+	}
+	md5_finish(&md5,iNESCart.MD5);
+	memcpy(FCEUGameInfo->MD5,iNESCart.MD5,sizeof(iNESCart.MD5));
 
-  if(head.ROM_type&2) FCEU_printf(" Battery-backed.\n");
-  if(head.ROM_type&4) FCEU_printf(" Trained.\n");
+	iNESCart.CRC32=iNESGameCRC32;
 
-  SetInput();
-  CheckHInfo();
-  {
-   int x;
-   uint64 partialmd5=0;
+#ifdef FCEU_LOG
+	FCEU_printf(" PRG ROM:  %3d x 16KiB\n",ROM_size);
+	FCEU_printf(" CHR ROM:  %3d x  8KiB\n",head.VROM_size);
+	FCEU_printf(" ROM CRC32:  0x%08lx\n",iNESGameCRC32);
+	FCEU_printf(" ROM MD5:  0x%s\n",md5_asciistr(iNESCart.MD5));
+	FCEU_printf(" Mapper:  %d\n", MapperNo);
+	FCEU_printf(" Mirroring: %s\n", Mirroring==2?"None(Four-screen)":Mirroring?"Vertical":"Horizontal");
 
-   for(x=0;x<8;x++)
-   {
-    partialmd5 |= (uint64)iNESCart.MD5[7-x] << (x*8);
-   }
+	if(head.ROM_type&2) FCEU_printf(" Battery-backed.\n");
+	if(head.ROM_type&4) FCEU_printf(" Trained.\n");
+#endif
 
-   FCEU_VSUniCheck(partialmd5, &MapperNo, &Mirroring);
-  }
-  /* Must remain here because above functions might change value of
-     VROM_size and free(VROM).
-  */
-  if(VROM_size)
-      SetupCartCHRMapping(0,VROM,VROM_size*0x2000,0);
+	SetInput();
+	CheckHInfo();
+	{
+		int x;
+		uint64 partialmd5=0;
 
-    if(Mirroring==2)
-      SetupCartMirroring(4,1,ExtraNTARAM);
-    else if(Mirroring>=0x10)
-        SetupCartMirroring(2+(Mirroring&1),1,0);
-       else
-    SetupCartMirroring(Mirroring&1,(Mirroring&4)>>2,0);
+		for(x=0;x<8;x++)
+		{
+			partialmd5 |= (uint64)iNESCart.MD5[7-x] << (x*8);
+		}
 
-  iNESCart.battery=(head.ROM_type&2)?1:0;
-  iNESCart.mirror=Mirroring;
+		FCEU_VSUniCheck(partialmd5, &MapperNo, &Mirroring);
+	}
+	/* Must remain here because above functions might change value of
+	   VROM_size and free(VROM).
+	 */
+	if(VROM_size)
+		SetupCartCHRMapping(0,VROM,VROM_size*0x2000,0);
 
-  //if(MapperNo != 18) {
-  //  if(ROM) free(ROM);
-  //  if(VROM) free(VROM);
-  //  ROM=VROM=0;
-  //  return(0);
-  // }
+	if(Mirroring==2)
+		SetupCartMirroring(4,1,ExtraNTARAM);
+	else if(Mirroring>=0x10)
+		SetupCartMirroring(2+(Mirroring&1),1,0);
+	else
+		SetupCartMirroring(Mirroring&1,(Mirroring&4)>>2,0);
 
-  if(NewiNES_Init(MapperNo))
-  {
+	iNESCart.battery=(head.ROM_type&2)?1:0;
+	iNESCart.mirror=Mirroring;
 
-  }
-  else
-  {
-   iNESCart.Power=iNESPower;
-   if(head.ROM_type&2)
-   {
-    iNESCart.SaveGame[0]=WRAM;
-    iNESCart.SaveGameLen[0]=8192;
-   }
-  }
-  FCEU_LoadGameSave(&iNESCart);
+	//if(MapperNo != 18) {
+	//  if(ROM) free(ROM);
+	//  if(VROM) free(VROM);
+	//  ROM=VROM=0;
+	//  return(0);
+	// }
 
-  GameInterface=iNESGI;
-  FCEU_printf("\n");
-  return 1;
+	if(NewiNES_Init(MapperNo))
+	{
+
+	}
+	else
+	{
+		iNESCart.Power=iNESPower;
+		if(head.ROM_type&2)
+		{
+			iNESCart.SaveGame[0]=WRAM;
+			iNESCart.SaveGameLen[0]=8192;
+		}
+	}
+	FCEU_LoadGameSave(&iNESCart);
+
+	GameInterface=iNESGI;
+#ifdef FCEU_LOG
+	FCEU_printf("\n");
+#endif
+	return 1;
 }
 
 void FASTAPASS(2) VRAM_BANK1(uint32 A, uint8 V)

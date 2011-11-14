@@ -41,92 +41,102 @@ typedef struct {
 
 void ApplyIPS(FILE *ips, MEMWRAP *dest)
 {
- uint8 header[5];
- uint32 count=0;
+	uint8 header[5];
+	uint32 count=0;
 
- FCEU_printf(" Applying IPS...\n");
- if(fread(header,1,5,ips)!=5)
- {
-  fclose(ips);
-  return;
- }
- if(memcmp(header,"PATCH",5))
- {
-  fclose(ips);
-  return;
- }
+#ifdef FCEU_LOG
+	FCEU_printf(" Applying IPS...\n");
+#endif
+	if(fread(header,1,5,ips)!=5)
+	{
+		fclose(ips);
+		return;
+	}
+	if(memcmp(header,"PATCH",5))
+	{
+		fclose(ips);
+		return;
+	}
 
- while(fread(header,1,3,ips)==3)
- {
-  uint32 offset=(header[0]<<16)|(header[1]<<8)|header[2];
-  uint16 size;
+	while(fread(header,1,3,ips)==3)
+	{
+		uint32 offset=(header[0]<<16)|(header[1]<<8)|header[2];
+		uint16 size;
 
-  if(!memcmp(header,"EOF",3))
-  {
-   FCEU_printf(" IPS EOF:  Did %d patches\n\n",count);
-   fclose(ips);
-   return;
-  }
+		if(!memcmp(header,"EOF",3))
+		{
+			#ifdef FCEU_LOG
+			FCEU_printf(" IPS EOF:  Did %d patches\n\n",count);
+			#endif
+			fclose(ips);
+			return;
+		}
 
-  size=fgetc(ips)<<8;
-  size|=fgetc(ips);
-  if(!size)  /* RLE */
-  {
-   uint8 *start;
-   uint8 b;
-   size=fgetc(ips)<<8;
-   size|=fgetc(ips);
+		size=fgetc(ips)<<8;
+		size|=fgetc(ips);
+		if(!size)  /* RLE */
+		{
+			uint8 *start;
+			uint8 b;
+			size=fgetc(ips)<<8;
+			size|=fgetc(ips);
 
-   //FCEU_printf("  Offset: %8d  Size: %5d RLE\n",offset,size);
+			//FCEU_printf("  Offset: %8d  Size: %5d RLE\n",offset,size);
 
-   if((offset+size)>dest->size)
-   {
-    uint8 *tmp;
+			if((offset+size)>dest->size)
+			{
+				uint8 *tmp;
 
-    // Probably a little slow.
-    tmp=(uint8 *)realloc(dest->data,offset+size);
-    if(!tmp)
-    {
-     FCEU_printf("  Oops.  IPS patch %d(type RLE) goes beyond end of file.  Could not allocate memory.\n",count);
-     fclose(ips);
-     return;
-    }
-    dest->size=offset+size;
-    dest->data=tmp;
-    memset(dest->data+dest->size,0,offset+size-dest->size);
-   }
-   b=fgetc(ips);
-   start=dest->data+offset;
-   do
-   {
-    *start=b;
-    start++;
-   } while(--size);
-  }
-  else    /* Normal patch */
-  {
-   //FCEU_printf("  Offset: %8d  Size: %5d\n",offset,size);
-   if((offset+size)>dest->size)
-   {
-    uint8 *tmp;
+				// Probably a little slow.
+				tmp=(uint8 *)realloc(dest->data,offset+size);
+				if(!tmp)
+				{
+					#ifdef FCEU_LOG
+					FCEU_printf("  Oops.  IPS patch %d(type RLE) goes beyond end of file.  Could not allocate memory.\n",count);
+					#endif
+					fclose(ips);
+					return;
+				}
+				dest->size=offset+size;
+				dest->data=tmp;
+				memset(dest->data+dest->size,0,offset+size-dest->size);
+			}
+			b=fgetc(ips);
+			start=dest->data+offset;
+			do
+			{
+				*start=b;
+				start++;
+			} while(--size);
+		}
+		else    /* Normal patch */
+		{
+			//FCEU_printf("  Offset: %8d  Size: %5d\n",offset,size);
+			if((offset+size)>dest->size)
+			{
+				uint8 *tmp;
 
-    // Probably a little slow.
-    tmp=(uint8 *)realloc(dest->data,offset+size);
-    if(!tmp)
-    {
-     FCEU_printf("  Oops.  IPS patch %d(type normal) goes beyond end of file.  Could not allocate memory.\n",count);
-     fclose(ips);
-     return;
-    }
-    dest->data=tmp;
-    memset(dest->data+dest->size,0,offset+size-dest->size);
-   }
-   fread(dest->data+offset,1,size,ips);
-  }
-  count++;
- }
- fclose(ips);
- FCEU_printf(" Hard IPS end!\n");
+				// Probably a little slow.
+				tmp=(uint8 *)realloc(dest->data,offset+size);
+				if(!tmp)
+				{
+					#ifdef FCEU_LOG
+					FCEU_printf("  Oops.  IPS patch %d(type normal) goes beyond end of file.  Could not allocate memory.\n",count);
+					#endif
+					fclose(ips);
+					return;
+				}
+				dest->data=tmp;
+				memset(dest->data+dest->size,0,offset+size-dest->size);
+			}
+			fread(dest->data+offset,1,size,ips);
+		}
+		count++;
+	}
+	fclose(ips);
+	#ifdef FCEU_LOG
+	FCEU_printf(" Hard IPS end!\n");
+	#endif
 }
 
 static MEMWRAP *MakeMemWrap(void *tz, int type)

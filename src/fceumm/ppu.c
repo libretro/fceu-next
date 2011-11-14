@@ -676,18 +676,16 @@ static void DoLine(void)
 	if(ScreenON || SpriteON)
 		FetchSpriteData();
 
+	X6502_Run(6);        // Tried 65, caused problems with Slalom(maybe others)
+	Fixit2();
 	if(GameHBIRQHook && (ScreenON || SpriteON) && ((PPU[0]&0x38)!=0x18))
 	{
-		X6502_Run(6);
-		Fixit2();
 		X6502_Run(4);
 		GameHBIRQHook();
 		X6502_Run(85-16-10);
 	}
 	else
 	{
-		X6502_Run(6);        // Tried 65, caused problems with Slalom(maybe others)
-		Fixit2();
 		X6502_Run(85-6-16);
 
 		// A semi-hack for Star Trek: 25th Anniversary
@@ -875,130 +873,125 @@ static void FetchSpriteData(void)
 
 static void RefreshSprites(void)
 {
-        int n;
-        SPRB *spr;
+	int n;
+	SPRB *spr;
 
-        spork=0;
-        if(!numsprites) return;
+	spork=0;
+	if(!numsprites) return;
 
-        FCEU_dwmemset(sprlinebuf,0x80808080,256);
-        numsprites--;
-        spr = (SPRB*)SPRBUF+numsprites;
+	FCEU_dwmemset(sprlinebuf,0x80808080,256);
+	numsprites--;
+	spr = (SPRB*)SPRBUF+numsprites;
 
-       for(n=numsprites;n>=0;n--,spr--)
-       {
-	 //#ifdef C80x86
-	 //register uint32 pixdata asm ("eax");
-	 //register uint8 J, atr;
-	 //#else
-        register uint32 pixdata;
-        register uint8 J,atr;
-	 //#endif
+	for(n=numsprites;n>=0;n--,spr--)
+	{
+		register uint32 pixdata;
+		register uint8 J,atr;
 
-        int x=spr->x;
-        uint8 *C;
-        uint8 *VB;
-                
-        pixdata=ppulut1[spr->ca[0]]|ppulut2[spr->ca[1]];
-        J=spr->ca[0]|spr->ca[1];
-        atr=spr->atr;
+		int x=spr->x;
+		uint8 *C;
+		uint8 *VB;
 
-                       if(J)
-                       {
-                        if(n==0 && SpriteBlurp && !(PPU_status&0x40))
-                        {
-                         sphitx=x;
-                         sphitdata=J;
-                         if(atr&H_FLIP)
-                          sphitdata=    ((J<<7)&0x80) |
-                                        ((J<<5)&0x40) |
-                                        ((J<<3)&0x20) |
-                                        ((J<<1)&0x10) |
-                                        ((J>>1)&0x08) |
-                                        ((J>>3)&0x04) |
-                                        ((J>>5)&0x02) |
-                                        ((J>>7)&0x01);                                          
-                        }
+		pixdata=ppulut1[spr->ca[0]]|ppulut2[spr->ca[1]];
+		J=spr->ca[0]|spr->ca[1];
+		atr=spr->atr;
 
-         C = sprlinebuf+x;
-         VB = (PALRAM+0x10)+((atr&3)<<2);
+		if(J)
+		{
+			if(n==0 && SpriteBlurp && !(PPU_status&0x40))
+			{
+				sphitx=x;
+				sphitdata=J;
+				if(atr&H_FLIP)
+					sphitdata=    ((J<<7)&0x80) |
+						((J<<5)&0x40) |
+						((J<<3)&0x20) |
+						((J<<1)&0x10) |
+						((J>>1)&0x08) |
+						((J>>3)&0x04) |
+						((J>>5)&0x02) |
+						((J>>7)&0x01);                                          
+			}
 
-         if(atr&SP_BACK) 
-         {
-          if (atr&H_FLIP)
-          {
-           if(J&0x80) C[7]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x40) C[6]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x20) C[5]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x10) C[4]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x08) C[3]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x04) C[2]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x02) C[1]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x01) C[0]=VB[pixdata]|0x40;
-          } else  {
-           if(J&0x80) C[0]=VB[pixdata&3]|0x40;   
-           pixdata>>=4;
-           if(J&0x40) C[1]=VB[pixdata&3]|0x40;   
-           pixdata>>=4;
-           if(J&0x20) C[2]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x10) C[3]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x08) C[4]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x04) C[5]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x02) C[6]=VB[pixdata&3]|0x40;
-           pixdata>>=4;
-           if(J&0x01) C[7]=VB[pixdata]|0x40;
-          }
-         } else {
-          if (atr&H_FLIP)
-          {
-           if(J&0x80) C[7]=VB[pixdata&3];   
-           pixdata>>=4;
-           if(J&0x40) C[6]=VB[pixdata&3];   
-           pixdata>>=4;
-           if(J&0x20) C[5]=VB[pixdata&3];
-           pixdata>>=4;
-           if(J&0x10) C[4]=VB[pixdata&3];
-           pixdata>>=4;
-           if(J&0x08) C[3]=VB[pixdata&3];
-           pixdata>>=4;
-           if(J&0x04) C[2]=VB[pixdata&3];
-           pixdata>>=4;
-           if(J&0x02) C[1]=VB[pixdata&3];
-           pixdata>>=4;
-           if(J&0x01) C[0]=VB[pixdata];
-          }else{                 
-           if(J&0x80) C[0]=VB[pixdata&3];   
-           pixdata>>=4;
-           if(J&0x40) C[1]=VB[pixdata&3];   
-           pixdata>>=4;
-           if(J&0x20) C[2]=VB[pixdata&3];
-           pixdata>>=4;
-           if(J&0x10) C[3]=VB[pixdata&3];
-           pixdata>>=4;
-           if(J&0x08) C[4]=VB[pixdata&3];
-           pixdata>>=4;
-           if(J&0x04) C[5]=VB[pixdata&3];
-           pixdata>>=4;
-           if(J&0x02) C[6]=VB[pixdata&3];
-           pixdata>>=4;
-           if(J&0x01) C[7]=VB[pixdata];
-          }
-         }
-        }
-      }
-     SpriteBlurp=0;
-        spork=1;
+			C = sprlinebuf+x;
+			VB = (PALRAM+0x10)+((atr&3)<<2);
+
+			if(atr&SP_BACK) 
+			{
+				if (atr&H_FLIP)
+				{
+					if(J&0x80) C[7]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x40) C[6]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x20) C[5]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x10) C[4]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x08) C[3]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x04) C[2]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x02) C[1]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x01) C[0]=VB[pixdata]|0x40;
+				} else  {
+					if(J&0x80) C[0]=VB[pixdata&3]|0x40;   
+					pixdata>>=4;
+					if(J&0x40) C[1]=VB[pixdata&3]|0x40;   
+					pixdata>>=4;
+					if(J&0x20) C[2]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x10) C[3]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x08) C[4]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x04) C[5]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x02) C[6]=VB[pixdata&3]|0x40;
+					pixdata>>=4;
+					if(J&0x01) C[7]=VB[pixdata]|0x40;
+				}
+			} else {
+				if (atr&H_FLIP)
+				{
+					if(J&0x80) C[7]=VB[pixdata&3];   
+					pixdata>>=4;
+					if(J&0x40) C[6]=VB[pixdata&3];   
+					pixdata>>=4;
+					if(J&0x20) C[5]=VB[pixdata&3];
+					pixdata>>=4;
+					if(J&0x10) C[4]=VB[pixdata&3];
+					pixdata>>=4;
+					if(J&0x08) C[3]=VB[pixdata&3];
+					pixdata>>=4;
+					if(J&0x04) C[2]=VB[pixdata&3];
+					pixdata>>=4;
+					if(J&0x02) C[1]=VB[pixdata&3];
+					pixdata>>=4;
+					if(J&0x01) C[0]=VB[pixdata];
+				}else{                 
+					if(J&0x80) C[0]=VB[pixdata&3];   
+					pixdata>>=4;
+					if(J&0x40) C[1]=VB[pixdata&3];   
+					pixdata>>=4;
+					if(J&0x20) C[2]=VB[pixdata&3];
+					pixdata>>=4;
+					if(J&0x10) C[3]=VB[pixdata&3];
+					pixdata>>=4;
+					if(J&0x08) C[4]=VB[pixdata&3];
+					pixdata>>=4;
+					if(J&0x04) C[5]=VB[pixdata&3];
+					pixdata>>=4;
+					if(J&0x02) C[6]=VB[pixdata&3];
+					pixdata>>=4;
+					if(J&0x01) C[7]=VB[pixdata];
+				}
+			}
+		}
+	}
+	SpriteBlurp=0;
+	spork=1;
 }
 
 static void CopySprites(uint8 *target)
@@ -1141,52 +1134,52 @@ void FCEUPPU_Reset(void)
 void FCEUPPU_Power(void)
 {
 	int x;
-    memset(NTARAM,0x00,0x800);
-    memset(PALRAM,0x00,0x20); 
-    memset(SPRAM,0x00,0x100); 
-    FCEUPPU_Reset();
+	memset(NTARAM,0x00,0x800);
+	memset(PALRAM,0x00,0x20); 
+	memset(SPRAM,0x00,0x100); 
+	FCEUPPU_Reset();
 #ifdef COPYFAMI
-    for(x=0x2000;x<0x2010;x+=8)
-    {
-         ARead[x]=A200x;
-         BWrite[x]=B2000;
-         ARead[x+1]=A200x;
-         BWrite[x+1]=B2001;
-         ARead[x+2]=A2002;
-         BWrite[x+2]=B2002;
-         ARead[x+3]=A200x;
-         BWrite[x+3]=B2003;
-         ARead[x+4]=A200x; //A2004;
-         BWrite[x+4]=B2004;
-         ARead[x+5]=A200x;
-         BWrite[x+5]=B2005;
-         ARead[x+6]=A200x;
-         BWrite[x+6]=B2006;
-         ARead[x+7]=A2007;
-         BWrite[x+7]=B2007;
-        }
+	for(x=0x2000;x<0x2010;x+=8)
+	{
+		ARead[x]=A200x;
+		BWrite[x]=B2000;
+		ARead[x+1]=A200x;
+		BWrite[x+1]=B2001;
+		ARead[x+2]=A2002;
+		BWrite[x+2]=B2002;
+		ARead[x+3]=A200x;
+		BWrite[x+3]=B2003;
+		ARead[x+4]=A200x; //A2004;
+		BWrite[x+4]=B2004;
+		ARead[x+5]=A200x;
+		BWrite[x+5]=B2005;
+		ARead[x+6]=A200x;
+		BWrite[x+6]=B2006;
+		ARead[x+7]=A2007;
+		BWrite[x+7]=B2007;
+	}
 #else
-    for(x=0x2000;x<0x4000;x+=8)
-    {
-         ARead[x]=A200x;
-         BWrite[x]=B2000;
-         ARead[x+1]=A200x;
-         BWrite[x+1]=B2001;
-         ARead[x+2]=A2002;
-         BWrite[x+2]=B2002;
-         ARead[x+3]=A200x;
-         BWrite[x+3]=B2003;
-         ARead[x+4]=A200x; //A2004;
-         BWrite[x+4]=B2004;
-         ARead[x+5]=A200x;
-         BWrite[x+5]=B2005;
-         ARead[x+6]=A200x;
-         BWrite[x+6]=B2006;
-         ARead[x+7]=A2007;
-         BWrite[x+7]=B2007;
-        }
+	for(x=0x2000;x<0x4000;x+=8)
+	{
+		ARead[x]=A200x;
+		BWrite[x]=B2000;
+		ARead[x+1]=A200x;
+		BWrite[x+1]=B2001;
+		ARead[x+2]=A2002;
+		BWrite[x+2]=B2002;
+		ARead[x+3]=A200x;
+		BWrite[x+3]=B2003;
+		ARead[x+4]=A200x; //A2004;
+		BWrite[x+4]=B2004;
+		ARead[x+5]=A200x;
+		BWrite[x+5]=B2005;
+		ARead[x+6]=A200x;
+		BWrite[x+6]=B2006;
+		ARead[x+7]=A2007;
+		BWrite[x+7]=B2007;
+	}
 #endif
-        BWrite[0x4014]=B4014;
+	BWrite[0x4014]=B4014;
 }
 
 
@@ -1216,32 +1209,28 @@ int FCEUPPU_Loop(int skip)
 		PPU_status&=0x1f;
 		X6502_Run(256);
 
+		if(ScreenON || SpriteON)
 		{
-			int x;
-
-			if(ScreenON || SpriteON)
-			{
-				if(GameHBIRQHook && ((PPU[0]&0x38)!=0x18))
-					GameHBIRQHook();
-				if(PPU_hook)
-					for(x=0;x<42;x++) {PPU_hook(0x2000); PPU_hook(0);}
-				if(GameHBIRQHook2)
-					GameHBIRQHook2();
-			}
-			X6502_Run(85-16);
-			if(ScreenON || SpriteON)
-			{  
-				RefreshAddr=TempAddr;  
-				if(PPU_hook) PPU_hook(RefreshAddr&0x3fff);  
-			}
-
-			/* Clean this stuff up later. */
-			spork=numsprites=0;
-			ResetRL(XBuf);
-
-			X6502_Run(16-kook);
-			kook ^= 1;
+			if(GameHBIRQHook && ((PPU[0]&0x38)!=0x18))
+				GameHBIRQHook();
+			if(PPU_hook)
+				for(uint32 x=0;x<42;x++) {PPU_hook(0x2000); PPU_hook(0);}
+			if(GameHBIRQHook2)
+				GameHBIRQHook2();
 		}
+		X6502_Run(85-16);
+		if(ScreenON || SpriteON)
+		{  
+			RefreshAddr=TempAddr;  
+			if(PPU_hook) PPU_hook(RefreshAddr&0x3fff);  
+		}
+
+		/* Clean this stuff up later. */
+		spork=numsprites=0;
+		ResetRL(XBuf);
+
+		X6502_Run(16-kook);
+		kook ^= 1;
 		int x,max,maxref;
 
 		deemp=PPU[1]>>5;
@@ -1293,6 +1282,6 @@ SFORMAT FCEUPPU_STATEINFO[]={
 
 void FCEUPPU_SaveState(void)
 {
- TempAddrT=TempAddr;   
- RefreshAddrT=RefreshAddr;
+	TempAddrT=TempAddr;   
+	RefreshAddrT=RefreshAddr;
 }

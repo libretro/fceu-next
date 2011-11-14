@@ -243,7 +243,9 @@ FCEUGI *FCEUI_LoadGame(const char *name)
 	FCEUGameInfo->inputfc=-1;
 	FCEUGameInfo->cspecial=0;
 
+#ifdef FCEU_LOG
 	FCEU_printf("Loading %s...\n\n",name);
+#endif
 
 	GetFileBase(name);
 
@@ -305,7 +307,9 @@ FCEUGI *FCEUI_CopyFamiStart(void)
 	FCEUGameInfo->inputfc=-1;
 	FCEUGameInfo->cspecial=0;
 
+#ifdef FCEU_LOG
 	FCEU_printf("Starting CopyFamicom...\n\n");
+#endif
 
 	if(!CopyFamiLoad())
 	{
