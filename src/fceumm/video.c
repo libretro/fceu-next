@@ -32,7 +32,6 @@
 #include "crc32.h"
 #include "state.h"
 #include "palette.h"
-#include "nsf.h"
 #include "input.h"
 #include "vsuni.h"
 

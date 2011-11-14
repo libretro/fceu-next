@@ -77,9 +77,6 @@ void FCEUI_SetSnapName(int a);
 /* 0 to keep 8-sprites limitation, 1 to remove it */
 void FCEUI_DisableSpriteLimitation(int a);
 
-/* -1 = no change, 0 = show, 1 = hide, 2 = internal toggle */
-void FCEUI_SetRenderDisable(int sprites, int bg);
-
 /* name=path and file to load.  returns 0 on failure, 1 on success */
 FCEUGI *FCEUI_LoadGame(const char *name);
 

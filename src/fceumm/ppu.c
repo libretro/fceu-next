@@ -27,7 +27,6 @@
 #include        "x6502.h"
 #include        "fceu.h"
 #include	"ppu.h"
-#include	"nsf.h"
 #include        "sound.h"
 #include        "general.h"
 #include        "myendian.h"
@@ -62,38 +61,6 @@ static void Fixit1(void);
 static uint32 ppulut1[256];
 static uint32 ppulut2[256];
 static uint32 ppulut3[128];
-
-static void makeppulut(void)
-{
- int x;
- int y;
- int cc,xo,pixel;
-
-
- for(x=0;x<256;x++)
- {
-  ppulut1[x]=0;
-  for(y=0;y<8;y++) 
-   ppulut1[x]|=((x>>(7-y))&1)<<(y*4);
-  ppulut2[x]=ppulut1[x]<<1;
- }
-
-  for(cc=0;cc<16;cc++)
-  {
-   for(xo=0;xo<8;xo++)
-   {
-    ppulut3[xo|(cc<<3)]=0;
-    for(pixel=0;pixel<8;pixel++)
-    {
-     int shiftr;
-      shiftr=(pixel+xo)/8;
-      shiftr*=2;
-      ppulut3[xo|(cc<<3)]|=(( cc>>shiftr )&3)<<(2+pixel*4);
-    }
-//    printf("%08x\n",ppulut3[xo|(cc<<3)]);
-   }
-  }
-} 
 
 static int ppudead=1;
 static int kook = 0;
@@ -386,29 +353,6 @@ void FCEUPPU_LineUpdate(void)
 	}
 } 
   
-static int tileview=0;
-static int rendis = 0;
-
-void FCEUI_ToggleTileView(void)
-{
- tileview^=1;
-}
-
-void FCEUI_SetRenderDisable(int sprites, int bg)
-{
- //printf("%d, %d\n",sprites,bg);
- if(sprites >= 0)
- { 
-  if(sprites == 2) rendis ^= 1;
-  else rendis = (rendis &~1) | sprites?1:0; 
- }
- if(bg >= 0)
- { 
-  if(bg == 2) rendis ^= 2;
-  else rendis = (rendis &~2) | bg?2:0;
- }
-}
-
 static void CheckSpriteHit(int p);
 
 static void EndRL(void)
@@ -703,14 +647,6 @@ static void DoLine(void)
 
 	X6502_Run(256);
 	EndRL();
-
-	if(rendis & 2)	/* User asked to not display background data. */
-	{
-		uint32 tem;
-		tem=Pal[0]|(Pal[0]<<8)|(Pal[0]<<16)|(Pal[0]<<24);
-		tem|=0x40404040;
-		FCEU_dwmemset(target,tem,256);
-	}
 
 	if(SpriteON)
 		CopySprites(target);
@@ -1067,82 +1003,81 @@ static void RefreshSprites(void)
 
 static void CopySprites(uint8 *target)
 {
-      uint8 n=((PPU[1]&4)^4)<<1;
-      uint8 *P=target;
+	uint8 n=((PPU[1]&4)^4)<<1;
+	uint8 *P=target;
 
-      if(!spork) return;
-      spork=0;
+	if(!spork)
+		return;
+	spork=0;
 
-      if(rendis & 1) return;	/* User asked to not display sprites. */
+loopskie:
+	{
+		uint32 t=*(uint32 *)(sprlinebuf+n);
 
-      loopskie:
-      {
-       uint32 t=*(uint32 *)(sprlinebuf+n);
+		if(t!=0x80808080)
+		{
+#ifdef LSB_FIRST
+			if(!(t&0x80))
+			{
+				if(!(t&0x40) || (P[n]&0x40))       // Normal sprite || behind bg sprite
+					P[n]=sprlinebuf[n];
+			}
 
-       if(t!=0x80808080)
-       {
-        #ifdef LSB_FIRST
-        if(!(t&0x80))
-        {
-         if(!(t&0x40) || (P[n]&0x40))       // Normal sprite || behind bg sprite
-          P[n]=sprlinebuf[n];
-        }
+			if(!(t&0x8000))
+			{
+				if(!(t&0x4000) || (P[n+1]&0x40))       // Normal sprite || behind bg sprite
+					P[n+1]=(sprlinebuf+1)[n];
+			}
 
-        if(!(t&0x8000))
-        {
-         if(!(t&0x4000) || (P[n+1]&0x40))       // Normal sprite || behind bg sprite
-          P[n+1]=(sprlinebuf+1)[n];
-        }
+			if(!(t&0x800000))
+			{
+				if(!(t&0x400000) || (P[n+2]&0x40))       // Normal sprite || behind bg sprite
+					P[n+2]=(sprlinebuf+2)[n];
+			}
 
-        if(!(t&0x800000))
-        {
-         if(!(t&0x400000) || (P[n+2]&0x40))       // Normal sprite || behind bg sprite
-          P[n+2]=(sprlinebuf+2)[n];
-        }
+			if(!(t&0x80000000))
+			{
+				if(!(t&0x40000000) || (P[n+3]&0x40))       // Normal sprite || behind bg sprite
+					P[n+3]=(sprlinebuf+3)[n];
+			}
+#else
+			/* TODO:  Simplify */
+			if(!(t&0x80000000))
+			{
+				if(!(t&0x40000000))       // Normal sprite
+					P[n]=sprlinebuf[n];
+				else if(P[n]&64)        // behind bg sprite
+					P[n]=sprlinebuf[n];
+			}
 
-        if(!(t&0x80000000))
-        {
-         if(!(t&0x40000000) || (P[n+3]&0x40))       // Normal sprite || behind bg sprite
-          P[n+3]=(sprlinebuf+3)[n];
-        }
-        #else
-        /* TODO:  Simplify */
-        if(!(t&0x80000000))
-        {
-         if(!(t&0x40000000))       // Normal sprite
-          P[n]=sprlinebuf[n];
-         else if(P[n]&64)        // behind bg sprite
-          P[n]=sprlinebuf[n];
-        }
+			if(!(t&0x800000))
+			{
+				if(!(t&0x400000))       // Normal sprite
+					P[n+1]=(sprlinebuf+1)[n];
+				else if(P[n+1]&64)        // behind bg sprite
+					P[n+1]=(sprlinebuf+1)[n];
+			}
 
-        if(!(t&0x800000))
-        {
-         if(!(t&0x400000))       // Normal sprite
-          P[n+1]=(sprlinebuf+1)[n];
-         else if(P[n+1]&64)        // behind bg sprite
-          P[n+1]=(sprlinebuf+1)[n];
-        }
+			if(!(t&0x8000))
+			{
+				if(!(t&0x4000))       // Normal sprite
+					P[n+2]=(sprlinebuf+2)[n];
+				else if(P[n+2]&64)        // behind bg sprite
+					P[n+2]=(sprlinebuf+2)[n];
+			}
 
-        if(!(t&0x8000))
-        {
-         if(!(t&0x4000))       // Normal sprite
-          P[n+2]=(sprlinebuf+2)[n];
-         else if(P[n+2]&64)        // behind bg sprite
-          P[n+2]=(sprlinebuf+2)[n];
-        }
-
-        if(!(t&0x80))
-        {
-         if(!(t&0x40))       // Normal sprite
-          P[n+3]=(sprlinebuf+3)[n];
-         else if(P[n+3]&64)        // behind bg sprite
-          P[n+3]=(sprlinebuf+3)[n];
-        }
-        #endif
-       }
-      }
-      n+=4;
-      if(n) goto loopskie;
+			if(!(t&0x80))
+			{
+				if(!(t&0x40))       // Normal sprite
+					P[n+3]=(sprlinebuf+3)[n];
+				else if(P[n+3]&64)        // behind bg sprite
+					P[n+3]=(sprlinebuf+3)[n];
+			}
+#endif
+		}
+	}
+	n+=4;
+	if(n) goto loopskie;
 }
 
 void FCEUPPU_SetVideoSystem(int w)
@@ -1163,7 +1098,33 @@ void FCEUPPU_SetVideoSystem(int w)
 
 void FCEUPPU_Init(void)
 {
- makeppulut();
+	int x;
+	int y;
+	int cc,xo,pixel;
+
+
+	for(x=0;x<256;x++)
+	{
+		ppulut1[x]=0;
+		for(y=0;y<8;y++) 
+			ppulut1[x]|=((x>>(7-y))&1)<<(y*4);
+		ppulut2[x]=ppulut1[x]<<1;
+	}
+
+	for(cc=0;cc<16;cc++)
+	{
+		for(xo=0;xo<8;xo++)
+		{
+			ppulut3[xo|(cc<<3)]=0;
+			for(pixel=0;pixel<8;pixel++)
+			{
+				int shiftr;
+				shiftr=(pixel+xo)/8;
+				shiftr*=2;
+				ppulut3[xo|(cc<<3)]|=(( cc>>shiftr )&3)<<(2+pixel*4);
+			}
+		}
+	}
 }
 
 void FCEUPPU_Reset(void)
@@ -1249,13 +1210,8 @@ int FCEUPPU_Loop(int skip)
 		   of this delay. 
 		 */
 		X6502_Run(12);
-		if(FCEUGameInfo->type==GIT_NSF)
-			DoNSFFrame();
-		else
-		{
-			if(VBlankON)
-				TriggerNMI();
-		}
+		if(VBlankON)
+			TriggerNMI();
 		X6502_Run((scanlines_per_frame-242)*(256+85)-12); //-12); 
 		PPU_status&=0x1f;
 		X6502_Run(256);
@@ -1286,30 +1242,25 @@ int FCEUPPU_Loop(int skip)
 			X6502_Run(16-kook);
 			kook ^= 1;
 		}
-		if(FCEUGameInfo->type==GIT_NSF)
-			X6502_Run((256+85)*240);
-		else
-		{
-			int x,max,maxref;
+		int x,max,maxref;
 
-			deemp=PPU[1]>>5;
-			for(scanline=0;scanline<240;)       //scanline is incremented in  DoLine.  Evil. :/
-			{
-				deempcnt[deemp]++;
-				DoLine();
-			}
-			if(MMC5Hack && (ScreenON || SpriteON)) MMC5_hb(scanline);
-			for(x=1,max=0,maxref=0;x<7;x++)
-			{
-				if(deempcnt[x]>max)
-				{
-					max=deempcnt[x];
-					maxref=x;
-				}
-				deempcnt[x]=0;
-			}
-			SetNESDeemph(maxref,0);
+		deemp=PPU[1]>>5;
+		for(scanline=0;scanline<240;)       //scanline is incremented in  DoLine.  Evil. :/
+		{
+			deempcnt[deemp]++;
+			DoLine();
 		}
+		if(MMC5Hack && (ScreenON || SpriteON)) MMC5_hb(scanline);
+		for(x=1,max=0,maxref=0;x<7;x++)
+		{
+			if(deempcnt[x]>max)
+			{
+				max=deempcnt[x];
+				maxref=x;
+			}
+			deempcnt[x]=0;
+		}
+		SetNESDeemph(maxref,0);
 	} /* else... to if(ppudead) */
 
 	return(1);

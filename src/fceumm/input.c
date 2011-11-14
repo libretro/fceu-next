@@ -89,176 +89,164 @@ uint8 oldCLK, bankFlip, DIFlip, OUT0state;
 
 uint8 serialROMautomat(uint8 chip, uint16 data)
 {
-  uint8 resp = 1;
-  chip &= 1;
-  if(!(data & CS))
-  {
-    if(!(data & CLK))
-    {
-      uint8 state = serialROM[chip].state;
-      uint8 mask, i;
-      FCEU_printf("> state = %02x\n", serialROM[chip].state);
-      switch (serialROM[chip].cmd)
-      {
-        case 0x00:
-             mask = ~(1<<(state&7));
-             if(state<8)
-             {
-               serialROM[chip].addr &= mask;
-               serialROM[chip].addr |= ((data&1)<<(state&7));
-               if(state==7)
-                FCEU_printf("> addr = %02x\n", serialROM[chip].addr);
-             }
-             else if(state<15)
-             {
-               serialROM[chip].acc &= mask;
-               serialROM[chip].acc |= ((data&1)<<(state&7));
-             }
-             else
-             {
-               serialROM[chip].acc &= mask;
-               serialROM[chip].acc |= ((data&1)<<(state&7));
-               serialROM[chip].cmd = serialROM[chip].acc;
-               FCEU_printf("> cmd = %02x\n", serialROM[chip].cmd);
-             }
-             break;
-        case 0x01:
-             if(state<30)
-               resp = (serialROM[chip].data[serialROM[chip].addr]>>(state&15))&1;
-             else
-             {
-               resp = (serialROM[chip].data[serialROM[chip].addr]>>(state&15))&1;
-               serialROM[chip].cmd = 0;
-             }
-             break;
-        case 0x06:
-             mask = ~(1<<(state&15));
-             if(state<30)
-             {
-               serialROM[chip].acc &= mask;
-               serialROM[chip].acc |= ((data&1)<<(state&15));
-             }
-             else
-             {
-               serialROM[chip].acc &= mask;
-               serialROM[chip].acc |= ((data&1)<<(state&15));
-               if(serialROM[chip].iswritable)
-                 serialROM[chip].data[serialROM[chip].addr] = serialROM[chip].acc;
-               serialROM[chip].cmd = 0;
-             }
-             break;
-        case 0x0C:
-             for(i=0;i<128;i++)
-                serialROM[chip].data[i] = 0xFFFF;
-             serialROM[chip].cmd = 0;
-             resp = 1;
-             break;
-        case 0x0D:
-             serialROM[chip].cmd = 0;
-             resp = 1;
-             break;
-        case 0x09:
-             serialROM[chip].cmd = 0;
-             serialROM[chip].iswritable = 1;
-             break;
-        case 0x0B:
-             serialROM[chip].cmd = 0;
-             serialROM[chip].iswritable = 0;
-             break;
-        default:
-             serialROM[chip].cmd = 0;
-             serialROM[chip].state = 0;
-             break;
-      }
-    }
-    else
-    {
-      if(serialROM[chip].cmd == 0)
-      {
-        if(serialROM[chip].state>15)
-          serialROM[chip].state = 0;
-      }
-      else
-        serialROM[chip].state++;
-    }
-  }
-  else
-  {
-    serialROM[chip].cmd = 0;
-    serialROM[chip].state = 0;
-  }
-  return resp;
+	uint8 resp = 1;
+	chip &= 1;
+	if(!(data & CS))
+	{
+		if(!(data & CLK))
+		{
+			uint8 state = serialROM[chip].state;
+			uint8 mask, i;
+			FCEU_printf("> state = %02x\n", serialROM[chip].state);
+			switch (serialROM[chip].cmd)
+			{
+				case 0x00:
+					mask = ~(1<<(state&7));
+					if(state<8)
+					{
+						serialROM[chip].addr &= mask;
+						serialROM[chip].addr |= ((data&1)<<(state&7));
+						if(state==7)
+							FCEU_printf("> addr = %02x\n", serialROM[chip].addr);
+					}
+					else if(state<15)
+					{
+						serialROM[chip].acc &= mask;
+						serialROM[chip].acc |= ((data&1)<<(state&7));
+					}
+					else
+					{
+						serialROM[chip].acc &= mask;
+						serialROM[chip].acc |= ((data&1)<<(state&7));
+						serialROM[chip].cmd = serialROM[chip].acc;
+						FCEU_printf("> cmd = %02x\n", serialROM[chip].cmd);
+					}
+					break;
+				case 0x01:
+					if(state<30)
+						resp = (serialROM[chip].data[serialROM[chip].addr]>>(state&15))&1;
+					else
+					{
+						resp = (serialROM[chip].data[serialROM[chip].addr]>>(state&15))&1;
+						serialROM[chip].cmd = 0;
+					}
+					break;
+				case 0x06:
+					mask = ~(1<<(state&15));
+					if(state<30)
+					{
+						serialROM[chip].acc &= mask;
+						serialROM[chip].acc |= ((data&1)<<(state&15));
+					}
+					else
+					{
+						serialROM[chip].acc &= mask;
+						serialROM[chip].acc |= ((data&1)<<(state&15));
+						if(serialROM[chip].iswritable)
+							serialROM[chip].data[serialROM[chip].addr] = serialROM[chip].acc;
+						serialROM[chip].cmd = 0;
+					}
+					break;
+				case 0x0C:
+					for(i=0;i<128;i++)
+						serialROM[chip].data[i] = 0xFFFF;
+					serialROM[chip].cmd = 0;
+					resp = 1;
+					break;
+				case 0x0D:
+					serialROM[chip].cmd = 0;
+					resp = 1;
+					break;
+				case 0x09:
+					serialROM[chip].cmd = 0;
+					serialROM[chip].iswritable = 1;
+					break;
+				case 0x0B:
+					serialROM[chip].cmd = 0;
+					serialROM[chip].iswritable = 0;
+					break;
+				default:
+					serialROM[chip].cmd = 0;
+					serialROM[chip].state = 0;
+					break;
+			}
+		}
+		else
+		{
+			if(serialROM[chip].cmd == 0)
+			{
+				if(serialROM[chip].state>15)
+					serialROM[chip].state = 0;
+			}
+			else
+				serialROM[chip].state++;
+		}
+	}
+	else
+	{
+		serialROM[chip].cmd = 0;
+		serialROM[chip].state = 0;
+	}
+	return resp;
 }
 
 uint8 serialROMstate(uint8 linestate)
 {
-  uint8 answ = 0, newCLK = linestate & CLK;
-  if((!oldCLK)&&newCLK)
-  {
-    DIFlip^=1;
-    if(linestate&&OUT0)
-    {
-      serialROMautomat(bankFlip, 04+DIFlip);
-      bankFlip^=1;
-      serialROMautomat(bankFlip, 02+DIFlip);
-    }    
-  }
-  answ = DIFlip^1;
-  answ |= (serialROMautomat(bankFlip, newCLK+DIFlip)<<1);
-  oldCLK = newCLK;
-  return answ << 3;
+	uint8 answ = 0, newCLK = linestate & CLK;
+	if((!oldCLK)&&newCLK)
+	{
+		DIFlip^=1;
+		if(linestate&&OUT0)
+		{
+			serialROMautomat(bankFlip, 04+DIFlip);
+			bankFlip^=1;
+			serialROMautomat(bankFlip, 02+DIFlip);
+		}    
+	}
+	answ = DIFlip^1;
+	answ |= (serialROMautomat(bankFlip, newCLK+DIFlip)<<1);
+	oldCLK = newCLK;
+	return answ << 3;
 }
 
 static DECLFR(JPRead)
 {
-  uint8 ret=0;
+	uint8 ret=0;
 
-  if(JPorts[A&1]->Read)
-    ret|=JPorts[A&1]->Read(A&1);
+	if(JPorts[A&1]->Read)
+		ret|=JPorts[A&1]->Read(A&1);
 
-  if(FCExp)
-    if(FCExp->Read)
-      ret=FCExp->Read(A&1,ret);
+	if(FCExp)
+		if(FCExp->Read)
+			ret=FCExp->Read(A&1,ret);
 
-  ret|=X.DB&0xC0;
+	ret|=X.DB&0xC0;
 
-//  if(A==0x4017)
-//{
-//    ret |= serialROMstate(OUT0);
-//    serialROMstate(OUT0|CLK);
-//    FCEU_printf("> 4017 read %02x\n",ret);
-//  }
-     
-  return(ret);
+	return(ret);
 }
 
 static DECLFW(B4016)
 {
-//  OUT0state = V;
-//  serialROMstate(OUT0state|CLK);
-//  FCEU_printf("> 4016 write %02x\n",V);
+	if(FCExp)
+		if(FCExp->Write)
+			FCExp->Write(V&7);
 
-  if(FCExp)
-    if(FCExp->Write)
-      FCExp->Write(V&7);
+	if(JPorts[0]->Write)
+		JPorts[0]->Write(V&1);
+	if(JPorts[1]->Write)
+		JPorts[1]->Write(V&1);
 
-  if(JPorts[0]->Write)
-    JPorts[0]->Write(V&1);
-  if(JPorts[1]->Write)
-    JPorts[1]->Write(V&1);
-
-  if((LastStrobe&1) && (!(V&1)))
-  {
-//    FCEUD_UpdateInput();    
-    if(JPorts[0]->Strobe)
-      JPorts[0]->Strobe(0);
-    if(JPorts[1]->Strobe)
-      JPorts[1]->Strobe(1);
-    if(FCExp)
-      if(FCExp->Strobe)
-        FCExp->Strobe();
-   }
-   LastStrobe=V&0x1;
+	if((LastStrobe&1) && (!(V&1)))
+	{
+		if(JPorts[0]->Strobe)
+			JPorts[0]->Strobe(0);
+		if(JPorts[1]->Strobe)
+			JPorts[1]->Strobe(1);
+		if(FCExp)
+			if(FCExp->Strobe)
+				FCExp->Strobe();
+	}
+	LastStrobe=V&0x1;
 }
 
 void FCEU_DrawInput(uint8 *buf)
@@ -274,19 +262,18 @@ void FCEU_DrawInput(uint8 *buf)
 
 void FCEU_UpdateInput(void)
 {
-  int x;
+	if(JPorts[0]->Update)
+		JPorts[0]->Update(0,InputDataPtr[0],JPAttrib[0]);
 
-  for(x=0;x<2;x++)
-  {
-    if(JPorts[x]->Update)
-      JPorts[x]->Update(x,InputDataPtr[x],JPAttrib[x]);
-  }
-  if(FCExp)
-    if(FCExp->Update)
-      FCExp->Update(InputDataPtrFC,JPAttribFC);
+	if(JPorts[1]->Update)
+		JPorts[1]->Update(1,InputDataPtr[1],JPAttrib[1]);
 
-  if(FCEUGameInfo->type==GIT_VSUNI)
-    if(coinon) coinon--;
+	if(FCExp)
+		if(FCExp->Update)
+			FCExp->Update(InputDataPtrFC,JPAttribFC);
+
+	if(FCEUGameInfo->type==GIT_VSUNI)
+		if(coinon) coinon--;
 }
 
 static DECLFR(VSUNIRead0)
@@ -314,38 +301,40 @@ static DECLFR(VSUNIRead1)
 
 static void SLHLHook(uint8 *bg, uint8 *spr, uint32 linets, int final)
 {
-  int x;
-  for(x=0;x<2;x++)
-     if(JPorts[x]->SLHook)
-       JPorts[x]->SLHook(x,bg,spr,linets,final);
-  if(FCExp)
-    if(FCExp->SLHook)
-      FCExp->SLHook(bg,spr,linets,final);
+	if(JPorts[0]->SLHook)
+		JPorts[0]->SLHook(0,bg,spr,linets,final);
+
+	if(JPorts[1]->SLHook)
+		JPorts[1]->SLHook(1,bg,spr,linets,final);
+
+	if(FCExp)
+		if(FCExp->SLHook)
+			FCExp->SLHook(bg,spr,linets,final);
 }
 
 static void CheckSLHook(void)
 {
-  InputScanlineHook=0;
-  if(JPorts[0]->SLHook || JPorts[1]->SLHook)
-    InputScanlineHook=SLHLHook;
-  if(FCExp)
-    if(FCExp->SLHook)
-      InputScanlineHook=SLHLHook;
+	InputScanlineHook=0;
+	if(JPorts[0]->SLHook || JPorts[1]->SLHook)
+		InputScanlineHook=SLHLHook;
+	if(FCExp)
+		if(FCExp->SLHook)
+			InputScanlineHook=SLHLHook;
 }
 
 static void FASTAPASS(1) SetInputStuff(int x)
 {
-  switch(JPType[x])
-  {
-    case SI_NONE:      JPorts[x]=&DummyJPort; break;
-    case SI_GAMEPAD:   JPorts[x]=FCEU_InitJoyPad(x); break;
-    case SI_ARKANOID:  JPorts[x]=FCEU_InitArkanoid(x); break;
-    case SI_MOUSE:     JPorts[x]=FCEU_InitMouse(x); break;
-    case SI_ZAPPER:    JPorts[x]=FCEU_InitZapper(x); break;
-    case SI_POWERPADA: JPorts[x]=FCEU_InitPowerpadA(x); break;
-    case SI_POWERPADB: JPorts[x]=FCEU_InitPowerpadB(x); break;
-  }
-  CheckSLHook();
+	switch(JPType[x])
+	{
+		case SI_NONE:      JPorts[x]=&DummyJPort; break;
+		case SI_GAMEPAD:   JPorts[x]=FCEU_InitJoyPad(x); break;
+		case SI_ARKANOID:  JPorts[x]=FCEU_InitArkanoid(x); break;
+		case SI_MOUSE:     JPorts[x]=FCEU_InitMouse(x); break;
+		case SI_ZAPPER:    JPorts[x]=FCEU_InitZapper(x); break;
+		case SI_POWERPADA: JPorts[x]=FCEU_InitPowerpadA(x); break;
+		case SI_POWERPADB: JPorts[x]=FCEU_InitPowerpadB(x); break;
+	}
+	CheckSLHook();
 }
 
 static void SetInputStuffFC(void)
@@ -390,18 +379,18 @@ void InitializeInput(void)
 
 void FCEUI_SetInput(int port, int type, void *ptr, int attrib)
 {
-  JPAttrib[port]=attrib;
-  JPType[port]=type;
-  InputDataPtr[port]=ptr;
-  SetInputStuff(port);
+	JPAttrib[port]=attrib;
+	JPType[port]=type;
+	InputDataPtr[port]=ptr;
+	SetInputStuff(port);
 }
 
 void FCEUI_SetInputFC(int type, void *ptr, int attrib)
 {
-  JPAttribFC=attrib;
-  JPTypeFC=type;
-  InputDataPtrFC=ptr;
-  SetInputStuffFC();
+	JPAttribFC=attrib;
+	JPTypeFC=type;
+	InputDataPtrFC=ptr;
+	SetInputStuffFC();
 }
 
 #if 0

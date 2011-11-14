@@ -33,7 +33,6 @@
 #include  "memory.h"
 
 #include  "cart.h"
-#include  "nsf.h"
 #include  "fds.h"
 #include  "ines.h"
 #include  "unif.h"
@@ -190,21 +189,20 @@ static DECLFR(ARAMH)
 
 static void CloseGame(void)
 {
- if(FCEUGameInfo)
- {
-  if(FCEUGameInfo->name)
-  {
-   free(FCEUGameInfo->name);
-   FCEUGameInfo->name=0;
-  }
-  if(FCEUGameInfo->type!=GIT_NSF)
-   FCEU_FlushGameCheats(0,0);
-  GameInterface(GI_CLOSE);
-  ResetExState(0,0);
-  CloseGenie();
-  free(FCEUGameInfo);
-  FCEUGameInfo = 0;
- }
+	if(FCEUGameInfo)
+	{
+		if(FCEUGameInfo->name)
+		{
+			free(FCEUGameInfo->name);
+			FCEUGameInfo->name=0;
+		}
+		FCEU_FlushGameCheats(0,0);
+		GameInterface(GI_CLOSE);
+		ResetExState(0,0);
+		CloseGenie();
+		free(FCEUGameInfo);
+		FCEUGameInfo = 0;
+	}
 }
 
 void ResetGameLoaded(void)
@@ -225,121 +223,110 @@ void ResetGameLoaded(void)
 int UNIFLoad(const char *name, FCEUFILE *fp);
 int iNESLoad(const char *name, FCEUFILE *fp);
 int FDSLoad(const char *name, FCEUFILE *fp);
-int NSFLoad(FCEUFILE *fp);
 
 FCEUGI *FCEUI_LoadGame(const char *name)
 {
-  FCEUFILE *fp;
-  char *ipsfn;
+	FCEUFILE *fp;
+	char *ipsfn;
 
-  ResetGameLoaded();
+	ResetGameLoaded();
 
-  FCEUGameInfo = malloc(sizeof(FCEUGI));
-  memset(FCEUGameInfo, 0, sizeof(FCEUGI));
+	FCEUGameInfo = malloc(sizeof(FCEUGI));
+	memset(FCEUGameInfo, 0, sizeof(FCEUGI));
 
-  FCEUGameInfo->soundchan = 0;
-  FCEUGameInfo->soundrate = 0;
-  FCEUGameInfo->name=0;
-  FCEUGameInfo->type=GIT_CART;
-  FCEUGameInfo->vidsys=GIV_USER;
-  FCEUGameInfo->input[0]=FCEUGameInfo->input[1]=-1;
-  FCEUGameInfo->inputfc=-1;
-  FCEUGameInfo->cspecial=0;
+	FCEUGameInfo->soundchan = 0;
+	FCEUGameInfo->soundrate = 0;
+	FCEUGameInfo->name=0;
+	FCEUGameInfo->type=GIT_CART;
+	FCEUGameInfo->vidsys=GIV_USER;
+	FCEUGameInfo->input[0]=FCEUGameInfo->input[1]=-1;
+	FCEUGameInfo->inputfc=-1;
+	FCEUGameInfo->cspecial=0;
 
-  FCEU_printf("Loading %s...\n\n",name);
+	FCEU_printf("Loading %s...\n\n",name);
 
-  GetFileBase(name);
+	GetFileBase(name);
 
-  ipsfn=FCEU_MakeFName(FCEUMKF_IPS,0,0);
-  fp=FCEU_fopen(name,ipsfn,"rb",0);
-  free(ipsfn);
+	ipsfn=FCEU_MakeFName(FCEUMKF_IPS,0,0);
+	fp=FCEU_fopen(name,ipsfn,"rb",0);
+	free(ipsfn);
 
-  if(!fp)
-  {
-    FCEU_PrintError("Error opening \"%s\"!",name);
-   return 0;
-  }
+	if(!fp)
+	{
+		FCEU_PrintError("Error opening \"%s\"!",name);
+		return 0;
+	}
 
-  if(iNESLoad(name,fp))
-   goto endlseq;
-  if(NSFLoad(fp))
-   goto endlseq;
-  if(UNIFLoad(name,fp))
-   goto endlseq;
-  if(FDSLoad(name,fp))
-   goto endlseq;
+	if(iNESLoad(name,fp))
+		goto endlseq;
+	if(UNIFLoad(name,fp))
+		goto endlseq;
+	if(FDSLoad(name,fp))
+		goto endlseq;
 
-  FCEU_PrintError("An error occurred while loading the file.");
-  FCEU_fclose(fp);
-  return 0;
+	FCEU_PrintError("An error occurred while loading the file.");
+	FCEU_fclose(fp);
+	return 0;
 
-  endlseq:
-  FCEU_fclose(fp);
+endlseq:
+	FCEU_fclose(fp);
 
-  FCEU_ResetVidSys();
-  if(FCEUGameInfo->type!=GIT_NSF)
-   if(FSettings.GameGenie)
-    OpenGenie();
+	FCEU_ResetVidSys();
+	if(FSettings.GameGenie)
+		OpenGenie();
 
-  PowerNES();
-  FCEUSS_CheckStates();
+	PowerNES();
+	FCEUSS_CheckStates();
 
-  if(FCEUGameInfo->type!=GIT_NSF)
-  {
-   FCEU_LoadGamePalette();
-   //FCEU_LoadGameCheats(0);
-  }
+	FCEU_LoadGamePalette();
+	//FCEU_LoadGameCheats(0);
 
-  FCEU_ResetPalette();
-  FCEU_ResetMessages();  // Save state, status messages, etc.
+	FCEU_ResetPalette();
+	FCEU_ResetMessages();  // Save state, status messages, etc.
 
-  return(FCEUGameInfo);
+	return(FCEUGameInfo);
 }
 
 int CopyFamiLoad(void);
 
 FCEUGI *FCEUI_CopyFamiStart(void)
 {
-  ResetGameLoaded();
+	ResetGameLoaded();
 
-  FCEUGameInfo = malloc(sizeof(FCEUGI));
-  memset(FCEUGameInfo, 0, sizeof(FCEUGI));
+	FCEUGameInfo = malloc(sizeof(FCEUGI));
+	memset(FCEUGameInfo, 0, sizeof(FCEUGI));
 
-  FCEUGameInfo->soundchan = 0;
-  FCEUGameInfo->soundrate = 0;
-  FCEUGameInfo->name="copyfami";
-  FCEUGameInfo->type=GIT_CART;
-  FCEUGameInfo->vidsys=GIV_USER;
-  FCEUGameInfo->input[0]=FCEUGameInfo->input[1]=-1;
-  FCEUGameInfo->inputfc=-1;
-  FCEUGameInfo->cspecial=0;
+	FCEUGameInfo->soundchan = 0;
+	FCEUGameInfo->soundrate = 0;
+	FCEUGameInfo->name="copyfami";
+	FCEUGameInfo->type=GIT_CART;
+	FCEUGameInfo->vidsys=GIV_USER;
+	FCEUGameInfo->input[0]=FCEUGameInfo->input[1]=-1;
+	FCEUGameInfo->inputfc=-1;
+	FCEUGameInfo->cspecial=0;
 
-  FCEU_printf("Starting CopyFamicom...\n\n");
+	FCEU_printf("Starting CopyFamicom...\n\n");
 
-  if(!CopyFamiLoad())
-  {
-    FCEU_PrintError("An error occurred while starting CopyFamicom.");
-    return 0;
-  }
+	if(!CopyFamiLoad())
+	{
+		FCEU_PrintError("An error occurred while starting CopyFamicom.");
+		return 0;
+	}
 
-  FCEU_ResetVidSys();
-  if(FCEUGameInfo->type!=GIT_NSF)
-   if(FSettings.GameGenie)
-    OpenGenie();
+	FCEU_ResetVidSys();
+	if(FSettings.GameGenie)
+		OpenGenie();
 
-  PowerNES();
-  FCEUSS_CheckStates();
+	PowerNES();
+	FCEUSS_CheckStates();
 
-  if(FCEUGameInfo->type!=GIT_NSF)
-  {
-   FCEU_LoadGamePalette();
-   FCEU_LoadGameCheats(0);
-  }
+	FCEU_LoadGamePalette();
+	FCEU_LoadGameCheats(0);
 
-  FCEU_ResetPalette();
-  FCEU_ResetMessages();  // Save state, status messages, etc.
+	FCEU_ResetPalette();
+	FCEU_ResetMessages();  // Save state, status messages, etc.
 
-  return(FCEUGameInfo);
+	return(FCEUGameInfo);
 }
 
 int FCEUI_Initialize(void)
@@ -365,21 +352,21 @@ void FCEUI_Kill(void)
 
 void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize, int skip)
 {
- int r,ssize;
+	int r,ssize;
 
- FCEU_UpdateInput();
- if(geniestage!=1) FCEU_ApplyPeriodicCheats();
- r=FCEUPPU_Loop(0);
+	FCEU_UpdateInput();
+	if(geniestage!=1) FCEU_ApplyPeriodicCheats();
+	r=FCEUPPU_Loop(0);
 
- ssize=FlushEmulateSound();
+	ssize=FlushEmulateSound();
 
- timestampbase += timestamp;
+	timestampbase += timestamp;
 
- timestamp = 0;
+	timestamp = 0;
 
- *pXBuf=skip?0:XBuf;
- *SoundBuf=WaveFinal;
- *SoundBufSize=ssize;
+	*pXBuf=skip?0:XBuf;
+	*SoundBuf=WaveFinal;
+	*SoundBufSize=ssize;
 }
 
 void FCEUI_CloseGame(void)
