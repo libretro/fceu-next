@@ -42,9 +42,6 @@
 static void (*SPreSave)(void);
 static void (*SPostSave)(void);
 
-static int SaveStateStatus[10];
-static int StateShow;
-
 static SFORMAT SFMDATA[64];
 static int SFEXINDEX;
 
@@ -279,7 +276,6 @@ void FCEUSS_Save(char *fname)
 
 	FCEUSS_SaveFP(st);
 
-	SaveStateStatus[CurrentState]=1;
 	fclose(st);
 	//FCEU_DispMessage("State %d saved.",CurrentState);
 }
@@ -337,12 +333,10 @@ int FCEUSS_Load(char *fname)
 	if(st == NULL)
 	{
 		//FCEU_DispMessage("State %d load error.",CurrentState);
-		SaveStateStatus[CurrentState]=0;
 		return(0);
 	}
 
 	int ret = FCEUSS_LoadFP(st);
-	SaveStateStatus[CurrentState]=1;
 	fclose(st);
 	if(ret)
 		return 1;
@@ -361,16 +355,10 @@ void FCEUSS_CheckStates(void)
 		st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,ssel,0),"rb");
 		free(fn);
 		if(st)
-		{
-			SaveStateStatus[ssel]=1;
 			fclose(st);
-		}
-		else
-			SaveStateStatus[ssel]=0;
 	}
 
 	CurrentState=0;
-	StateShow=0;
 }
 
 void ResetExState(void (*PreSave)(void), void (*PostSave)(void))
@@ -406,23 +394,17 @@ void AddExState(void *v, uint32 s, int type, char *desc)
 void FCEUI_SelectState(int w)
 {
 	if(w == -1)
-	{
-		StateShow = 0;
 		return;
-	}
 
 	CurrentState=w;
-	StateShow=180;
 	//FCEU_DispMessage("-select state-");
 }
 
 void FCEUI_SaveState(char *fname)
 {
-	StateShow=0;
 	FCEUSS_Save(fname);
 }
 
 void FCEUI_LoadState(char *fname)
 {
-	StateShow=0;
 }
