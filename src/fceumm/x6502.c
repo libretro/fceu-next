@@ -394,109 +394,109 @@ void X6502_Power(void)
 
 void X6502_Run(int32 cycles)
 {
-  #define RdRAM RdRAMFast
-  #define WrRAM WrRAMFast
-  #define RdMem RdMemNorm
-  #define WrMem WrMemNorm
+#define RdRAM RdRAMFast
+#define WrRAM WrRAMFast
+#define RdMem RdMemNorm
+#define WrMem WrMemNorm
 
-  #if(defined(C80x86) && defined(__GNUC__))
-  /* Gives a nice little speed boost. */
-  register uint16 pbackus asm ("edi");
-  #else
-  uint16 pbackus;
-  #endif
+#if(defined(C80x86) && defined(__GNUC__))
+	/* Gives a nice little speed boost. */
+	register uint16 pbackus asm ("edi");
+#else
+	uint16 pbackus;
+#endif
 
-  pbackus=_PC;
+	pbackus=_PC;
 
-  #undef _PC
-  #define _PC pbackus
+#undef _PC
+#define _PC pbackus
 
-  if(PAL)
-   cycles*=15;    // 15*4=60
-  else
-   cycles*=16;    // 16*4=64
+	if(PAL)
+		cycles*=15;    // 15*4=60
+	else
+		cycles*=16;    // 16*4=64
 
-  _count+=cycles;
+	_count+=cycles;
 
-  while(_count>0)
-  {
-   int32 temp;
-   uint8 b1;
+	while(_count>0)
+	{
+		int32 temp;
+		uint8 b1;
 
-//   XI.PC=pbackus;
-   if(_IRQlow)
-   {
-    if(_IRQlow&FCEU_IQRESET)
-    {
-     _PC=RdMem(0xFFFC);
-     _PC|=RdMem(0xFFFD)<<8;
-     _jammed=0;
-     _PI=_P=I_FLAG;
-     _IRQlow&=~FCEU_IQRESET;
-    }
-    else if(_IRQlow&FCEU_IQNMI2)
-     {
-     _IRQlow&=~FCEU_IQNMI2;
-     _IRQlow|=FCEU_IQNMI;
-    }
-    else if(_IRQlow&FCEU_IQNMI)
-    {
-     if(!_jammed)
-     {
-      ADDCYC(7);
-      PUSH(_PC>>8);
-      PUSH(_PC);
-      PUSH((_P&~B_FLAG)|(U_FLAG));
-      _P|=I_FLAG;
-      _PC=RdMem(0xFFFA);
-      _PC|=RdMem(0xFFFB)<<8;
-      _IRQlow&=~FCEU_IQNMI;
-     }
-    }
-    else
-    {
-     if(!(_PI&I_FLAG) && !_jammed)
-     {
-      ADDCYC(7);
-      PUSH(_PC>>8);
-      PUSH(_PC);
-      PUSH((_P&~B_FLAG)|(U_FLAG));
-      _P|=I_FLAG;
-      _PC=RdMem(0xFFFE);
-      _PC|=RdMem(0xFFFF)<<8;
-     }
-    }
-    _IRQlow&=~(FCEU_IQTEMP);
-    if(_count<=0)
-    {
-     _PI=_P;
-     X.PC=pbackus;
-     return;
-     } /* Should increase accuracy without a */
-              /* major speed hit. */
-   }
+		//   XI.PC=pbackus;
+		if(_IRQlow)
+		{
+			if(_IRQlow&FCEU_IQRESET)
+			{
+				_PC=RdMem(0xFFFC);
+				_PC|=RdMem(0xFFFD)<<8;
+				_jammed=0;
+				_PI=_P=I_FLAG;
+				_IRQlow&=~FCEU_IQRESET;
+			}
+			else if(_IRQlow&FCEU_IQNMI2)
+			{
+				_IRQlow&=~FCEU_IQNMI2;
+				_IRQlow|=FCEU_IQNMI;
+			}
+			else if(_IRQlow&FCEU_IQNMI)
+			{
+				if(!_jammed)
+				{
+					ADDCYC(7);
+					PUSH(_PC>>8);
+					PUSH(_PC);
+					PUSH((_P&~B_FLAG)|(U_FLAG));
+					_P|=I_FLAG;
+					_PC=RdMem(0xFFFA);
+					_PC|=RdMem(0xFFFB)<<8;
+					_IRQlow&=~FCEU_IQNMI;
+				}
+			}
+			else
+			{
+				if(!(_PI&I_FLAG) && !_jammed)
+				{
+					ADDCYC(7);
+					PUSH(_PC>>8);
+					PUSH(_PC);
+					PUSH((_P&~B_FLAG)|(U_FLAG));
+					_P|=I_FLAG;
+					_PC=RdMem(0xFFFE);
+					_PC|=RdMem(0xFFFF)<<8;
+				}
+			}
+			_IRQlow&=~(FCEU_IQTEMP);
+			if(_count<=0)
+			{
+				_PI=_P;
+				X.PC=pbackus;
+				return;
+			} /* Should increase accuracy without a */
+			/* major speed hit. */
+		}
 
-   _PI=_P;
-   b1=RdMem(_PC);
+		_PI=_P;
+		b1=RdMem(_PC);
 
-   ADDCYC(CycTable[b1]);
+		ADDCYC(CycTable[b1]);
 
-   temp=_tcount;
-   _tcount=0;
-   if(MapIRQHook) MapIRQHook(temp);
-   FCEU_SoundCPUHook(temp);
-   //printf("%04x\n",X.PC);
-   X.PC=pbackus;
-   _PC++;
-   switch(b1)
-   {
-    #include "ops.h"
-   }
-  }
+		temp=_tcount;
+		_tcount=0;
+		if(MapIRQHook) MapIRQHook(temp);
+		FCEU_SoundCPUHook(temp);
+		//printf("%04x\n",X.PC);
+		X.PC=pbackus;
+		_PC++;
+		switch(b1)
+		{
+#include "ops.h"
+		}
+	}
 
-  #undef _PC
-  #define _PC X.PC
-  _PC=pbackus;
-  #undef RdRAM
-  #undef WrRAM
+#undef _PC
+#define _PC X.PC
+	_PC=pbackus;
+#undef RdRAM
+#undef WrRAM
 }
