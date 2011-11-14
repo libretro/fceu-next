@@ -26,10 +26,10 @@ else
    SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=link.T
 endif
 
-FCEU_DIR := ../fceumm
+FCEU_DIR := ../fceu
 UTILS_DIR := ../../utils
 
-FCEU_SRC_DIRS := $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(FCEU_DIR)/utils $(UTILS_DIR)/zlib
+FCEU_SRC_DIRS := $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(FCEU_DIR)/utils $(UTILS_DIR)/zlib $(UTILS_DIR)/unzip
 
 FCEU_CXXSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.cpp))
 FCEU_CXXOBJ := $(FCEU_CXXSRCS:.cpp=.o)
@@ -44,7 +44,7 @@ CFLAGS += -O3 -g -std=gnu99 $(fpic) -Wno-write-strings $(FCEU_DEFINES)
 CXXFLAGS += -O3 -g $(fpic) -Wno-write-strings $(FCEU_DEFINES)
 LDFLAGS += -Wl,-no-undefined
 
-INCDIRS := -I$(FCEU_DIR) -I$(UTILS_DIR)/zlib 
+INCDIRS := -I$(FCEU_DIR) -I$(UTILS_DIR)/zlib -I$(UTILS_DIR)/unzip
 LIBS :=
 
 $(TARGET): $(OBJS)
