@@ -395,22 +395,19 @@ static DECLFR(MMC5_ExRAMRd)
 
 static DECLFR(MMC5_read)
 {
-  switch(A)
-  {
-    case 0x5204: X6502_IRQEnd(FCEU_IQEXT);
-                 {
-                   uint8 x;
-                   x=MMC5IRQR;
-                   #ifdef FCEUDEF_DEBUGGER
-                   if(!fceuindbg)
-                   #endif
-                     MMC5IRQR&=0x40;
-                   return x;
-                 }
-    case 0x5205: return (mul[0]*mul[1]);
-    case 0x5206: return ((mul[0]*mul[1])>>8);
-  }
-  return(X.DB);
+	switch(A)
+	{
+		case 0x5204: X6502_IRQEnd(FCEU_IQEXT);
+			     {
+				     uint8 x;
+				     x=MMC5IRQR;
+				     MMC5IRQR&=0x40;
+				     return x;
+			     }
+		case 0x5205: return (mul[0]*mul[1]);
+		case 0x5206: return ((mul[0]*mul[1])>>8);
+	}
+	return(X.DB);
 }
 
 void MMC5Synco(void)

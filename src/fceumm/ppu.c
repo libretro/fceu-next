@@ -145,21 +145,16 @@ uint8 NTARAM[0x800],PALRAM[0x20],SPRAM[0x100],SPRBUF[0x100];
 
 static DECLFR(A2002)
 {
-                        uint8 ret;
-        
-			FCEUPPU_LineUpdate();
-                        ret = PPU_status;
-                        ret|=PPUGenLatch&0x1F;
+	uint8 ret;
 
-			#ifdef FCEUDEF_DEBUGGER
-                        if(!fceuindbg)
-			#endif
-                        {
-                         vtoggle=0;
-                         PPU_status&=0x7F;
-			 PPUGenLatch=ret;
-                        }
-                        return ret;
+	FCEUPPU_LineUpdate();
+	ret = PPU_status;
+	ret|=PPUGenLatch&0x1F;
+
+	vtoggle=0;
+	PPU_status&=0x7F;
+	PPUGenLatch=ret;
+	return ret;
 }
 
 static DECLFR(A200x)	/* Not correct for $2004 reads. */
@@ -196,55 +191,45 @@ static DECLFR(A2004)
 
 static DECLFR(A2007)
 {
-  uint8 ret;
-  uint32 tmp=RefreshAddr&0x3FFF;
-  
-  FCEUPPU_LineUpdate();
-                        
-  ret=VRAMBuffer;
+	uint8 ret;
+	uint32 tmp=RefreshAddr&0x3FFF;
 
-  #ifdef FCEUDEF_DEBUGGER
-  if(!fceuindbg)
-  #endif
-  {
-    if(PPU_hook) PPU_hook(tmp);
- 	PPUGenLatch=VRAMBuffer;
-    if(tmp<0x2000)
-      VRAMBuffer=VPage[tmp>>10][tmp];
-    else
-      VRAMBuffer=vnapage[(tmp>>10)&0x3][tmp&0x3FF];
-  }
-  #ifdef FCEUDEF_DEBUGGER
-  if(!fceuindbg)
-  #endif
-  {
-    if((ScreenON || SpriteON) && (scanline < 240))
-    {
-      uint32 rad=RefreshAddr;
-      if((rad&0x7000)==0x7000)
-      {
-        rad^=0x7000;
-        if((rad&0x3E0)==0x3A0)
-          rad^=0xBA0;
-        else if((rad&0x3E0)==0x3e0)
-          rad^=0x3e0;
-        else
-          rad+=0x20;
-      } 
-      else
-        rad+=0x1000;
-      RefreshAddr=rad;
-    }
-    else
-    {
-      if (INC32)
-        RefreshAddr+=32;
-      else
-        RefreshAddr++;
-      }
-      if(PPU_hook) PPU_hook(RefreshAddr&0x3fff);
-    }
-    return ret;
+	FCEUPPU_LineUpdate();
+
+	ret=VRAMBuffer;
+
+	if(PPU_hook) PPU_hook(tmp);
+	PPUGenLatch=VRAMBuffer;
+	if(tmp<0x2000)
+		VRAMBuffer=VPage[tmp>>10][tmp];
+	else
+		VRAMBuffer=vnapage[(tmp>>10)&0x3][tmp&0x3FF];
+	if((ScreenON || SpriteON) && (scanline < 240))
+	{
+		uint32 rad=RefreshAddr;
+		if((rad&0x7000)==0x7000)
+		{
+			rad^=0x7000;
+			if((rad&0x3E0)==0x3A0)
+				rad^=0xBA0;
+			else if((rad&0x3E0)==0x3e0)
+				rad^=0x3e0;
+			else
+				rad+=0x20;
+		} 
+		else
+			rad+=0x1000;
+		RefreshAddr=rad;
+	}
+	else
+	{
+		if (INC32)
+			RefreshAddr+=32;
+		else
+			RefreshAddr++;
+	}
+	if(PPU_hook) PPU_hook(RefreshAddr&0x3fff);
+	return ret;
 }
 
 static DECLFW(B2000)
@@ -421,14 +406,11 @@ static uint8 sprlinebuf[256+8];
 
 void FCEUPPU_LineUpdate(void)
 {
- #ifdef FCEUDEF_DEBUGGER
- if(!fceuindbg)
- #endif
-  if(Pline)
-  {
-   int l=GETLASTPIXEL;
-   RefreshLine(l);
- }
+	if(Pline)
+	{
+		int l=GETLASTPIXEL;
+		RefreshLine(l);
+	}
 } 
   
 static int tileview=0;

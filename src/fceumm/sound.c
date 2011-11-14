@@ -329,22 +329,17 @@ static DECLFW(StatusWrite)
 
 static DECLFR(StatusRead)
 {
-   int x;
-   uint8 ret;
+	int x;
+	uint8 ret;
 
-   ret=SIRQStat;
+	ret=SIRQStat;
 
-   for(x=0;x<4;x++) ret|=lengthcount[x]?(1<<x):0;
-   if(DMCSize) ret|=0x10;
+	for(x=0;x<4;x++) ret|=lengthcount[x]?(1<<x):0;
+	if(DMCSize) ret|=0x10;
 
-   #ifdef FCEUDEF_DEBUGGER
-   if(!fceuindbg)
-   #endif
-   {
-    SIRQStat&=~0x40;
-    X6502_IRQEnd(FCEU_IQFCOUNT);
-   }
-   return ret;
+	SIRQStat&=~0x40;
+	X6502_IRQEnd(FCEU_IQFCOUNT);
+	return ret;
 }
 
 static void FASTAPASS(1) FrameSoundStuff(int V)

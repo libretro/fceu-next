@@ -343,52 +343,46 @@ static DECLFW(NSF_write)
 
 static DECLFR(NSF_read)
 {
- int x;
+	int x;
 
- switch(A)
- {
- case 0x3ff0:x=SongReload;
-       #ifdef FCEUDEF_DEBUGGER
-       if(!fceuindbg)
-       #endif
-         SongReload=0;
-       return x;
- case 0x3ff1:
-      #ifdef FCEUDEF_DEBUGGER
-      if(!fceuindbg)
-      #endif
-      {
-       memset(RAM,0x00,0x800);
+	switch(A)
+	{
+		case 0x3ff0:x=SongReload;
+			    SongReload=0;
+			    return x;
+		case 0x3ff1:
+			    {
+				    memset(RAM,0x00,0x800);
 
-       BWrite[0x4015](0x4015,0x0);
-       for(x=0;x<0x14;x++)
-        BWrite[0x4000+x](0x4000+x,0);
-       BWrite[0x4015](0x4015,0xF);
+				    BWrite[0x4015](0x4015,0x0);
+				    for(x=0;x<0x14;x++)
+					    BWrite[0x4000+x](0x4000+x,0);
+				    BWrite[0x4015](0x4015,0xF);
 
-       if(NSFHeader.SoundChip&4)
-       {
-        BWrite[0x4017](0x4017,0xC0);  /* FDS BIOS writes $C0 */
-        BWrite[0x4089](0x4089,0x80);
-        BWrite[0x408A](0x408A,0xE8);
-       }
-       else
-       {
-        memset(ExWRAM,0x00,8192);
-        BWrite[0x4017](0x4017,0xC0);
-        BWrite[0x4017](0x4017,0xC0);
-        BWrite[0x4017](0x4017,0x40);
-       }
+				    if(NSFHeader.SoundChip&4)
+				    {
+					    BWrite[0x4017](0x4017,0xC0);  /* FDS BIOS writes $C0 */
+					    BWrite[0x4089](0x4089,0x80);
+					    BWrite[0x408A](0x408A,0xE8);
+				    }
+				    else
+				    {
+					    memset(ExWRAM,0x00,8192);
+					    BWrite[0x4017](0x4017,0xC0);
+					    BWrite[0x4017](0x4017,0xC0);
+					    BWrite[0x4017](0x4017,0x40);
+				    }
 
-       if(BSon)
-       {
-        for(x=0;x<8;x++)
-         BANKSET(0x8000+x*4096,NSFHeader.BankSwitch[x]);
-       }
-       return (CurrentSong-1);
-        }
- case 0x3FF3:return PAL;
- }
- return 0;
+				    if(BSon)
+				    {
+					    for(x=0;x<8;x++)
+						    BANKSET(0x8000+x*4096,NSFHeader.BankSwitch[x]);
+				    }
+				    return (CurrentSong-1);
+			    }
+		case 0x3FF3:return PAL;
+	}
+	return 0;
 }
 
 uint8 FCEU_GetJoyJoy(void);

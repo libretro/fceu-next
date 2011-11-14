@@ -37,23 +37,20 @@ static void StrobeARKFC(void)
 
 static uint8 FP_FASTAPASS(2) ReadARKFC(int w,uint8 ret)
 {
-  ret&=~2;
-  if(w)
-  {
-    if(FCArk.readbit>=8)
-      ret|=2;
-    else
-    {
-      ret|=((FCArk.mzx>>(7-FCArk.readbit))&1)<<1;
-      #ifdef FCEUDEF_DEBUGGER
-      if(!fceuindbg)
-      #endif
-        FCArk.readbit++;
-    }
-  }
-  else
-    ret|=FCArk.mzb<<1;
-  return(ret);
+	ret&=~2;
+	if(w)
+	{
+		if(FCArk.readbit>=8)
+			ret|=2;
+		else
+		{
+			ret|=((FCArk.mzx>>(7-FCArk.readbit))&1)<<1;
+			FCArk.readbit++;
+		}
+	}
+	else
+		ret|=FCArk.mzb<<1;
+	return(ret);
 }
 
 static uint32 FixX(uint32 x)
@@ -82,19 +79,16 @@ INPUTCFC *FCEU_InitArkanoidFC(void)
 
 static uint8 FP_FASTAPASS(1) ReadARK(int w)
 {
-  uint8 ret=0;
-  if(NESArk[w].readbit>=8)
-    ret|=1<<4;
-  else
-  {
-    ret|=((NESArk[w].mzx>>(7-NESArk[w].readbit))&1)<<4;
-    #ifdef FCEUDEF_DEBUGGER
-    if(!fceuindbg)
-    #endif
-      NESArk[w].readbit++;
-  }
-  ret|=(NESArk[w].mzb&1)<<3;
-  return(ret);
+	uint8 ret=0;
+	if(NESArk[w].readbit>=8)
+		ret|=1<<4;
+	else
+	{
+		ret|=((NESArk[w].mzx>>(7-NESArk[w].readbit))&1)<<4;
+		NESArk[w].readbit++;
+	}
+	ret|=(NESArk[w].mzb&1)<<3;
+	return(ret);
 }
 
 static void FP_FASTAPASS(1) StrobeARK(int w)

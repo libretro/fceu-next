@@ -96,25 +96,22 @@ static INLINE int CheckColor(int w)
 
 static uint8 FP_FASTAPASS(1) ReadZapperVS(int w)
 {
-                uint8 ret=0;
+	uint8 ret=0;
 
-                if(ZD[w].zap_readbit==4) ret=1;
+	if(ZD[w].zap_readbit==4) ret=1;
 
-                if(ZD[w].zap_readbit==7)
-                {
-                 if(ZD[w].bogo)
-                  ret|=0x1;
-                }
-                if(ZD[w].zap_readbit==6)
-                {
-                 if(!CheckColor(w))
-                  ret|=0x1;
-                }
-                #ifdef FCEUDEF_DEBUGGER
-                if(!fceuindbg)
-                #endif
-                 ZD[w].zap_readbit++;
-                return ret;
+	if(ZD[w].zap_readbit==7)
+	{
+		if(ZD[w].bogo)
+			ret|=0x1;
+	}
+	if(ZD[w].zap_readbit==6)
+	{
+		if(!CheckColor(w))
+			ret|=0x1;
+	}
+	ZD[w].zap_readbit++;
+	return ret;
 }
 
 static void FP_FASTAPASS(1) StrobeZapperVS(int w)

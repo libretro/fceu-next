@@ -208,38 +208,30 @@ static void FP_FASTAPASS(1) FDSFix(int a)
 
 static DECLFR(FDSRead4030)
 {
-  uint8 ret=0;
+	uint8 ret=0;
 
-  /* Cheap hack. */
-  if(X.IRQlow&FCEU_IQEXT) ret|=1;
-  if(X.IRQlow&FCEU_IQEXT2) ret|=2;
+	/* Cheap hack. */
+	if(X.IRQlow&FCEU_IQEXT) ret|=1;
+	if(X.IRQlow&FCEU_IQEXT2) ret|=2;
 
-  #ifdef FCEUDEF_DEBUGGER
-  if(!fceuindbg)
-  #endif
-  {
-   X6502_IRQEnd(FCEU_IQEXT);
-   X6502_IRQEnd(FCEU_IQEXT2);
-  }
-  return ret;
+	X6502_IRQEnd(FCEU_IQEXT);
+	X6502_IRQEnd(FCEU_IQEXT2);
+	return ret;
 }
 
 static DECLFR(FDSRead4031)
 {
-  static uint8 z=0;
-  if(InDisk!=255)
-  {
-   z=diskdata[InDisk][DiskPtr];
-   #ifdef FCEUDEF_DEBUGGER
-   if(!fceuindbg)
-   #endif
-   {
-    if(DiskPtr<64999) DiskPtr++;
-    DiskSeekIRQ=150;
-    X6502_IRQEnd(FCEU_IQEXT2);
-   }
-  }
-  return z;
+	static uint8 z=0;
+	if(InDisk!=255)
+	{
+		z=diskdata[InDisk][DiskPtr];
+		{
+			if(DiskPtr<64999) DiskPtr++;
+			DiskSeekIRQ=150;
+			X6502_IRQEnd(FCEU_IQEXT2);
+		}
+	}
+	return z;
 }
 static DECLFR(FDSRead4032)
 {

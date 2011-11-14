@@ -24,7 +24,7 @@
 
 #include <stdio.h>
 #include "types.h"
-#include "endian.h"
+#include "myendian.h"
 
 void FlipByteOrder(uint8 *src, uint32 count)
 {

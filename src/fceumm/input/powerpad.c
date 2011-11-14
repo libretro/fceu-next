@@ -29,20 +29,17 @@ static uint32 pprdata[2];
 
 static uint8 FP_FASTAPASS(1) ReadPP(int w)
 {
-                uint8 ret=0;
-                ret|=((pprdata[w]>>pprsb[w])&1)<<3;
-                ret|=((pprdata[w]>>(pprsb[w]+8))&1)<<4;
-                if(pprsb[w]>=4)
-                {
-                 ret|=0x10;
-                 if(pprsb[w]>=8)
-                  ret|=0x08;
-                }
-                #ifdef FCEUDEF_DEBUGGER
-                if(!fceuindbg)
-                #endif
-                 pprsb[w]++;
-                return ret;
+	uint8 ret=0;
+	ret|=((pprdata[w]>>pprsb[w])&1)<<3;
+	ret|=((pprdata[w]>>(pprsb[w]+8))&1)<<4;
+	if(pprsb[w]>=4)
+	{
+		ret|=0x10;
+		if(pprsb[w]>=8)
+			ret|=0x08;
+	}
+	pprsb[w]++;
+	return ret;
 }
 
 static void FP_FASTAPASS(1) StrobePP(int w)
