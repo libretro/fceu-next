@@ -354,21 +354,22 @@ void FCEUI_Kill(void)
  FCEU_KillGenie();
 }
 
-void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize, int skip)
+void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize)
 {
-	int r,ssize;
+	int ssize;
 
 	FCEU_UpdateInput();
-	if(geniestage!=1) FCEU_ApplyPeriodicCheats();
-	r=FCEUPPU_Loop(0);
+	if(geniestage!=1)
+		FCEU_ApplyPeriodicCheats();
+	FCEUPPU_Loop();
 
-	ssize=FlushEmulateSound();
+	ssize = FlushEmulateSound();
 
 	timestampbase += timestamp;
 
 	timestamp = 0;
 
-	*pXBuf=skip?0:XBuf;
+	*pXBuf= XBuf;
 	*SoundBuf=WaveFinal;
 	*SoundBufSize=ssize;
 }
@@ -387,16 +388,16 @@ void ResetNES(void)
   X6502_Reset();
 }
 
-void FCEU_MemoryRand(uint8 *ptr, uint32 size)
+static void FCEU_MemoryRand(uint8 *ptr, uint32 size)
 {
- int x=0;
- while(size)
- {
-  *ptr=(x&4)?0x7F:0x00;
-  x++;
-  size--;
-  ptr++;
- }
+	int x=0;
+	while(size)
+	{
+		*ptr=(x&4)?0x7F:0x00;
+		x++;
+		size--;
+		ptr++;
+	}
 }
 
 void hand(X6502 *X, int type, unsigned int A)

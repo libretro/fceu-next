@@ -1183,7 +1183,7 @@ void FCEUPPU_Power(void)
 }
 
 
-int FCEUPPU_Loop(int skip)
+void FCEUPPU_Loop(void)
 {
 	if(ppudead) /* Needed for Knight Rider, possibly others. */
 	{
@@ -1251,8 +1251,6 @@ int FCEUPPU_Loop(int skip)
 		}
 		SetNESDeemph(maxref,0);
 	} /* else... to if(ppudead) */
-
-	return(1);
 }
 
 static uint16 TempAddrT,RefreshAddrT;

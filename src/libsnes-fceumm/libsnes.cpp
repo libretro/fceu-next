@@ -463,7 +463,7 @@ static void update_input(void)
 void snes_run(void)
 {
 	int32 ssize = 0;
-	FCEUI_Emulate(&gfx, &sound, &ssize, 0);
+	FCEUI_Emulate(&gfx, &sound, &ssize);
 
 	static uint16_t video_out[1024 * 240];
 	const uint8_t *gfx = XBuf;
