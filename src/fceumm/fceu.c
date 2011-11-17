@@ -351,7 +351,6 @@ int FCEUI_Initialize(void)
 
 void FCEUI_Kill(void)
 {
-	FCEU_KillVirtualVideo();
 	FCEU_KillGenie();
 }
 

@@ -36,16 +36,6 @@
 #include "vsuni.h"
 
 uint8 *XBuf=NULL;
-static uint8 *xbsave=NULL;
-
-void FCEU_KillVirtualVideo(void)
-{
-	if(xbsave)
-	{
-		free(xbsave);
-		xbsave=0;
-	}
-}
 
 int FCEU_InitVirtualVideo(void)
 {
@@ -54,7 +44,6 @@ int FCEU_InitVirtualVideo(void)
 		 */
 		if(!(XBuf= (uint8*) (FCEU_malloc(256 * 256 + 8))))
 			return 0;
-	xbsave=XBuf;
 
 	if(sizeof(uint8*)==4)
 	{
