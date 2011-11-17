@@ -297,9 +297,8 @@ zpfail:
 		{
 			int fd;
 
-			fd = dup(fileno( (FILE *)t));
-
-			fclose(t);
+			fflush(t);
+			fd = (fileno( (FILE *)t));
 
 			lseek(fd, 0, SEEK_SET);
 
@@ -323,7 +322,7 @@ zpfail:
 				}
 				return(fceufp);
 			}
-			close(fd);
+			fclose(fd);
 		}
 
 	}
