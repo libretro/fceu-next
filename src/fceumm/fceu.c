@@ -285,7 +285,6 @@ endlseq:
 	//FCEU_LoadGameCheats(0);
 
 	FCEU_ResetPalette();
-	FCEU_ResetMessages();  // Save state, status messages, etc.
 
 	return(FCEUGameInfo);
 }
@@ -329,7 +328,6 @@ FCEUGI *FCEUI_CopyFamiStart(void)
 	FCEU_LoadGameCheats(0);
 
 	FCEU_ResetPalette();
-	FCEU_ResetMessages();  // Save state, status messages, etc.
 
 	return(FCEUGameInfo);
 }

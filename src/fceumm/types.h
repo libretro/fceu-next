@@ -31,11 +31,6 @@ typedef uint8_t uint8;
 typedef uint16_t uint16;
 typedef uint32_t uint32;
 
-//typedef unsigned char uint8;
-//typedef unsigned short uint16;
-//typedef unsigned long  uint32;
-
-
 #ifdef __GNUC__
  typedef unsigned long long uint64;
  typedef long long int64;

@@ -69,8 +69,3 @@ void FCEU_DispMessage(char *format, ...)
 
  howlong=180;
 }
-
-void FCEU_ResetMessages(void)
-{
- howlong=0;
-}
