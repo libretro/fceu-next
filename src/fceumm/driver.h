@@ -71,9 +71,6 @@ void FCEUI_DisableFourScore(int s);
 
 /* New interface functions */
 
-/* 0 to order screen snapshots numerically(0.png), 1 to order them file base-numerically(smb3-0.png). */
-void FCEUI_SetSnapName(int a);
-
 /* 0 to keep 8-sprites limitation, 1 to remove it */
 void FCEUI_DisableSpriteLimitation(int a);
 
@@ -127,14 +124,7 @@ void FCEUI_Sound(int Rate);
 void FCEUI_SetSoundVolume(uint32 volume);
 void FCEUI_SetSoundQuality(int quality);
 
-/* "fname" overrides the default save state filename code if non-NULL. */
-void FCEUI_SaveState(char *fname);
-void FCEUI_LoadState(char *fname);
-
 int32 FCEUI_GetDesiredFPS(void);
-void FCEUI_SaveSnapshot(void);
-void FCEU_DispMessage(char *format, ...);
-#define FCEUI_DispMessage FCEU_DispMessage
 
 int FCEUI_DecodePAR(const char *code, uint16 *a, uint8 *v, int *c, int *type);
 int FCEUI_DecodeGG(const char *str, uint16 *a, uint8 *v, int *c);
@@ -160,15 +150,12 @@ void FCEUI_CheatSearchSetCurrentAsOriginal(void);
 #define FCEUIOD_NV      2
 #define FCEUIOD_CHEATS  3
 #define FCEUIOD_MISC    4
-#define FCEUIOD_MOVIE  5
-
 #define FCEUIOD__COUNT  6
 
 void FCEUI_SetDirOverride(int which, char *n);
 
 void FCEUI_NMI(void);
 void FCEUI_IRQ(void);
-void FCEUI_GetIVectors(uint16 *reset, uint16 *irq, uint16 *nmi);
 
 uint32 FCEUI_CRC32(uint32 crc, uint8 *buf, uint32 len);
 

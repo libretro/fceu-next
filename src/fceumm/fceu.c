@@ -39,7 +39,6 @@
 #include  "cheat.h"
 #include  "palette.h"
 #include  "state.h"
-#include  "video.h"
 #include  "input.h"
 #include  "file.h"
 #include  "crc32.h"
@@ -533,11 +532,6 @@ int FCEUI_GetCurrentVidSystem(int *slstart, int *slend)
 void FCEUI_SetGameGenie(int a)
 {
 	FSettings.GameGenie=a?1:0;
-}
-
-void FCEUI_SetSnapName(int a)
-{
-	FSettings.SnapName=a;
 }
 
 int32 FCEUI_GetDesiredFPS(void)

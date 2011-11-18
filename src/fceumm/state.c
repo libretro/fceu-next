@@ -36,7 +36,6 @@
 #include "state.h"
 #include "memory.h"
 #include "ppu.h"
-#include "video.h"
 
 
 static void (*SPreSave)(void);
@@ -389,13 +388,4 @@ void AddExState(void *v, uint32 s, int type, char *desc)
 	if(type) SFMDATA[SFEXINDEX].s|=RLSB;
 	if(SFEXINDEX<63) SFEXINDEX++;
 	SFMDATA[SFEXINDEX].v=0;    // End marker.
-}
-
-void FCEUI_SaveState(char *fname)
-{
-	FCEUSS_Save(fname);
-}
-
-void FCEUI_LoadState(char *fname)
-{
 }

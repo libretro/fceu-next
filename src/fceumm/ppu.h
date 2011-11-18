@@ -17,4 +17,7 @@ extern uint8 PPUCHRRAM;
 void FCEUPPU_SaveState(void);
 void FCEUPPU_LoadState(int version);
 
+int FCEU_InitVirtualVideo(void);
+
 extern int scanline;
+extern uint8 *XBuf;

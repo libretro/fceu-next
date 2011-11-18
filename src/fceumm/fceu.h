@@ -58,7 +58,6 @@ extern uint8 PAL;
 
 typedef struct {
      int PAL;
-     int NetworkPlay;
      int SoundVolume;
      int GameGenie;
 
@@ -71,7 +70,6 @@ typedef struct {
      */
      int UsrFirstSLine[2];
      int UsrLastSLine[2];
-     int SnapName;
      uint32 SndRate;
      int soundq;
      int lowpass;
