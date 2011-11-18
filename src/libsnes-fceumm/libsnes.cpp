@@ -58,8 +58,8 @@ void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, uns
 }
 
 bool FCEUD_ShouldDrawInputAids() { return 1; }
-void FCEUD_PrintError(char *c) { FCEU_DispMessage(c, 20); }
-void FCEUD_Message(char *text) { FCEU_DispMessage(text, 20); }
+void FCEUD_PrintError(char *c) { }
+void FCEUD_Message(char *text) { }
 void FCEUD_SoundToggle() { FCEUI_SetSoundVolume(100); }
 void FCEUD_VideoChanged() {}
 

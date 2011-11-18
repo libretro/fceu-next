@@ -55,17 +55,3 @@ int FCEU_InitVirtualVideo(void)
 	memset(XBuf,128,256*256); //*240);
 	return 1;
 }
-
-static int howlong;
-static char errmsg[65];
-
-void FCEU_DispMessage(char *format, ...)
-{
- va_list ap;
-
- va_start(ap,format);
- vsprintf(errmsg,format,ap);
- va_end(ap);
-
- howlong=180;
-}

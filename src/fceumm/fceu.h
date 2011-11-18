@@ -81,7 +81,6 @@ extern FCEUS FSettings;
 
 void FCEU_PrintError(char *format, ...);
 void FCEU_printf(char *format, ...);
-void FCEU_DispMessage(char *format, ...);
 
 void SetNESDeemph(uint8 d, int force);
 void FCEU_PutImage(void);
