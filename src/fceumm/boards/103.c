@@ -104,7 +104,7 @@ static void M103Power(void)
 static void M103Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

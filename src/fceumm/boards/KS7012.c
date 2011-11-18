@@ -74,7 +74,7 @@ static void StateRestore(int version)
 static void UNLKS7012Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

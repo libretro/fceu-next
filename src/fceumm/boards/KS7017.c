@@ -109,7 +109,7 @@ static void UNLKS7017Power(void)
 static void UNLKS7017Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

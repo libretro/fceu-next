@@ -88,7 +88,7 @@ static void M156Power(void)
 static void M156Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

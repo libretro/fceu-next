@@ -31,7 +31,7 @@ void *FCEU_gmalloc(uint32 size)
  ret=malloc(size);
  if(!ret)
  {
-  FCEU_PrintError("Error allocating memory!  Doing a hard exit.");
+  //FCEU_PrintError("Error allocating memory!  Doing a hard exit.");
   exit(1);
  }
  return ret;
@@ -43,13 +43,8 @@ void *FCEU_malloc(uint32 size)
  ret=malloc(size);
  if(!ret)
  {
-  FCEU_PrintError("Error allocating memory!");
+  //FCEU_PrintError("Error allocating memory!");
   return(0);
  }
  return ret;
-}
-
-void FCEU_gfree(void *ptr)
-{
- free(ptr);
 }

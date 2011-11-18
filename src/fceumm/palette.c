@@ -43,9 +43,6 @@ pal palettei[64];       // Custom palette for an individual game.
 pal palettec[64];       // Custom "global" palette.
 pal paletten[64];       // Mathematically generated palette.
 
-static void CalculatePalette(void);
-static void ChoosePalette(void);
-static void WritePalette(void);
 uint8 pale=0;
 
 pal *palo;
@@ -149,6 +146,17 @@ void SetNESDeemph(uint8 d, int force)
  lastd=d;
 }
 
+void WritePalette(void)
+{
+	int x;
+
+	for(x=0;x<7;x++)
+		FCEUD_SetPalette(x,unvpalette[x].r,unvpalette[x].g,unvpalette[x].b);
+	for(x=0;x<64;x++)
+		FCEUD_SetPalette(128+x,palo[x].r,palo[x].g,palo[x].b);
+	SetNESDeemph(lastd,1);
+}
+
 /* Converted from Kevin Horton's qbasic palette generator. */
 static void CalculatePalette(void)
 {
@@ -222,15 +230,6 @@ void FCEU_LoadGamePalette(void)
 	free(fn);
 }
 
-void FCEU_ResetPalette(void)
-{
- if(FCEUGameInfo)
- {
-   ChoosePalette();
-   WritePalette();
- }
-}
-
 static void ChoosePalette(void)
 {
 	if(ipalette)
@@ -244,16 +243,16 @@ static void ChoosePalette(void)
 		palo=palpoint[pale];
 }
 
-void WritePalette(void)
+void FCEU_ResetPalette(void)
 {
-	int x;
-
-	for(x=0;x<7;x++)
-		FCEUD_SetPalette(x,unvpalette[x].r,unvpalette[x].g,unvpalette[x].b);
-	for(x=0;x<64;x++)
-		FCEUD_SetPalette(128+x,palo[x].r,palo[x].g,palo[x].b);
-	SetNESDeemph(lastd,1);
+ if(FCEUGameInfo)
+ {
+   ChoosePalette();
+   WritePalette();
+ }
 }
+
+
 
 void FCEUI_GetNTSCTH(int *tint, int *hue)
 {

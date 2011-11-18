@@ -127,15 +127,9 @@ void FCEUI_Sound(int Rate);
 void FCEUI_SetSoundVolume(uint32 volume);
 void FCEUI_SetSoundQuality(int quality);
 
-void FCEUI_SelectState(int);
-
 /* "fname" overrides the default save state filename code if non-NULL. */
 void FCEUI_SaveState(char *fname);
 void FCEUI_LoadState(char *fname);
-
-void FCEUI_SelectMovie(int);
-void FCEUI_SaveMovie(char *fname);
-void FCEUI_LoadMovie(char *fname);
 
 int32 FCEUI_GetDesiredFPS(void);
 void FCEUI_SaveSnapshot(void);
@@ -174,16 +168,11 @@ void FCEUI_SetDirOverride(int which, char *n);
 
 void FCEUI_NMI(void);
 void FCEUI_IRQ(void);
-uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo);
 void FCEUI_GetIVectors(uint16 *reset, uint16 *irq, uint16 *nmi);
 
 uint32 FCEUI_CRC32(uint32 crc, uint8 *buf, uint32 len);
 
 void FCEUI_SetLowPass(int q);
-
-void FCEUI_NSFSetVis(int mode);
-int FCEUI_NSFChange(int amount);
-int FCEUI_NSFGetInfo(uint8 *name, uint8 *artist, uint8 *copyright, int maxlen);
 
 void FCEUI_VSUniToggleDIPView(void);
 void FCEUI_VSUniToggleDIP(int w);

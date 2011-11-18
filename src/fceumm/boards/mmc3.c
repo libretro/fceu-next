@@ -296,9 +296,9 @@ void GenMMC3Power(void)
 static void GenMMC3Close(void)
 {
  if(CHRRAM)
-    FCEU_gfree(CHRRAM);
+    free(CHRRAM);
  if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
  CHRRAM=WRAM=NULL;
 }
 
@@ -1093,7 +1093,7 @@ static void M195Power(void)
 static void M195Close(void)
 {
   if(wramtw)
-    FCEU_gfree(wramtw);
+    free(wramtw);
   wramtw=NULL;
 }
 

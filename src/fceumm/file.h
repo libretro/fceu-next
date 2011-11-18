@@ -8,11 +8,7 @@ int FCEU_fclose(FCEUFILE*);
 uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE*);
 uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE*);
 int FCEU_fseek(FCEUFILE*, long offset, int whence);
-uint64 FCEU_ftell(FCEUFILE*);
-void FCEU_rewind(FCEUFILE*);
 int FCEU_read32le(uint32 *Bufo, FCEUFILE*);
 int FCEU_read16le(uint16 *Bufo, FCEUFILE*);
 int FCEU_fgetc(FCEUFILE*);
 uint64 FCEU_fgetsize(FCEUFILE*);
-int FCEU_fisarchive(FCEUFILE*);
-

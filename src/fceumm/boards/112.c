@@ -61,7 +61,7 @@ static DECLFW(M112Write)
 static void M112Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM = NULL;
 }
 

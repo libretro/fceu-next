@@ -101,7 +101,7 @@ static void UNLSC127Reset(void)
 static void UNLSC127Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

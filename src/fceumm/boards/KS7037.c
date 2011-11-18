@@ -93,7 +93,7 @@ static void LH10Power(void)
 static void Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

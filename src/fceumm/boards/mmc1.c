@@ -304,9 +304,9 @@ static void GenMMC1Power(void)
 static void GenMMC1Close(void)
 {
   if(CHRRAM)
-    FCEU_gfree(CHRRAM);
+    free(CHRRAM);
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   CHRRAM=WRAM=NULL;
 }
 

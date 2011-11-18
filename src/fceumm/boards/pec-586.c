@@ -87,7 +87,7 @@ static void UNLPEC586IRQ(void)
 static void UNLPEC586Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

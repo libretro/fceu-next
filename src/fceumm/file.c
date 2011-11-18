@@ -446,35 +446,6 @@ int FCEU_fseek(FCEUFILE *fp, long offset, int whence)
   return fseek((FILE *)fp->fp,offset,whence);
 }
 
-uint64 FCEU_ftell(FCEUFILE *fp)
-{
- if(fp->type==1)
- {
-  return gztell(fp->fp);
- }
- else if(fp->type>=2)
- {
-  return (((MEMWRAP *)(fp->fp))->location);
- }
- else
-  return ftell((FILE *)fp->fp);
-}
-
-void FCEU_rewind(FCEUFILE *fp)
-{
- if(fp->type==1)
- {
-  gzrewind(fp->fp);
- }
- else if(fp->type>=2)
- {
-  ((MEMWRAP *)(fp->fp))->location=0;
- }
- else
-  /* Rewind */
-  fseek(fp->fp,0,SEEK_SET);
-}
-
 int FCEU_read16le(uint16 *val, FCEUFILE *fp)
 {
  uint8 t[2];
@@ -576,11 +547,4 @@ uint64 FCEU_fgetsize(FCEUFILE *fp)
   fseek((FILE *)fp->fp,t,SEEK_SET);
   return r;
  }
-}
-
-int FCEU_fisarchive(FCEUFILE *fp)
-{
- if(fp->type==2)
-  return 1;
- return 0;
 }

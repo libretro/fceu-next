@@ -511,13 +511,13 @@ static void MCopyFamiPower(void)
 static void MCopyFamiClose(void)
 {
   if(chr_data.buf)
-    FCEU_gfree(chr_data.buf);
+    free(chr_data.buf);
   chr_data.buf=NULL;
   if(prg_data.buf)
-    FCEU_gfree(prg_data.buf);
+    free(prg_data.buf);
   prg_data.buf=NULL;
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM = NULL;
   
   SerialClose();

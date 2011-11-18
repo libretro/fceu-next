@@ -58,7 +58,7 @@ static void UNLEDU2000Power(void)
 static void UNLEDU2000Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

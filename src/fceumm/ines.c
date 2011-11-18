@@ -111,7 +111,7 @@ static void iNESGI(int h)
       if(ROM) {free(ROM);ROM=0;}
      if(VROM) {free(VROM);VROM=0;}
      if(MapClose) MapClose();
-     if(trainerpoo) {FCEU_gfree(trainerpoo);trainerpoo=0;}
+     if(trainerpoo) {free(trainerpoo);trainerpoo=0;}
     }
     break;
      }

@@ -432,8 +432,6 @@ void SetupCartMirroring(int m, int hard, uint8 *extra)
 
 static uint8 *GENIEROM=0;
 
-void FixGenieMap(void);
-
 /* Called when a game(file) is opened successfully. */
 void OpenGenie(void)
 {
@@ -507,9 +505,67 @@ void FCEU_KillGenie(void)
  }
 }
 
+static readfunc GenieBackup[3];
+
 static DECLFR(GenieRead)
 {
  return GENIEROM[A&4095];
+}
+
+static DECLFR(GenieFix3)
+{
+ uint8 r=GenieBackup[2](A);
+
+ if((modcon>>3)&1)        // No check
+  return genieval[2];
+ else if(r==geniech[2])
+  return genieval[2];
+
+ return r;
+}
+
+static DECLFR(GenieFix2)
+{
+ uint8 r=GenieBackup[1](A);
+
+ if((modcon>>2)&1)        // No check
+  return genieval[1];
+ else if(r==geniech[1])
+  return genieval[1];
+
+ return r;
+}
+
+static DECLFR(GenieFix1)
+{
+ uint8 r=GenieBackup[0](A);
+
+ if((modcon>>1)&1)    // No check
+  return genieval[0];
+ else if(r==geniech[0])
+  return genieval[0];
+
+ return r;
+}
+
+static void FixGenieMap(void)
+{
+	int x;
+
+	geniestage=2;
+
+	for(x=0;x<8;x++)
+		VPage[x]=VPageG[x];
+
+	VPageR=VPage;
+	FlushGenieRW();
+	for(x=0;x<3;x++)
+		if((modcon>>(4+x))&1)
+		{
+			readfunc tmp[3]={GenieFix1,GenieFix2,GenieFix3};
+			GenieBackup[x]=GetReadHandler(genieaddr[x]);
+			SetReadHandler(genieaddr[x],genieaddr[x],tmp[x]);
+		}
 }
 
 static DECLFW(GenieWrite)
@@ -544,64 +600,10 @@ static DECLFW(GenieWrite)
  }
 }
 
-static readfunc GenieBackup[3];
-
-static DECLFR(GenieFix1)
-{
- uint8 r=GenieBackup[0](A);
-
- if((modcon>>1)&1)    // No check
-  return genieval[0];
- else if(r==geniech[0])
-  return genieval[0];
-
- return r;
-}
-
-static DECLFR(GenieFix2)
-{
- uint8 r=GenieBackup[1](A);
-
- if((modcon>>2)&1)        // No check
-  return genieval[1];
- else if(r==geniech[1])
-  return genieval[1];
-
- return r;
-}
-
-static DECLFR(GenieFix3)
-{
- uint8 r=GenieBackup[2](A);
-
- if((modcon>>3)&1)        // No check
-  return genieval[2];
- else if(r==geniech[2])
-  return genieval[2];
-
- return r;
-}
 
 
-void FixGenieMap(void)
-{
-	int x;
 
-	geniestage=2;
 
-	for(x=0;x<8;x++)
-		VPage[x]=VPageG[x];
-
-	VPageR=VPage;
-	FlushGenieRW();
-	for(x=0;x<3;x++)
-		if((modcon>>(4+x))&1)
-		{
-			readfunc tmp[3]={GenieFix1,GenieFix2,GenieFix3};
-			GenieBackup[x]=GetReadHandler(genieaddr[x]);
-			SetReadHandler(genieaddr[x],genieaddr[x],tmp[x]);
-		}
-}
 
 void GeniePower(void)
 {

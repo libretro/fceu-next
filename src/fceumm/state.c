@@ -391,15 +391,6 @@ void AddExState(void *v, uint32 s, int type, char *desc)
 	SFMDATA[SFEXINDEX].v=0;    // End marker.
 }
 
-void FCEUI_SelectState(int w)
-{
-	if(w == -1)
-		return;
-
-	CurrentState=w;
-	//FCEU_DispMessage("-select state-");
-}
-
 void FCEUI_SaveState(char *fname)
 {
 	FCEUSS_Save(fname);

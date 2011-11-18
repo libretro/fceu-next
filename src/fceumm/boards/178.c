@@ -74,7 +74,7 @@ static void M178Power(void)
 static void M178Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

@@ -83,7 +83,7 @@ static void M186Power(void)
 static void M186Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

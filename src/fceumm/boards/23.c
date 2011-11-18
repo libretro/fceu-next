@@ -168,7 +168,7 @@ static void StateRestore(int version)
 static void M23Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
 }
 
 void Mapper23_Init(CartInfo *info)

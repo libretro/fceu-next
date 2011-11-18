@@ -85,7 +85,7 @@ static void M199Power(void)
 static void M199Close(void)
 {
   if(CHRRAM)
-    FCEU_gfree(CHRRAM);
+    free(CHRRAM);
   CHRRAM=NULL;
 }
 

@@ -95,7 +95,7 @@ static void M15Reset(void)
 static void M15Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

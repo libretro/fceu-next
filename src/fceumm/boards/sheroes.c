@@ -69,7 +69,7 @@ static void MSHPower(void)
 static void MSHClose(void)
 {
   if(CHRRAM)
-    FCEU_gfree(CHRRAM);
+    free(CHRRAM);
   CHRRAM=NULL;
 }
 

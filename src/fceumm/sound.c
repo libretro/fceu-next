@@ -445,7 +445,7 @@ static void FASTAPASS(1) FrameSoundStuff(int V)
   }
 }
 
-void FrameSoundUpdate(void)
+static void FrameSoundUpdate(void)
 {
  // Linear counter:  Bit 0-6 of $4008
  // Length counter:  Bit 4-7 of $4003, $4007, $400b, $400f

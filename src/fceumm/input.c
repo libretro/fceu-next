@@ -257,13 +257,15 @@ static DECLFW(B4016)
 
 void FCEU_DrawInput(uint8 *buf)
 {
-  int x;
-  for(x=0;x<2;x++)
-     if(JPorts[x]->Draw)
-       JPorts[x]->Draw(x,buf,JPAttrib[x]);
-  if(FCExp)
-    if(FCExp->Draw)
-      FCExp->Draw(buf,JPAttribFC);
+	if(JPorts[0]->Draw)
+		JPorts[0]->Draw(0,buf,JPAttrib[0]);
+
+	if(JPorts[1]->Draw)
+		JPorts[1]->Draw(1,buf,JPAttrib[1]);
+
+	if(FCExp)
+		if(FCExp->Draw)
+			FCExp->Draw(buf,JPAttribFC);
 }
 
 void FCEU_UpdateInput(void)
@@ -397,27 +399,6 @@ void FCEUI_SetInputFC(int type, void *ptr, int attrib)
 	JPTypeFC=type;
 	InputDataPtrFC=ptr;
 	SetInputStuffFC();
-}
-
-#if 0
-void FCEU_DoSimpleCommand(int cmd)
-{
-  switch(cmd)
-  {
-    case FCEUNPCMD_FDSINSERT: FCEU_FDSInsert(-1); break;
-    case FCEUNPCMD_FDSSELECT: FCEU_FDSSelect(); break;
-    case FCEUNPCMD_FDSEJECT: FCEU_FDSEject(); break;
-    case FCEUNPCMD_VSUNICOIN: FCEU_VSUniCoin(); break;
-    case FCEUNPCMD_VSUNIDIP0 ... (FCEUNPCMD_VSUNIDIP0 + 7): FCEU_VSUniToggleDIP(cmd - FCEUNPCMD_VSUNIDIP0); break;
-    case FCEUNPCMD_POWER: PowerNES(); break;
-    case FCEUNPCMD_RESET: ResetNES(); break;
-  }
-}
-#endif
-
-void FCEU_QSimpleCommand(int cmd)
-{
-	//FCEU_DoSimpleCommand(cmd);
 }
 
 void FCEUI_FDSSelect(void)

@@ -26,4 +26,3 @@
 
 void *FCEU_malloc(uint32 size);
 void *FCEU_gmalloc(uint32 size);
-void FCEU_gfree(void *ptr);

@@ -151,7 +151,7 @@ static void M68Power(void)
 static void M68Close(void)
 {
   if(WRAM)
-    FCEU_gfree(WRAM);
+    free(WRAM);
   WRAM=NULL;
 }
 

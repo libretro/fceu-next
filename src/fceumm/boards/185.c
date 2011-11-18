@@ -77,7 +77,7 @@ static void MPower(void)
 static void MClose(void)
 {
   if(DummyCHR)
-    FCEU_gfree(DummyCHR);
+    free(DummyCHR);
   DummyCHR=NULL;
 }
 
