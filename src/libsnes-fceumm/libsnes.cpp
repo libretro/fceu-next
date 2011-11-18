@@ -44,6 +44,8 @@ static uint32 current_palette = 0;
 // extern forward decls.
 extern FCEUGI *FCEUGameInfo;
 extern uint8 *XBuf;
+extern CartInfo iNESCart;
+extern CartInfo UNIFCart;
 
 /* emulator-specific callback functions */
 
@@ -570,6 +572,11 @@ uint8_t *snes_get_memory_data(unsigned id)
    if (id != SNES_MEMORY_CARTRIDGE_RAM)
       return NULL;
 
+   if (iNESCart.battery)
+	   return iNESCart.SaveGame[0];
+   if (UNIFCart.battery)
+      return UNIFCart.SaveGame[0];
+
    return 0;
 }
 
@@ -577,6 +584,11 @@ unsigned snes_get_memory_size(unsigned id)
 {
    if (id != SNES_MEMORY_CARTRIDGE_RAM)
       return 0;
+
+   if (iNESCart.battery)
+      return iNESCart.SaveGameLen[0];
+   if (UNIFCart.battery)
+      return UNIFCart.SaveGameLen[0];
 
    return 0;
 }

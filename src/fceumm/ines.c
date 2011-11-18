@@ -47,7 +47,7 @@ static uint8 *trainerpoo=0;
 static uint8 *ROM=NULL;
 static uint8 *VROM=NULL;
 
-static CartInfo iNESCart;
+CartInfo iNESCart;
 
 uint8 iNESMirroring;
 uint16 iNESCHRBankList[8];
