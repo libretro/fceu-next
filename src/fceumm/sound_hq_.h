@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -28,8 +29,9 @@
 
 #include "fceu.h"
 #include "sound.h"
-#include "filter.h"
 #include "state.h"
+
+#include "fcoeffs.h"
 
 static uint32 wlookup1[32];
 static uint32 wlookup2[203];
@@ -142,7 +144,6 @@ static char DMCHaveSample=0;
 static void Dummyfunc(void) {};
 static void (*DoNoise)(void)=Dummyfunc;
 static void (*DoTriangle)(void)=Dummyfunc;
-static void (*DoPCM)(void)=Dummyfunc;
 static void (*DoSQ1)(void)=Dummyfunc;
 static void (*DoSQ2)(void)=Dummyfunc;
 
@@ -194,6 +195,16 @@ static void SQReload(int x, uint8 V)
 	RectDutyCount[x]=7;
 	EnvUnits[x].reloaddec=1;
 	//reloadfreq[x]=1;
+}
+
+static void RDoPCM(void)
+{
+	uint32 V;
+
+	for(V=ChannelBC[4];V<SOUNDTS;V++)
+		WaveHi[V]+=RawDALatch<<16;
+
+	ChannelBC[4]=SOUNDTS;
 }
 
 static DECLFW(Write_PSG)
@@ -252,7 +263,8 @@ static DECLFW(Write_PSG)
 				 lengthcount[3]=lengthtable[(V>>3)&0x1f];
 			 EnvUnits[2].reloaddec=1;
 			 break;
-		case 0x10:DoPCM();
+		case 0x10:
+			 RDoPCM();
 			  LoadDMCPeriod(V&0xF);
 
 			  if(SIRQStat&0x80)
@@ -276,7 +288,8 @@ static DECLFW(Write_DMCRegs)
 
 	switch(A)
 	{
-		case 0x00:DoPCM();
+		case 0x00:
+			RDoPCM();
 			  LoadDMCPeriod(V&0xF);
 
 			  if(SIRQStat&0x80)
@@ -290,7 +303,8 @@ static DECLFW(Write_DMCRegs)
 			  }
 			  DMCFormat=V;
 			  break;
-		case 0x01:DoPCM();
+		case 0x01:
+			RDoPCM();
 			  RawDALatch=V&0x7F;
 			  break;
 		case 0x02:DMCAddressLatch=V;break;
@@ -309,7 +323,7 @@ static DECLFW(StatusWrite)
 	DoSQ2();
 	DoTriangle();
 	DoNoise();
-	DoPCM();
+	RDoPCM();
 	for(x=0;x<4;x++)
 		if(!(V&(1<<x)))
 			lengthcount[x]=0;   /* Force length counters to 0. */
@@ -520,7 +534,7 @@ void FASTAPASS(1) FCEU_SoundCPUHook(int cycles)
 			int t=((DMCShift&1)<<2)-2;
 			/* Unbelievably ugly hack */
 			soundtsoffs+=DMCacc;
-			DoPCM();
+			RDoPCM();
 			soundtsoffs-=DMCacc;
 			RawDALatch+=t;
 			if(RawDALatch&0x80)
@@ -534,15 +548,6 @@ void FASTAPASS(1) FCEU_SoundCPUHook(int cycles)
 	}
 }
 
-void RDoPCM(void)
-{
- uint32 V;
-
- for(V=ChannelBC[4];V<SOUNDTS;V++)
-  WaveHi[V]+=RawDALatch<<16;
-
- ChannelBC[4]=SOUNDTS;
-}
 
 /* This has the correct phase.  Don't mess with it. */
 static INLINE void RDoSQ(int x)
@@ -954,6 +959,117 @@ void SetNESSoundMap(void)
 	SetReadHandler(0x4015,0x4015,StatusRead);
 }
 
+/* Returns number of samples written to out. */
+/* leftover is set to the number of samples that need to be copied
+   from the end of in to the beginning of in.
+*/
+
+//static uint32 mva=1000;
+
+/* This filtering code assumes that almost all input values stay below 32767.
+   Do not adjust the volume in the wlookup tables and the expansion sound
+   code to be higher, or you *might* overflow the FIR code.
+*/
+static uint32 mrindex;
+static uint32 mrratio;
+
+static void SexyFilter(int32 *in, int32 *out, int32 count)
+{
+	static int64 acc1=0,acc2=0;
+	int32 mul1,mul2,vmul;
+
+	mul1=(94<<16)/FSettings.SndRate;
+	mul2=(24<<16)/FSettings.SndRate;
+	vmul=(FSettings.SoundVolume<<16)*3/4/100;
+
+	vmul/=4;
+
+	while(count)
+	{
+		int64 ino=(int64)*in*vmul;
+		acc1+=((ino-acc1)*mul1)>>16;
+		acc2+=((ino-acc1-acc2)*mul2)>>16;
+		*in=0;
+		{
+			int32 t=(acc1-ino+acc2)>>16;
+			if(t>32767)
+				t=32767;
+			if(t<-32768)
+				t=-32768;
+			*out=t;
+		}
+		in++;
+		out++;
+		count--;
+	}
+}
+
+static int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
+{
+	uint32 x;
+	uint32 max;
+	int32 *outsave=out;
+	int32 count=0;
+
+	max=(inlen-1)<<16;
+
+	if(FSettings.soundq==2)
+		for(x=mrindex;x<max;x+=mrratio)
+		{
+			int32 acc=0,acc2=0;
+			unsigned int c;
+			int32 *S,*D;
+
+			for(c=SQ2NCOEFFS,S=&in[(x>>16)-SQ2NCOEFFS],D=sq2coeffs;c;c--,D++)
+			{
+				acc+=(S[c]**D)>>6;
+				acc2+=(S[1+c]**D)>>6;
+			}
+
+			acc=((int64)acc*(65536-(x&65535))+(int64)acc2*(x&65535))>>(16+11);
+			*out=acc;
+			out++;
+			count++;
+		}
+	else
+		for(x=mrindex;x<max;x+=mrratio)
+		{
+			int32 acc=0,acc2=0;
+			unsigned int c;
+			int32 *S,*D;
+
+			for(c=NCOEFFS,S=&in[(x>>16)-NCOEFFS],D=coeffs;c;c--,D++)
+			{
+				acc+=(S[c]**D)>>6;
+				acc2+=(S[1+c]**D)>>6;
+			}
+
+			acc=((int64)acc*(65536-(x&65535))+(int64)acc2*(x&65535))>>(16+11);
+			*out=acc;
+			out++;
+			count++;
+		}
+
+	mrindex=x-max;
+
+	if(FSettings.soundq==2)
+	{
+		mrindex+=SQ2NCOEFFS*65536;
+		*leftover=SQ2NCOEFFS+1;
+	}
+	else
+	{
+		mrindex+=NCOEFFS*65536;
+		*leftover=NCOEFFS+1;
+	}
+
+	if(GameExpSound.NeoFill)
+		GameExpSound.NeoFill(outsave,count);
+
+	SexyFilter(outsave,outsave,count);
+	return(count);
+}
+
 static int32 inbuf=0;
 int FlushEmulateSound(void)
 {
@@ -964,50 +1080,29 @@ int FlushEmulateSound(void)
 	DoSQ2();
 	DoTriangle();
 	DoNoise();
-	DoPCM();
+	RDoPCM();
 
-	if(FSettings.soundq >= 1)
+	int32 *tmpo=&WaveHi[soundtsoffs];
+
+	if(GameExpSound.HiFill)
+		GameExpSound.HiFill();
+
+	for(x=timestamp;x;x--)
 	{
-		int32 *tmpo=&WaveHi[soundtsoffs];
-
-		if(GameExpSound.HiFill)
-			GameExpSound.HiFill();
-
-		for(x=timestamp;x;x--)
-		{
-			uint32 b=*tmpo;
-			*tmpo=(b&65535)+wlookup2[(b>>16)&255]+wlookup1[b>>24];
-			tmpo++;
-		}
-		end=NeoFilterSound(WaveHi,WaveFinal,SOUNDTS,&left);
-
-		memmove(WaveHi,WaveHi+SOUNDTS-left,left*sizeof(uint32));
-		memset(WaveHi+left,0,sizeof(WaveHi)-left*sizeof(uint32));
-
-		if(GameExpSound.HiSync) GameExpSound.HiSync(left);
-		for(x=0;x<5;x++)
-			ChannelBC[x]=left;
-
-		soundtsoffs=left;
+		uint32 b=*tmpo;
+		*tmpo=(b&65535)+wlookup2[(b>>16)&255]+wlookup1[b>>24];
+		tmpo++;
 	}
-	else
-	{
-		end=(SOUNDTS<<16)/soundtsinc;
-		if(GameExpSound.Fill)
-			GameExpSound.Fill(end&0xF);
+	end=NeoFilterSound(WaveHi,WaveFinal,SOUNDTS,&left);
 
-		SexyFilter(Wave,WaveFinal,end>>4);
+	memmove(WaveHi,WaveHi+SOUNDTS-left,left*sizeof(uint32));
+	memset(WaveHi+left,0,sizeof(WaveHi)-left*sizeof(uint32));
 
-		if(end&0xF)
-			Wave[0]=Wave[(end>>4)];
-		Wave[end>>4]=0;
+	if(GameExpSound.HiSync) GameExpSound.HiSync(left);
+	for(x=0;x<5;x++)
+		ChannelBC[x]=left;
 
-		for(x=0;x<5;x++)
-			ChannelBC[x]=end & 0xF;
-
-		soundtsoffs = (soundtsinc*(end&0xF))>>16;
-		end>>=4;
-	}
+	soundtsoffs=left;
 
 	inbuf=end;
 
@@ -1081,6 +1176,37 @@ void FCEUSND_Power(void)
 	LoadDMCPeriod(DMCFormat&0xF);
 }
 
+static void MakeFilters(int32 rate)
+{
+	int32 *tabs[6]={C44100NTSC,C44100PAL,C48000NTSC,C48000PAL,C96000NTSC,
+		C96000PAL};
+	int32 *sq2tabs[6]={SQ2C44100NTSC,SQ2C44100PAL,SQ2C48000NTSC,SQ2C48000PAL,
+		SQ2C96000NTSC,SQ2C96000PAL};
+
+	int32 *tmp;
+	int32 x;
+	uint32 nco= SQ2NCOEFFS;
+
+	mrindex=(nco+1)<<16;
+	mrratio=(PAL?(int64)(PAL_CPU*65536):(int64)(NTSC_CPU*65536))/rate;
+
+	tmp=sq2tabs[(PAL?1:0)|(rate==48000?2:0)|(rate==96000?4:0)];
+
+	for(x=0;x<SQ2NCOEFFS>>1;x++)
+		sq2coeffs[x]=sq2coeffs[SQ2NCOEFFS-1-x]=tmp[x];
+
+#ifdef MOO
+	/* Some tests involving precision and error. */
+	{
+		static int64 acc=0;
+		int x;
+		for(x=0;x<SQ2NCOEFFS;x++)
+			acc+=(int64)32767*sq2coeffs[x];
+		printf("Foo: %lld\n",acc);
+	}
+#endif
+}
+
 void SetSoundVariables(void)
 {
 	int x;
@@ -1094,37 +1220,20 @@ void SetSoundVariables(void)
 		for(x=1;x<32;x++)
 		{
 			wlookup1[x]=(double)16*16*16*4*95.52/((double)8128/(double)x+100);
-			if(!FSettings.soundq)
-				wlookup1[x]>>=4;
 		}
 		wlookup2[0]=0;
 		for(x=1;x<203;x++)
 		{
 			wlookup2[x]=(double)16*16*16*4*163.67/((double)24329/(double)x+100);
-			if(!FSettings.soundq)
-				wlookup2[x]>>=4;
 		}
-		if(FSettings.soundq>=1)
-		{
-			DoNoise=RDoNoise;
-			DoTriangle=RDoTriangle;
-			DoPCM=RDoPCM;
-			DoSQ1=RDoSQ1;
-			DoSQ2=RDoSQ2;
-		}
-		else
-		{
-			DoNoise=DoTriangle=DoPCM=DoSQ1=DoSQ2=Dummyfunc;
-			DoSQ1=RDoSQLQ;
-			DoSQ2=RDoSQLQ;
-			DoTriangle=RDoTriangleNoisePCMLQ;
-			DoNoise=RDoTriangleNoisePCMLQ;
-			DoPCM=RDoTriangleNoisePCMLQ;
-		}
+		DoNoise=RDoNoise;
+		DoTriangle=RDoTriangle;
+		DoSQ1=RDoSQ1;
+		DoSQ2=RDoSQ2;
 	}
 	else
 	{
-		DoNoise=DoTriangle=DoPCM=DoSQ1=DoSQ2=Dummyfunc;
+		DoNoise=DoTriangle=DoSQ1=DoSQ2=Dummyfunc;
 		return;
 	}
 

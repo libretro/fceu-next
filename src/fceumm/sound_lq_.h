@@ -792,10 +792,7 @@ static void SexyFilter(int32 *in, int32 *out, int32 count)
 	mul2=(24<<16)/FSettings.SndRate;
 	vmul=(FSettings.SoundVolume<<16)*3/4/100;
 
-	if(FSettings.soundq)
-		vmul/=4;
-	else
-		vmul*=2;      /* TODO:  Increase volume in low quality sound rendering code itself */
+	vmul*=2;      /* TODO:  Increase volume in low quality sound rendering code itself */
 
 	while(count)
 	{
@@ -924,27 +921,15 @@ static void MakeFilters(int32 rate)
 
 	int32 *tmp;
 	int32 x;
-	uint32 nco;
-
-	if(FSettings.soundq==2)
-		nco=SQ2NCOEFFS;
-	else
-		nco=NCOEFFS;
+	uint32 nco = NCOEFFS;
 
 	mrindex=(nco+1)<<16;
 	mrratio=(PAL?(int64)(PAL_CPU*65536):(int64)(NTSC_CPU*65536))/rate;
 
-	if(FSettings.soundq==2)
-		tmp=sq2tabs[(PAL?1:0)|(rate==48000?2:0)|(rate==96000?4:0)];
-	else
-		tmp=tabs[(PAL?1:0)|(rate==48000?2:0)|(rate==96000?4:0)];
+	tmp=tabs[(PAL?1:0)|(rate==48000?2:0)|(rate==96000?4:0)];
 
-	if(FSettings.soundq==2)
-		for(x=0;x<SQ2NCOEFFS>>1;x++)
-			sq2coeffs[x]=sq2coeffs[SQ2NCOEFFS-1-x]=tmp[x];
-	else
-		for(x=0;x<NCOEFFS>>1;x++)
-			coeffs[x]=coeffs[NCOEFFS-1-x]=tmp[x];
+	for(x=0;x<NCOEFFS>>1;x++)
+		coeffs[x]=coeffs[NCOEFFS-1-x]=tmp[x];
 
 #ifdef MOO
 	/* Some tests involving precision and error. */
