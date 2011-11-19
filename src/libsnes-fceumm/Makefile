@@ -36,7 +36,7 @@ FCEU_CXXOBJ := $(FCEU_CXXSRCS:.cpp=.o)
 FCEU_CSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.c))
 FCEU_COBJ := $(FCEU_CSRCS:.c=.o)
 
-OBJS := $(FCEU_COBJ) $(FCEU_CXXOBJ) libsnes.o
+OBJS := $(FCEU_COBJ) $(FCEU_CXXOBJ) libsnes.o memstream.o
 
 FCEU_DEFINES := -D__LIBSNES__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DPSS_STYLE=1 -DLSB_FIRST=1 -DLOCAL_LE=1
 
@@ -44,7 +44,7 @@ CFLAGS += -O3 -std=gnu99 $(fpic) -Wno-write-strings $(FCEU_DEFINES)
 CXXFLAGS += -O3 $(fpic) -Wno-write-strings $(FCEU_DEFINES)
 LDFLAGS += -Wl,-no-undefined
 
-INCDIRS := -I$(FCEU_DIR) -I$(UTILS_DIR)/zlib 
+INCDIRS := -I. -I$(FCEU_DIR) -I$(UTILS_DIR)/zlib 
 LIBS :=
 
 $(TARGET): $(OBJS)

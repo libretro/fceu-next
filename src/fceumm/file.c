@@ -322,7 +322,7 @@ zpfail:
 				}
 				return(fceufp);
 			}
-			fclose(fd);
+			close(fd);
 		}
 
 	}

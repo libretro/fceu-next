@@ -25,8 +25,8 @@ extern "C" {
 #endif
 
 #ifdef __LIBSNES__
-void FCEUSS_Load(uint8_t *data, unsigned size);
-void FCEUSS_Save(uint8_t *data, unsigned size);
+void FCEUSS_Load(void);
+void FCEUSS_Save(void);
 #else
 void FCEUSS_Save(char *, int slot);
 int FCEUSS_Load(char *, int slot);

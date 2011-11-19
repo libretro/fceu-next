@@ -27,119 +27,6 @@
 #include <string.h>
 #include "memstream.h"
 
-// memstream
-
-static uint8_t* g_buffer = NULL;
-static size_t g_size = 0;
-
-static size_t last_file_size = 0;
-
-struct memstream
-{
-   uint8_t *m_buf;
-   size_t m_size;
-   size_t m_ptr;
-};
-
-void memstream_new(memstream_t *stream, uint8_t *buffer, size_t max_size)
-{
-	stream->m_buf = buffer;
-	stream->m_size = max_size;
-	stream->m_ptr = 0;
-}
-
-void memstream_set_buffer(uint8_t *buffer, size_t size)
-{
-   g_buffer = buffer;
-   g_size = size;
-}
-
-size_t memstream_get_last_size()
-{
-   return last_file_size;
-}
-
-memstream_t *memstream_open()
-{
-   if (!g_buffer || !g_size)
-      return NULL;
-
-   memstream_t *stream;
-   memstream_new(stream, g_buffer, g_size);
-   g_buffer = NULL;
-   g_size = 0;
-   return stream;
-}
-
-void memstream_close(memstream_t *stream)
-{
-   last_file_size = stream->m_ptr;
-   free(stream);
-}
-
-size_t memstream_read(memstream_t *stream, void *data, size_t bytes)
-{
-   size_t avail = stream->m_size - stream->m_ptr;
-   if (bytes > avail)
-      bytes = avail;
-
-   memcpy(data, stream->m_buf + stream->m_ptr, bytes);
-   stream->m_ptr += bytes;
-   return bytes;
-}
-
-size_t memstream_write(memstream_t *stream, const void *data, size_t bytes)
-{
-   size_t avail = stream->m_size - stream->m_ptr;
-   if (bytes > avail)
-      bytes = avail;
-
-   memcpy(stream->m_buf + stream->m_ptr, data, bytes);
-   stream->m_ptr += bytes;
-   return bytes;
-}
-
-int memstream_seek(memstream_t *stream, int offset, int whence)
-{
-   size_t ptr;
-   if (whence == SEEK_SET)
-      ptr = offset;
-   else if (whence == SEEK_CUR)
-      ptr = stream->m_ptr + offset;
-   else if (whence == SEEK_END)
-      ptr = stream->m_size + offset;
-   else
-      return -1;
-
-   if (ptr <= stream->m_size)
-   {
-      stream->m_ptr = ptr;
-      return 0;
-   }
-   else
-      return -1;
-}
-
-size_t memstream_pos(memstream_t *stream)
-{
-   return stream->m_ptr;
-}
-
-char *memstream_gets(memstream_t *stream, char *buffer, size_t len)
-{
-   return NULL;
-}
-
-int memstream_getc(memstream_t *stream)
-{
-   if (stream->m_ptr >= stream->m_size)
-      return EOF;
-   else
-      return stream->m_buf[stream->m_ptr++];
-}
-
-// end of memstream
-
 static snes_video_refresh_t video_cb = NULL;
 static snes_audio_sample_t audio_cb = NULL;
 static snes_input_poll_t poll_cb = NULL;
@@ -164,7 +51,6 @@ extern CartInfo UNIFCart;
 
 /* emulator-specific callback functions */
 
-void FCEU_ResetPalette() {}
 char *GetKeyboard(void) {}
 void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b)
 {
@@ -493,8 +379,6 @@ void snes_init(void)
    }
 }
 
-static unsigned serialize_size = 0;
-
 static void emulator_set_input(void)
 {
 	FCEUI_SetInput(0, SI_GAMEPAD, &JSReturn[0], 0);
@@ -596,18 +480,40 @@ void snes_run(void)
 }
 
 
+static unsigned serialize_size = 0;
 unsigned snes_serialize_size(void)
 {
-   return 0;
+   if (serialize_size == 0)
+   {
+      // Something arbitrarily big.
+      uint8_t *buffer = (uint8_t*)malloc(1000000);
+      memstream_set_buffer(buffer, 1000000);
+      free(buffer);
+
+      FCEUSS_Save();
+      serialize_size = memstream_get_last_size();
+   }
+
+   return serialize_size;
 }
 
 bool snes_serialize(uint8_t *data, unsigned size)
 {
+   if (size != snes_serialize_size())
+      return false;
+
+   memstream_set_buffer(data, size);
+   FCEUSS_Save();
    return true;
 }
 
 bool snes_unserialize(const uint8_t *data, unsigned size)
 {
+   if (size != snes_serialize_size())
+      return false;
+
+   memstream_set_buffer((uint8_t*)data, size);
+   FCEUSS_Load();
    return true;
 }
 

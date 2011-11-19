@@ -1,23 +1,31 @@
 #ifndef __MEMSTREAM_H
 #define __MEMSTREAM_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
 typedef struct memstream memstream_t;
 
-memstream_t *memstream_open();
-void memstream_close(memstream_t * stream);
+memstream_t *memstream_open(void);
+void memstream_close(memstream_t *stream);
 
-void memstream_new(memstream_t *stream, uint8_t *buffer, size_t max_size);
-size_t memstream_read(memstream_t * stream, void *data, size_t bytes);
-size_t memstream_write(memstream_t * stream, const void *data, size_t bytes);
-int memstream_getc(memstream_t * stream);
-char *memstream_gets(memstream_t * stream, char *buffer, size_t len);
-size_t memstream_pos(memstream_t * stream);
-int memstream_seek(memstream_t * stream, int offset, int whence);
+size_t memstream_read(memstream_t *stream, void *data, size_t bytes);
+size_t memstream_write(memstream_t *stream, const void *data, size_t bytes);
+int memstream_getc(memstream_t *stream);
+void memstream_putc(memstream_t *stream, int c);
+char *memstream_gets(memstream_t *stream, char *buffer, size_t len);
+size_t memstream_pos(memstream_t *stream);
+int memstream_seek(memstream_t *stream, int offset, int whence);
 
 void memstream_set_buffer(uint8_t *buffer, size_t size);
-size_t memstream_get_last_size();
+size_t memstream_get_last_size(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

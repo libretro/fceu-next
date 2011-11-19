@@ -9,3 +9,4 @@
 #include "../cheat.h"
 #include "../unif.h"
 #include <string.h>
+#include <stdlib.h>
