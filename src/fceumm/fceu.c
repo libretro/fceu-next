@@ -278,7 +278,6 @@ endlseq:
 		OpenGenie();
 
 	PowerNES();
-	FCEUSS_CheckStates();
 
 	FCEU_LoadGamePalette();
 	//FCEU_LoadGameCheats(0);
@@ -321,7 +320,6 @@ FCEUGI *FCEUI_CopyFamiStart(void)
 		OpenGenie();
 
 	PowerNES();
-	FCEUSS_CheckStates();
 
 	FCEU_LoadGamePalette();
 	FCEU_LoadGameCheats(0);

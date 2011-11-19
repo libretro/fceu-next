@@ -315,12 +315,6 @@ int FCEUSS_Load(char *fname)
 	FILE *st;
 	char *fn;
 
-	if(geniestage==1)
-	{
-		//FCEU_DispMessage("Cannot load FCS in GG screen.");
-		return(0);
-	}
-
 	if(fname)
 		st=fopen(fname, "rb");
 	else
@@ -329,7 +323,7 @@ int FCEUSS_Load(char *fname)
 		free(fn);
 	}
 
-	if(st == NULL)
+	if(st == NULL || geniestage == 1)
 	{
 		//FCEU_DispMessage("State %d load error.",CurrentState);
 		return(0);
@@ -341,23 +335,6 @@ int FCEUSS_Load(char *fname)
 		return 1;
 	else
 		return 0;
-}
-
-void FCEUSS_CheckStates(void)
-{
-	FILE *st=NULL;
-	char *fn;
-	int ssel;
-
-	for(ssel=0;ssel<10;ssel++)
-	{
-		st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,ssel,0),"rb");
-		free(fn);
-		if(st)
-			fclose(st);
-	}
-
-	CurrentState=0;
 }
 
 void ResetExState(void (*PreSave)(void), void (*PostSave)(void))
