@@ -1,6 +1,7 @@
 #include "libsnes.hpp"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 
 /* emulator-specific includes */
@@ -35,13 +36,17 @@ static size_t last_file_size = 0;
 
 struct memstream
 {
-   memstream(uint8_t *buffer, size_t max_size) : m_buf(buffer), m_size(max_size), m_ptr(0)
-   {}
-
    uint8_t *m_buf;
    size_t m_size;
    size_t m_ptr;
 };
+
+void memstream_new(memstream_t *stream, uint8_t *buffer, size_t max_size)
+{
+	stream->m_buf = buffer;
+	stream->m_size = max_size;
+	stream->m_ptr = 0;
+}
 
 void memstream_set_buffer(uint8_t *buffer, size_t size)
 {
@@ -59,7 +64,8 @@ memstream_t *memstream_open()
    if (!g_buffer || !g_size)
       return NULL;
 
-   memstream_t *stream = new memstream_t(g_buffer, g_size);
+   memstream_t *stream;
+   memstream_new(stream, g_buffer, g_size);
    g_buffer = NULL;
    g_size = 0;
    return stream;
@@ -68,7 +74,7 @@ memstream_t *memstream_open()
 void memstream_close(memstream_t *stream)
 {
    last_file_size = stream->m_ptr;
-   delete stream;
+   free(stream);
 }
 
 size_t memstream_read(memstream_t *stream, void *data, size_t bytes)

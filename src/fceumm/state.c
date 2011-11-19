@@ -224,6 +224,16 @@ endo:
 static int CurrentState=0;
 extern int geniestage;
 
+#ifdef __LIBSNES__
+void FCEUSS_Load(uint8_t *data, unsigned size)
+{
+}
+
+void FCEUSS_Save(uint8_t *data, unsigned size)
+{
+}
+
+#else
 static int FCEUSS_SaveFP(FILE *st)
 {
 	static uint32 totalsize;
@@ -336,6 +346,7 @@ int FCEUSS_Load(char *fname)
 	else
 		return 0;
 }
+#endif
 
 void ResetExState(void (*PreSave)(void), void (*PostSave)(void))
 {
