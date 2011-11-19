@@ -40,8 +40,8 @@ OBJS := $(FCEU_COBJ) $(FCEU_CXXOBJ) libsnes.o memstream.o
 
 FCEU_DEFINES := -D__LIBSNES__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DPSS_STYLE=1 -DLSB_FIRST=1 -DLOCAL_LE=1
 
-CFLAGS += -O0 -g -std=gnu99 $(fpic) -Wno-write-strings $(FCEU_DEFINES)
-CXXFLAGS += -O0 -g $(fpic) -Wno-write-strings $(FCEU_DEFINES)
+CFLAGS += -O3 -std=gnu99 $(fpic) -Wno-write-strings $(FCEU_DEFINES)
+CXXFLAGS += -O3 $(fpic) -Wno-write-strings $(FCEU_DEFINES)
 LDFLAGS += -Wl,-no-undefined
 
 INCDIRS := -I. -I$(FCEU_DIR) -I$(UTILS_DIR)/zlib 
