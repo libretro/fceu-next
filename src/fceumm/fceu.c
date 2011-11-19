@@ -204,6 +204,8 @@ static void CloseGame(void)
 	}
 }
 
+extern uint8 pale;
+
 void ResetGameLoaded(void)
 {
 	if(FCEUGameInfo)
@@ -255,8 +257,7 @@ FCEUGI *FCEUI_LoadGame(const char *name)
 
 	if(!fp)
 	{
-		FCEU_PrintError("Error opening \"%s\"!",name);
-		return 0;
+		return 0;	//Error opening ROM
 	}
 
 	if(iNESLoad(name,fp))
@@ -266,8 +267,7 @@ FCEUGI *FCEUI_LoadGame(const char *name)
 	if(FDSLoad(name,fp))
 		goto endlseq;
 
-	FCEU_PrintError("An error occurred while loading the file.");
-	FCEU_fclose(fp);
+	FCEU_fclose(fp);	//An error occcurred while loading the file
 	return 0;
 
 endlseq:
@@ -310,10 +310,7 @@ FCEUGI *FCEUI_CopyFamiStart(void)
 #endif
 
 	if(!CopyFamiLoad())
-	{
-		FCEU_PrintError("An error occurred while starting CopyFamicom.");
-		return 0;
-	}
+		return 0;	//An error occurred while starting CopyFamicom
 
 	FCEU_ResetVidSys();
 	if(FSettings.GameGenie)
@@ -342,11 +339,6 @@ int FCEUI_Initialize(void)
 	FCEUPPU_Init();
 	X6502_Init();
 	return 1;
-}
-
-void FCEUI_Kill(void)
-{
-	FCEU_KillGenie();
 }
 
 void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize)
@@ -535,12 +527,4 @@ int FCEUI_GetCurrentVidSystem(int *slstart, int *slend)
 void FCEUI_SetGameGenie(int a)
 {
 	FSettings.GameGenie=a?1:0;
-}
-
-int32 FCEUI_GetDesiredFPS(void)
-{
-	if(PAL)
-		return(838977920); // ~50.007
-	else
-		return(1008307711);  // ~60.1
 }

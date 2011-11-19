@@ -790,8 +790,8 @@ void FCEUD_VideoChanged()
 // dummy functions
 
 bool FCEUD_ShouldDrawInputAids() { return 1; }
-void FCEUD_Message(char *s) { printf("MESSAGE: %s\n", s); }
-void FCEUD_PrintError(char *s) { printf("ERROR: %s\n", s); }
+void FCEUD_Message(const char *s) { printf("MESSAGE: %s\n", s); }
+void FCEUD_PrintError(const char *s) { printf("ERROR: %s\n", s); }
 
 
 struct st_palettes palettes[] = {
@@ -1487,7 +1487,7 @@ static  void ingame_menu(void)
 			case MENU_ITEM_RESET:
 				if(CTRL_CROSS(button_was_pressed))
 				{
-					FCEUI_ResetNES();
+					ResetNES();
 					is_running = 1;
 					ingame_menu_item = 0;
 					is_ingame_menu_running = 0;

@@ -194,7 +194,7 @@ static int WriteStateChunk_Mem(memstream_t *mem, int type, SFORMAT *sf)
 }
 #endif
 
-static SFORMAT *CheckS(SFORMAT *sf, uint32 tsize, char *desc)
+static SFORMAT *CheckS(SFORMAT *sf, uint32 tsize, const char *desc)
 {
 	while(sf->v)
 	{
@@ -467,16 +467,16 @@ static int FCEUSS_SaveFP(FILE *st)
 	return(1);
 }
 
-void FCEUSS_Save(char *fname, int slot)
+void FCEUSS_Save(const char *fname, int slot)
 {
 	FILE *st=NULL;
-	char *fn;
 
 	if(fname)
 		st=fopen(fname, "wb");
 	else
 	{
-		st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE, slot,0),"wb");
+		const char *fn = FCEU_MakeFName(FCEUMKF_STATE, slot,0);
+		st=fopen(fn,"wb");
 		free(fn);
 	}
 
@@ -519,16 +519,16 @@ static int FCEUSS_LoadFP(FILE *st)
 	return(x);
 }
 
-int FCEUSS_Load(char *fname, int slot)
+int FCEUSS_Load(const char *fname, int slot)
 {
 	FILE *st;
-	char *fn;
 
 	if(fname)
 		st=fopen(fname, "rb");
 	else
 	{
-		st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE, slot, fname),"rb");
+		const char *fn = FCEU_MakeFName(FCEUMKF_STATE, slot, fname);
+		st=fopen(fn,"rb");
 		free(fn);
 	}
 
@@ -557,11 +557,11 @@ void ResetExState(void (*PreSave)(void), void (*PostSave)(void))
 	SFEXINDEX=0;
 }
 
-void AddExState(void *v, uint32 s, int type, char *desc)
+void AddExState(void *v, uint32 s, int type, const char *desc)
 {
 	if(desc)
 	{
-		SFMDATA[SFEXINDEX].desc=(char *)FCEU_malloc(strlen(desc)+1);
+		SFMDATA[SFEXINDEX].desc=(const char *)FCEU_malloc(strlen(desc)+1);
 		strcpy(SFMDATA[SFEXINDEX].desc,desc);
 	}
 	else

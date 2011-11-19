@@ -498,11 +498,11 @@ void CloseGenie(void)
 
 void FCEU_KillGenie(void)
 {
- if(GENIEROM)
- {
-  free(GENIEROM);
-  GENIEROM=0;
- }
+	if(GENIEROM)
+	{
+		free(GENIEROM);
+		GENIEROM=0;
+	}
 }
 
 static readfunc GenieBackup[3];

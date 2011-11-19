@@ -1,4 +1,7 @@
 #ifndef _FCEUH
+#define _FCEUH
+
+#include "types.h"
 
 void ResetGameLoaded(void);
 
@@ -16,9 +19,6 @@ void FlushGenieRW(void);
 void FCEU_ResetVidSys(void);
 
 void ResetMapping(void);
-void ResetNES(void);
-void PowerNES(void);
-
 
 extern uint64 timestampbase;
 extern uint32 MMC5HackVROMMask;
@@ -75,14 +75,8 @@ typedef struct {
 
 extern FCEUS FSettings;
 
-void FCEU_PrintError(char *format, ...);
-void FCEU_printf(char *format, ...);
-
 void SetNESDeemph(uint8 d, int force);
-void FCEU_PutImage(void);
 
-extern uint8 Exit;
-extern uint8 pale;
 extern uint8 vsdip;
 
 #define JOY_A   1
@@ -93,6 +87,5 @@ extern uint8 vsdip;
 #define JOY_DOWN  0x20
 #define JOY_LEFT  0x40
 #define JOY_RIGHT       0x80
-#else
-#define _FCEUH
+
 #endif

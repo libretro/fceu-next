@@ -53,7 +53,7 @@ void FCEU_CheatAddRAM(int s, uint32 A, uint8 *p)
 
 struct CHEATF {
      struct CHEATF *next;
-     char *name;
+     const char *name;
      uint16 addr;
      uint8 val;
      int compare;  /* -1 for no compare. */
@@ -143,14 +143,13 @@ void FCEU_PowerCheats()
  RebuildSubCheats();
 }
 
-static int AddCheatEntry(char *name, uint32 addr, uint8 val, int compare, int status, int type);
 static void CheatMemErr(void)
 {
  FCEUD_PrintError("Error allocating memory for cheat data.");
 }
 
 /* This function doesn't allocate any memory for "name" */
-static int AddCheatEntry(char *name, uint32 addr, uint8 val, int compare, int status, int type)
+static int AddCheatEntry(const char *name, uint32 addr, uint8 val, int compare, int status, int type)
 {
  struct CHEATF *temp;
  if(!(temp=(struct CHEATF *)malloc(sizeof(struct CHEATF))))
@@ -435,19 +434,7 @@ void FCEU_ApplyPeriodicCheats(void)
  }
 }
 
-
-void FCEUI_ListCheats(int (*callb)(char *name, uint32 a, uint8 v, int compare, int s, int type, void *data), void *data)
-{
-  struct CHEATF *next=cheats;
-
-  while(next)
-  {
-   if(!callb(next->name,next->addr,next->val,next->compare,next->status,next->type,data)) break;
-   next=next->next;
-  }
-}
-
-char * FCEUI_GetCheatLabel(unsigned int which)
+const char * FCEUI_GetCheatLabel(unsigned int which)
 {
         struct CHEATF *next=cheats;
         uint32 x=0;
@@ -682,196 +669,9 @@ static int InitCheatComp(void)
  return(1);
 }
 
-void FCEUI_CheatSearchSetCurrentAsOriginal(void)
-{
- uint32 x;
- for(x=0x000;x<0x10000;x++)
-  if(!(CheatComp[x]&CHEATC_NOSHOW))
-  {
-   if(CheatRPtrs[x>>10])
-    CheatComp[x]=CheatRPtrs[x>>10][x];
-   else
-    CheatComp[x]|=CHEATC_NONE;
-  }
-}
-
-void FCEUI_CheatSearchShowExcluded(void)
-{
- uint32 x;
-
- for(x=0x000;x<0x10000;x++)
-  CheatComp[x]&=~CHEATC_EXCLUDED;
-}
-
-
-int32 FCEUI_CheatSearchGetCount(void)
-{
- uint32 x,c=0;
-
- if(CheatComp)
- {
-  for(x=0x0000;x<0x10000;x++)
-   if(!(CheatComp[x]&CHEATC_NOSHOW) && CheatRPtrs[x>>10])
-    c++;
- }
-
- return c;
-}
-/* This function will give the initial value of the search and the current value at a location. */
-
-void FCEUI_CheatSearchGet(int (*callb)(uint32 a, uint8 last, uint8 current, void *data),void *data)
-{
-  uint32 x;
-
-  if(!CheatComp)
-  {
-   if(!InitCheatComp())
-    CheatMemErr();
-   return;
-  }
-
-  for(x=0;x<0x10000;x++)
-   if(!(CheatComp[x]&CHEATC_NOSHOW) && CheatRPtrs[x>>10])
-    if(!callb(x,CheatComp[x],CheatRPtrs[x>>10][x],data))
-     break;
-}
-
-void FCEUI_CheatSearchGetRange(uint32 first, uint32 last, int (*callb)(uint32 a, uint8 last, uint8 current))
-{
-  uint32 x;
-  uint32 in=0;
-
-  if(!CheatComp)
-  {
-   if(!InitCheatComp())
-    CheatMemErr();
-   return;
-  }
-
-  for(x=0;x<0x10000;x++)
-   if(!(CheatComp[x]&CHEATC_NOSHOW) && CheatRPtrs[x>>10])
-   {
-    if(in>=first)
-     if(!callb(x,CheatComp[x],CheatRPtrs[x>>10][x]))
-      break;
-    in++;
-    if(in>last) return;
-   }
-}
-
-void FCEUI_CheatSearchBegin(void)
-{
- uint32 x;
-
- if(!CheatComp)
- {
-  if(!InitCheatComp())
-  {
-   CheatMemErr();
-   return;
-  }
- }
- for(x=0;x<0x10000;x++)
- {
-  if(CheatRPtrs[x>>10])
-   CheatComp[x]=CheatRPtrs[x>>10][x];
-  else
-   CheatComp[x]=CHEATC_NONE;
- }
-}
-
-
 static int INLINE CAbs(int x)
 {
  if(x<0)
   return(0-x);
  return x;
-}
-
-void FCEUI_CheatSearchEnd(int type, uint8 v1, uint8 v2)
-{
- uint32 x;
-
- if(!CheatComp)
- {
-  if(!InitCheatComp())
-  {
-   CheatMemErr();
-   return;
-  }
- }
-
-
- if(!type)      // Change to a specific value.
- {
-  for(x=0;x<0x10000;x++)
-   if(!(CheatComp[x]&CHEATC_NOSHOW))
-   {
-    if(CheatComp[x]==v1 && CheatRPtrs[x>>10][x]==v2)
-    {
-
-    }
-    else
-     CheatComp[x]|=CHEATC_EXCLUDED;
-   }
- }
- else if(type==1)     // Search for relative change(between values).
- {
-  for(x=0;x<0x10000;x++)
-   if(!(CheatComp[x]&CHEATC_NOSHOW))
-   {
-    if(CheatComp[x]==v1 && CAbs(CheatComp[x]-CheatRPtrs[x>>10][x])==v2)
-    {
-
-    }
-    else
-     CheatComp[x]|=CHEATC_EXCLUDED;
-   }
- }
- else if(type==2)        // Purely relative change.
- {
-  for(x=0x000;x<0x10000;x++)
-   if(!(CheatComp[x]&CHEATC_NOSHOW))
-   {
-    if(CAbs(CheatComp[x]-CheatRPtrs[x>>10][x])==v2)
-    {
-
-    }
-    else
-     CheatComp[x]|=CHEATC_EXCLUDED;
-   }
- }
- else if(type==3)        // Any change.
- {
-  for(x=0;x<0x10000;x++)
-   if(!(CheatComp[x]&CHEATC_NOSHOW))
-   {
-    if(CheatComp[x]!=CheatRPtrs[x>>10][x])
-    {
-
-    }
-    else
-     CheatComp[x]|=CHEATC_EXCLUDED;
-   }
- }
- else if(type==4)       // Value decreased.
- {
-  for(x=0;x<0x10000;x++)
-   if(!(CheatComp[x]&CHEATC_NOSHOW))
-   {
-    if(!(CheatRPtrs[x>>10][x]<CheatComp[x]))
-     CheatComp[x]|=CHEATC_EXCLUDED;
-   }
- }
- else if(type==5)       // Value increased.
- {
-  for(x=0;x<0x10000;x++)
-   if(!(CheatComp[x]&CHEATC_NOSHOW))
-   {
-    if(!(CheatRPtrs[x>>10][x]>CheatComp[x]))
-     CheatComp[x]|=CHEATC_EXCLUDED;
-   }
- }
- if(type>4)
-  FCEUI_CheatSearchSetCurrentAsOriginal();
 }

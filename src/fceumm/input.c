@@ -427,13 +427,3 @@ void FCEUI_VSUniCoin(void)
 {
 	FCEU_VSUniCoin();
 }
-
-void FCEUI_ResetNES(void)
-{
-	ResetNES();
-}
-
-void FCEUI_PowerNES(void)
-{
-	PowerNES();
-}

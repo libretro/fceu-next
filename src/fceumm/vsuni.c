@@ -324,6 +324,8 @@ VSUNIENTRY VSUniGames[]  =
  {0}
 };
 
+extern uint8 pale;
+
 void FCEU_VSUniCheck(uint64 md5partial, int *MapperNo, uint8 *Mirroring)
 {
  VSUNIENTRY *vs = VSUniGames;

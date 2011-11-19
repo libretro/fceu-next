@@ -51,9 +51,9 @@ void FCEUI_SetBaseDirectory(char *dir)
 
 static char *odirs[FCEUIOD__COUNT]={0,0,0,0,0,0};     // odirs, odors. ^_^
 
-void FCEUI_SetDirOverride(int which, char *n)
+void FCEUI_SetDirOverride(int which, const char *n)
 {
-	odirs[which]=n;
+	odirs[which] = n;
 }
 
 #ifndef HAVE_ASPRINTF

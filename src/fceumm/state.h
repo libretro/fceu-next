@@ -28,18 +28,18 @@ extern "C" {
 void FCEUSS_Load(void);
 void FCEUSS_Save(void);
 #else
-void FCEUSS_Save(char *, int slot);
-int FCEUSS_Load(char *, int slot);
+void FCEUSS_Save(const char *, int slot);
+int FCEUSS_Load(const char *, int slot);
 #endif
 
 typedef struct {
 	void *v;
 	uint32 s;
-	char *desc;
+	const char *desc;
 } SFORMAT;
 
 void ResetExState(void (*PreSave)(void),void (*PostSave)(void));
-void AddExState(void *v, uint32 s, int type, char *desc);
+void AddExState(void *v, uint32 s, int type, const char *desc);
 
 #define FCEUSTATE_RLSB      0x80000000
 

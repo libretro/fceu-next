@@ -14,7 +14,7 @@ void FCEU_LoadGameCheats(FILE *override);
 void FCEU_FlushGameCheats(FILE *override, int nosave);
 void FCEU_ApplyPeriodicCheats(void);
 void FCEU_PowerCheats(void);
-char * FCEUI_GetCheatLabel(unsigned int which);
+const char * FCEUI_GetCheatLabel(unsigned int which);
 
 #ifdef __cplusplus
 }

@@ -39,7 +39,7 @@ CELL_FRAMEWORK2_DIR	=	./src/cellframework2
 FCEU_API_DIR		=	./src/fceumm
 
 EMULATOR_VERSION	= 1.6
-
+PPU_OPTIMIZE_LV      := -O2
 
 # all source directories
 SOURCES			= $(SRC_DIR) \
@@ -118,18 +118,17 @@ PPU_SRCS += $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.cpp)) $(foreach di
 PPU_TARGET		=	fceu-ps3.ppu.elf
 
 
-PPU_CXXFLAGS	+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -I$(UTILS_DIR)/sz -DPSS_STYLE=1 -DGEKKO -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
-PPU_CFLAGS		+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -I$(UTILS_DIR)/sz -DPSS_STYLE=1 -DGEKKO -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
+PPU_CXXFLAGS	+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -DPSS_STYLE=1 -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
+PPU_CFLAGS		+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -DPSS_STYLE=1 -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
 
 ifeq ($(CELL_BUILD_TOOLS),SNC)
 PPU_CFLAGS		+= 	-Xbranchless=1 -Xfastmath=1 -Xassumecorrectsign=1 -Xassumecorrectalignment=1 \
-				-Xunroll=1 -Xautovecreg=1 -DSNC_COMPILER 
+				-Xunroll=1 -Xautovecreg=1
 PPU_CXXFLAGS		+=	-Xbranchless=1 -Xfastmath=1 -Xassumecorrectsign=1 -Xassumecorrectalignment=1 \
-				-Xunroll=1 -Xautovecreg=1 -DSNC_COMPILER -Xc=cp+exceptions+rtti+wchar_t+bool+array_nd+tmplname
+				-Xunroll=1 -Xautovecreg=1
 else
-PPU_CFLAGS		+=	-funroll-loops -DGCC_COMPILER
-PPU_CXXFLAGS		+=	-funroll-loops -DGCC_COMPILER
-PPU_LDFLAGS		+=	-finline-limit=5000
+PPU_CFLAGS		+=	-funroll-loops
+PPU_CXXFLAGS		+=	-funroll-loops
 PPU_LDFLAGS		+=	-Wl
 endif
 

@@ -19,7 +19,6 @@
 
 /* Emulator-specific includes */
 
-#include "fceumm/driver.h"
 #include "fceumm/fceu.h"
 #include "fceumm/input.h"
 #include "fceumm/state.h"
