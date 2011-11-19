@@ -319,31 +319,28 @@ void VRC6SyncHQ(int32 ts)
 
 static void VRC6_ESI(void)
 {
-        GameExpSound.RChange=VRC6_ESI;
-        GameExpSound.Fill=VRC6Sound;
-        GameExpSound.HiFill=VRC6SoundHQ;
-        GameExpSound.HiSync=VRC6SyncHQ;
+	GameExpSound.RChange=VRC6_ESI;
+	GameExpSound.Fill=VRC6Sound;
+	GameExpSound.HiFill=VRC6SoundHQ;
+	GameExpSound.HiSync=VRC6SyncHQ;
 
-        memset(CVBC,0,sizeof(CVBC));
-        memset(vcount,0,sizeof(vcount));
-        memset(dcount,0,sizeof(dcount));
-        if(FSettings.SndRate)
-        {
-         if(FSettings.soundq>=1)
-         {
-          sfun[0]=DoSQV1HQ;
-          sfun[1]=DoSQV2HQ;
-          sfun[2]=DoSawVHQ;
-         }
-         else
-         {
-          sfun[0]=DoSQV1;
-          sfun[1]=DoSQV2;
-          sfun[2]=DoSawV;
-         }
-        }
-        else
-         memset(sfun,0,sizeof(sfun));
+	memset(CVBC,0,sizeof(CVBC));
+	memset(vcount,0,sizeof(vcount));
+	memset(dcount,0,sizeof(dcount));
+	if(FSettings.SndRate)
+	{
+#if SOUND_QUALITY == 1
+		sfun[0]=DoSQV1HQ;
+		sfun[1]=DoSQV2HQ;
+		sfun[2]=DoSawVHQ;
+#else
+		sfun[0]=DoSQV1;
+		sfun[1]=DoSQV2;
+		sfun[2]=DoSawV;
+#endif
+	}
+	else
+		memset(sfun,0,sizeof(sfun));
 }
 
 void Mapper24_init(void)

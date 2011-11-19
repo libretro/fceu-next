@@ -218,16 +218,16 @@ static int dwave=0;
 
 static void NamcoSoundHack(void)
 {
-  int32 z,a;
-  if(FSettings.soundq>=1)
-  {
-    DoNamcoSoundHQ();
-    return;
-  }
-  z=((SOUNDTS<<16)/soundtsinc)>>4;
-  a=z-dwave;
-  if(a) DoNamcoSound(&Wave[dwave], a);
-  dwave+=a;
+	int32 z,a;
+#if SOUND_QUALITY == 1
+	DoNamcoSoundHQ();
+#else
+	z=((SOUNDTS<<16)/soundtsinc)>>4;
+	a=z-dwave;
+	if(a)
+		DoNamcoSound(&Wave[dwave], a);
+	dwave+=a;
+#endif
 }
 
 static void NamcoSound(int Count)

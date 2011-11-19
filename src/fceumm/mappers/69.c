@@ -57,16 +57,38 @@ static DECLFW(Mapper69_SWH)
              {
               case 0:
               case 1:
-              case 8:if(FSettings.soundq>=1) DoAYSQHQ(0); else DoAYSQ(0);break;
+              case 8:
+#if SOUND_QUALITY == 1
+		      DoAYSQHQ(0);
+#else
+		      DoAYSQ(0);
+#endif
+		      break;
               case 2:
               case 3:
-              case 9:if(FSettings.soundq>=1) DoAYSQHQ(1); else DoAYSQ(1);break;
+              case 9:
+#if SOUND_QUALITY == 1
+		      DoAYSQHQ(1);
+#else
+		      DoAYSQ(1);
+#endif
+		      break;
               case 4:
               case 5:
-              case 10:if(FSettings.soundq>=1) DoAYSQHQ(2); else DoAYSQ(2);break;
+              case 10:
+#if SOUND_QUALITY == 1
+		      DoAYSQHQ(2);
+#else
+		      DoAYSQ(2);
+#endif
+		      break;
               case 7:
                      for(x=0;x<2;x++)
-                        if(FSettings.soundq>=1) DoAYSQHQ(x); else DoAYSQ(x);
+#if SOUND_QUALITY == 1
+		     DoAYSQHQ(x);
+#else
+		     DoAYSQ(x);
+#endif
                      break;
              }
              MapperExRAM[sunindex]=V;

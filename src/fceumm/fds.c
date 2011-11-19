@@ -330,35 +330,36 @@ static DECLFR(FDSSRead)
 
 static DECLFW(FDSSWrite)
 {
- if(FSettings.SndRate)
- {
-  if(FSettings.soundq>=1)
-   RenderSoundHQ();
-  else
-   RenderSound();
- }
- A-=0x4080;
- switch(A)
- {
-  case 0x0:
-  case 0x4: if(V&0x80)
-       amplitude[(A&0xF)>>2]=V&0x3F; //)>0x20?0x20:(V&0x3F);
-      break;
-  case 0x5://printf("$%04x:$%02x\n",A,V);
-    break;
-  case 0x7: b17latch76=0;SPSG[0x5]=0;//printf("$%04x:$%02x\n",A,V);
-    break;
-  case 0x8:
-     b17latch76=0;
-  //   printf("%d:$%02x, $%02x\n",SPSG[0x5],V,b17latch76);
-     fdso.mwave[SPSG[0x5]&0x1F]=V&0x7;
-     SPSG[0x5]=(SPSG[0x5]+1)&0x1F;
-     break;
- }
- //if(A>=0x7 && A!=0x8 && A<=0xF)
- //if(A==0xA || A==0x9)
- //printf("$%04x:$%02x\n",A,V);
- SPSG[A]=V;
+	if(FSettings.SndRate)
+	{
+#if SOUND_QUALITY == 1
+		RenderSoundHQ();
+#else
+		RenderSound();
+#endif
+	}
+	A-=0x4080;
+	switch(A)
+	{
+		case 0x0:
+		case 0x4: if(V&0x80)
+				  amplitude[(A&0xF)>>2]=V&0x3F; //)>0x20?0x20:(V&0x3F);
+			  break;
+		case 0x5://printf("$%04x:$%02x\n",A,V);
+			  break;
+		case 0x7: b17latch76=0;SPSG[0x5]=0;//printf("$%04x:$%02x\n",A,V);
+			  break;
+		case 0x8:
+			  b17latch76=0;
+			  //   printf("%d:$%02x, $%02x\n",SPSG[0x5],V,b17latch76);
+			  fdso.mwave[SPSG[0x5]&0x1F]=V&0x7;
+			  SPSG[0x5]=(SPSG[0x5]+1)&0x1F;
+			  break;
+	}
+	//if(A>=0x7 && A!=0x8 && A<=0xF)
+	//if(A==0xA || A==0x9)
+	//printf("$%04x:$%02x\n",A,V);
+	SPSG[A]=V;
 }
 
 // $4080 - Fundamental wave amplitude data register 92
@@ -560,25 +561,22 @@ static DECLFR(FDSBIOSPatch)
 
 static void FDS_ESI(void)
 {
- if(FSettings.SndRate)
- {
-  if(FSettings.soundq>=1)
-  {
-   fdso.cycles=(int64)1<<39;
-  }
-  else
-  {
-   fdso.cycles=((int64)1<<40)*FDSClock;
-   fdso.cycles/=FSettings.SndRate *16;
-  }
- }
-//  fdso.cycles=(int64)32768*FDSClock/(FSettings.SndRate *16);
- SetReadHandler(0x4040,0x407f,FDSWaveRead);
- SetWriteHandler(0x4040,0x407f,FDSWaveWrite);
- SetWriteHandler(0x4080,0x408A,FDSSWrite);
- SetReadHandler(0x4090,0x4092,FDSSRead);
+	if(FSettings.SndRate)
+	{
+#if SOUND_QUALITY == 1
+		fdso.cycles=(int64)1<<39;
+#else
+		fdso.cycles=((int64)1<<40)*FDSClock;
+		fdso.cycles/=FSettings.SndRate *16;
+#endif
+	}
+	//  fdso.cycles=(int64)32768*FDSClock/(FSettings.SndRate *16);
+	SetReadHandler(0x4040,0x407f,FDSWaveRead);
+	SetWriteHandler(0x4040,0x407f,FDSWaveWrite);
+	SetWriteHandler(0x4080,0x408A,FDSSWrite);
+	SetReadHandler(0x4090,0x4092,FDSSRead);
 
- //SetReadHandler(0xE7A3,0xE7A3,FDSBIOSPatch);
+	//SetReadHandler(0xE7A3,0xE7A3,FDSBIOSPatch);
 }
 
 void FDSSoundReset(void)

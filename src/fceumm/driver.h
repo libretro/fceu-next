@@ -122,7 +122,6 @@ void FCEUI_SetPaletteArray(uint8 *pal);
 */
 void FCEUI_Sound(int Rate);
 void FCEUI_SetSoundVolume(uint32 volume);
-void FCEUI_SetSoundQuality(int quality);
 
 int32 FCEUI_GetDesiredFPS(void);
 
