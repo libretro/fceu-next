@@ -221,7 +221,6 @@ endo:
 }
 
 
-static int CurrentState=0;
 extern int geniestage;
 
 #ifdef __LIBSNES__
@@ -258,7 +257,7 @@ static int FCEUSS_SaveFP(FILE *st)
 	return(1);
 }
 
-void FCEUSS_Save(char *fname)
+void FCEUSS_Save(char *fname, int slot)
 {
 	FILE *st=NULL;
 	char *fn;
@@ -267,20 +266,16 @@ void FCEUSS_Save(char *fname)
 		st=fopen(fname, "wb");
 	else
 	{
-		st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0),"wb");
+		st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE, slot,0),"wb");
 		free(fn);
 	}
 
 	if(st == NULL || geniestage == 1)
-	{
-		//FCEU_DispMessage("State %d save error.",CurrentState);
-		return;
-	}
+		return;	//State save error
 
 	FCEUSS_SaveFP(st);
 
 	fclose(st);
-	//FCEU_DispMessage("State %d saved.",CurrentState);
 }
 
 static int FCEUSS_LoadFP(FILE *st)
@@ -314,7 +309,7 @@ static int FCEUSS_LoadFP(FILE *st)
 	return(x);
 }
 
-int FCEUSS_Load(char *fname)
+int FCEUSS_Load(char *fname, int slot)
 {
 	FILE *st;
 	char *fn;
@@ -323,15 +318,12 @@ int FCEUSS_Load(char *fname)
 		st=fopen(fname, "rb");
 	else
 	{
-		st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname),"rb");
+		st=fopen(fn=FCEU_MakeFName(FCEUMKF_STATE, slot, fname),"rb");
 		free(fn);
 	}
 
 	if(st == NULL || geniestage == 1)
-	{
-		//FCEU_DispMessage("State %d load error.",CurrentState);
-		return(0);
-	}
+		return(0);	// State load error
 
 	int ret = FCEUSS_LoadFP(st);
 	fclose(st);

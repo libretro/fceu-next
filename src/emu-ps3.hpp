@@ -19,21 +19,21 @@
 
 /* Emulator-specific includes */
 
-#include "fceu/driver.h"
-#include "fceu/fceu.h"
-#include "fceu/input.h"
-#include "fceu/state.h"
-#include "fceu/ppu.h"
-#include "fceu/cart.h"
-#include "fceu/x6502.h"
-#include "fceu/git.h"
-#include "fceu/palette.h"
-#include "fceu/sound.h"
-#include "fceu/file.h"
-#include "fceu/cheat.h"
-#include "fceu/ines.h"
-#include "fceu/unif.h"
-#include "fceu/fds.h"
+#include "fceumm/driver.h"
+#include "fceumm/fceu.h"
+#include "fceumm/input.h"
+#include "fceumm/state.h"
+#include "fceumm/ppu.h"
+#include "fceumm/cart.h"
+#include "fceumm/x6502.h"
+#include "fceumm/git.h"
+#include "fceumm/palette.h"
+#include "fceumm/sound.h"
+#include "fceumm/file.h"
+#include "fceumm/cheat.h"
+#include "fceumm/ines.h"
+#include "fceumm/unif.h"
+#include "fceumm/fds.h"
 
 /* PS3 frontend includes */
 
@@ -107,7 +107,6 @@ void Emulator_StartROMRunning(uint32_t set_is_running = 1);
 /* Emulator-specific extern function prototypes */
 
 extern int AddCheatEntry(char *name, uint32 addr, uint8 val, int compare, int status, int type);
-extern int FCEUX_PPU_Loop(int skip);
 
 /* PS3-frontend extern variables */
 
@@ -134,7 +133,7 @@ extern int control_style;
 
 /* Emulator-specific extern variables */
 
-extern FCEUGI *GameInfo;
+extern FCEUGI *FCEUGameInfo;
 extern CartInfo iNESCart;
 extern CartInfo UNIFCart;
 

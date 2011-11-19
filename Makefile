@@ -10,7 +10,7 @@ MULTIMAN_SUPPORT	= 0
 SDK_340			= 1
 
 #specify build tools
-CELL_BUILD_TOOLS	=	GCC
+CELL_BUILD_TOOLS	=	SNC
 #explicitly set some cell sdk defaults
 CELL_SDK		?=	/usr/local/cell
 # CELL_GPU_TYPE (currently RSX is only one option)  
@@ -36,9 +36,9 @@ UTILS_DIR		=	./utils
 SRC_DIR			=	./src
 CELL_FRAMEWORK_DIR	=	./src/cellframework
 CELL_FRAMEWORK2_DIR	=	./src/cellframework2
-FCEU_API_DIR		=	./src/fceu
+FCEU_API_DIR		=	./src/fceumm
 
-EMULATOR_VERSION	= 1.5
+EMULATOR_VERSION	= 1.6
 
 
 # all source directories
@@ -52,8 +52,7 @@ SOURCES			= $(SRC_DIR) \
                  $(FCEU_API_DIR)/input \
                  $(FCEU_API_DIR)/boards
 
-SOURCES_LAST   = $(UTILS_DIR)/unzip \
-                  $(UTILS_DIR)/zlib
+SOURCES_LAST   =  $(UTILS_DIR)/zlib
 
 ifeq ($(CELL_DEBUG_CONSOLE),1)
 PPU_CFLAGS     += -DCELL_DEBUG_CONSOLE
@@ -93,36 +92,34 @@ PPU_CXXFLAGS   += -DMULTIMAN_SUPPORT=1
 endif
 
 PPU_SRCS = $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c)) \
-$(FCEU_API_DIR)/cart.cpp \
-$(FCEU_API_DIR)/cheat.cpp \
-$(FCEU_API_DIR)/emufile.cpp \
-$(FCEU_API_DIR)/fceu.cpp \
-$(FCEU_API_DIR)/fds.cpp \
-$(FCEU_API_DIR)/file.cpp \
-$(FCEU_API_DIR)/filter.cpp \
-$(FCEU_API_DIR)/ines.cpp \
-$(FCEU_API_DIR)/input.cpp \
-$(FCEU_API_DIR)/palette.cpp \
-$(FCEU_API_DIR)/ppu.cpp \
-$(FCEU_API_DIR)/sound.cpp \
-$(FCEU_API_DIR)/state.cpp \
-$(FCEU_API_DIR)/unif.cpp \
-$(FCEU_API_DIR)/video.cpp \
-$(FCEU_API_DIR)/vsuni.cpp \
-$(FCEU_API_DIR)/x6502.cpp \
-$(FCEU_API_DIR)/utils/crc32-fceu.cpp \
-$(FCEU_API_DIR)/utils/endian.cpp \
-$(FCEU_API_DIR)/utils/general.cpp \
-$(FCEU_API_DIR)/utils/md5.cpp \
-$(FCEU_API_DIR)/utils/xstring.cpp
+$(FCEU_API_DIR)/cart.c \
+$(FCEU_API_DIR)/cheat.c \
+$(FCEU_API_DIR)/crc32.c \
+$(FCEU_API_DIR)/fceu.c \
+$(FCEU_API_DIR)/fds.c \
+$(FCEU_API_DIR)/file.c \
+$(FCEU_API_DIR)/general.c \
+$(FCEU_API_DIR)/ines.c \
+$(FCEU_API_DIR)/input.c \
+$(FCEU_API_DIR)/md5.c \
+$(FCEU_API_DIR)/memory.c \
+$(FCEU_API_DIR)/myendian.c \
+$(FCEU_API_DIR)/palette.c \
+$(FCEU_API_DIR)/ppu.c \
+$(FCEU_API_DIR)/sound.c \
+$(FCEU_API_DIR)/state.c \
+$(FCEU_API_DIR)/unif.c \
+$(FCEU_API_DIR)/unzip.c \
+$(FCEU_API_DIR)/vsuni.c \
+$(FCEU_API_DIR)/x6502.c
 
 PPU_SRCS += $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.c))
 
 PPU_TARGET		=	fceu-ps3.ppu.elf
 
 
-PPU_CXXFLAGS	+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -I$(UTILS_DIR)/unzip -I$(UTILS_DIR)/sz -DPSS_STYLE=1 -DGEKKO -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
-PPU_CFLAGS		+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -I$(UTILS_DIR)/unzip -I$(UTILS_DIR)/sz -DPSS_STYLE=1 -DGEKKO -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
+PPU_CXXFLAGS	+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -I$(UTILS_DIR)/sz -DPSS_STYLE=1 -DGEKKO -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
+PPU_CFLAGS		+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -I$(UTILS_DIR)/sz -DPSS_STYLE=1 -DGEKKO -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
 
 ifeq ($(CELL_BUILD_TOOLS),SNC)
 PPU_CFLAGS		+= 	-Xbranchless=1 -Xfastmath=1 -Xassumecorrectsign=1 -Xassumecorrectalignment=1 \

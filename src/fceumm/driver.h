@@ -21,9 +21,6 @@ void FCEUD_GetPalette(uint8 i,uint8 *r, uint8 *g, uint8 *b);
 void FCEUD_PrintError(char *s);
 void FCEUD_Message(char *s);
 
-int FCEUI_BeginWaveRecord(char *fn);
-int FCEUI_EndWaveRecord(void);
-
 void PowerNES(void);
 void ResetNES(void);
 void FCEUI_ResetNES(void);

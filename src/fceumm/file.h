@@ -1,3 +1,6 @@
+#ifndef _FCEU_FILE_H
+#define _FCEU_FILE_H
+
 typedef struct {
   void *fp;       // FILE* or ptr to ZIPWRAP
   uint32 type;    // 0=normal file, 1=gzip, 2=zip
@@ -12,3 +15,5 @@ int FCEU_read32le(uint32 *Bufo, FCEUFILE*);
 int FCEU_read16le(uint16 *Bufo, FCEUFILE*);
 int FCEU_fgetc(FCEUFILE*);
 uint64 FCEU_fgetsize(FCEUFILE*);
+
+#endif

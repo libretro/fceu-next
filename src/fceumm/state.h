@@ -20,12 +20,16 @@
 
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef __LIBSNES__
 void FCEUSS_Load(uint8_t *data, unsigned size);
 void FCEUSS_Save(uint8_t *data, unsigned size);
 #else
-void FCEUSS_Save(char *);
-int FCEUSS_Load(char *);
+void FCEUSS_Save(char *, int slot);
+int FCEUSS_Load(char *, int slot);
 #endif
 
 typedef struct {
@@ -38,3 +42,7 @@ void ResetExState(void (*PreSave)(void),void (*PostSave)(void));
 void AddExState(void *v, uint32 s, int type, char *desc);
 
 #define FCEUSTATE_RLSB      0x80000000
+
+#ifdef __cplusplus
+}
+#endif

@@ -447,6 +447,23 @@ void FCEUI_ListCheats(int (*callb)(char *name, uint32 a, uint8 v, int compare, i
   }
 }
 
+char * FCEUI_GetCheatLabel(unsigned int which)
+{
+        struct CHEATF *next=cheats;
+        uint32 x=0;
+
+        while(next)
+        {
+                if(x==which)
+                {
+                        return next->name;
+                }
+                next=next->next;
+                x++;
+        }
+        return "";
+}
+
 int FCEUI_GetCheat(uint32 which, char **name, uint32 *a, uint8 *v, int *compare, int *s, int *type)
 {
  struct CHEATF *next=cheats;

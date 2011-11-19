@@ -23,9 +23,8 @@
 
 /* emulator-specific includes */
 
-#include "fceu/emufile.h"
-#include "fceu/types.h"
-#include "fceu/file.h"
+#include "fceumm/types.h"
+#include "fceumm/file.h"
 
 /* PS3 frontend includes */
 
@@ -78,7 +77,7 @@ uint64_t ingame_menu_item = 0;				// the current ingame menu item that is select
 static uint32 JSReturn = 0;
 void *InputDPR;
 static uint8 *gfx=0;					// had to be made a global because ingame_menu needs access to it too
-uint32_t hack_prevent_game_sram_from_being_erased = 1;	// ugly hack - is set to 0 after the hack has been applied
+static uint32_t hack_prevent_game_sram_from_being_erased = 1; //ugly hack - is set to 0 after the hack has been applied
 
 #if 0
 static INPUTC *zapperdata[2];
@@ -91,8 +90,6 @@ static unsigned int myzappers[2][3];
 	if (Settings.CurrentSaveStateSlot != MIN_SAVE_STATE_SLOT) \
 	{ \
 		Settings.CurrentSaveStateSlot--; \
-		/* emulator-specific */ \
-		FCEUI_SelectState(Settings.CurrentSaveStateSlot, true); \
 	} \
 	snprintf(special_action_msg, sizeof(special_action_msg), "Save state slot changed to: #%d", Settings.CurrentSaveStateSlot); \
 	special_action_msg_expired = ps3graphics_set_text_message_speed(60);
@@ -100,30 +97,12 @@ static unsigned int myzappers[2][3];
 #define emulator_increment_current_save_state_slot() \
 	Settings.CurrentSaveStateSlot++; \
 	/* emulator-specific */ \
-	FCEUI_SelectState(Settings.CurrentSaveStateSlot, true); \
-	\
 	snprintf(special_action_msg, sizeof(special_action_msg), "Save state slot changed to: #%d", Settings.CurrentSaveStateSlot); \
 	special_action_msg_expired = ps3graphics_set_text_message_speed(60);
 
-#define emulator_save_sram() \
-	/* emulator-specific */ \
-	if (iNESCart.battery) \
-		FCEU_SaveGameSave(&iNESCart); \
-	\
-	if (UNIFCart.battery) \
-		FCEU_SaveGameSave(&UNIFCart);
-
-#define emulator_load_sram() \
-	/* emulator-specific */ \
-	if (iNESCart.battery) \
-		FCEU_LoadGameSave(&iNESCart); \
-	\
-	if (UNIFCart.battery) \
-		FCEU_LoadGameSave(&UNIFCart);
-
 #define emulator_load_current_save_state_slot() \
 	/* emulator-specific */ \
-	int ret = FCEUI_LoadState(NULL); \
+	int ret = FCEUSS_Load(NULL, Settings.CurrentSaveStateSlot); \
 	if(ret) \
 		snprintf(special_action_msg, sizeof(special_action_msg), "Loaded save state slot #%d", Settings.CurrentSaveStateSlot); \
 	else \
@@ -132,7 +111,7 @@ static unsigned int myzappers[2][3];
 
 #define emulator_save_current_save_state_slot() \
 	/* emulator-specific */ \
-	FCEUI_SaveState(NULL); \
+	FCEUSS_Save(NULL, Settings.CurrentSaveStateSlot); \
 	snprintf(special_action_msg, sizeof(special_action_msg), "Saved to save state slot #%d", Settings.CurrentSaveStateSlot); \
 	special_action_msg_expired = ps3graphics_set_text_message_speed(60);
 
@@ -150,9 +129,6 @@ static unsigned int myzappers[2][3];
 static void Emulator_StopROMRunning()
 {
 	is_running = 0;
-
-	//emulator-specific
-	emulator_save_sram();
 }
 
 void Emulator_StartROMRunning(uint32_t set_is_running)
@@ -790,7 +766,7 @@ void FCEUD_VideoChanged()
 			{
 				case 0:
 					//PAL60 is OFF
-					if(GameInfo->vidsys == 0)
+					if(FCEUGameInfo->vidsys == 0)
 					{
 						Settings.PS3PALTemporalMode60Hz = true;
 						ps3graphics_set_pal60hz(Settings.PS3PALTemporalMode60Hz);
@@ -799,7 +775,7 @@ void FCEUD_VideoChanged()
 					break;
 				case 1:
 					//PAL60 is ON
-					if(GameInfo->vidsys == 1)
+					if(FCEUGameInfo->vidsys == 1)
 					{
 						Settings.PS3PALTemporalMode60Hz = false;
 						ps3graphics_set_pal60hz(Settings.PS3PALTemporalMode60Hz);
@@ -813,20 +789,10 @@ void FCEUD_VideoChanged()
 
 // dummy functions
 
-void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC fcexp) {}
-FCEUFILE* FCEUD_OpenArchive(ArchiveScanRecord& asr, std::string& fname, std::string* innerFilename) { return 0; }
-FCEUFILE* FCEUD_OpenArchiveIndex(ArchiveScanRecord& asr, std::string &fname, int innerIndex) { return 0; }
 bool FCEUD_ShouldDrawInputAids() { return 1; }
-void FCEUD_PrintError(const char *c) { FCEU_DispMessage(c, 20); }
-void FCEUD_Message(const char *text) { FCEU_DispMessage(text, 20); }
+void FCEUD_Message(char *s) { printf("MESSAGE: %s\n", s); }
+void FCEUD_PrintError(char *s) { printf("ERROR: %s\n", s); }
 
-void FCEUD_SoundToggle()
-{
-	if(Settings.Throttled)
-		FCEUI_SetSoundVolume(100);
-	else
-		FCEUI_SetSoundVolume(0);
-}
 
 struct st_palettes palettes[] = {
 	{ "asqrealc", "AspiringSquire's Real palette",
@@ -1070,13 +1036,11 @@ struct st_palettes palettes[] = {
 static void emulator_set_custom_palette()
 {
 	if ( Settings.FCEUPalette == 0 )
-	{
 		FCEU_ResetPalette();	// Do palette reset
-	}
 	else
 	{
 		// Now setup this palette
-		u8 i,r,g,b;
+		uint8 i,r,g,b;
 
 		for ( i = 0; i < 64; i++ )
 		{
@@ -1125,21 +1089,8 @@ static void emulator_set_input(void)
 			snprintf(special_action_msg, sizeof(special_action_msg), "Disabled cheat: %d", Settings.CurrentCheatPosition); \
 		special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
 	} \
-	if(specialbuttonmap & BTN_INCREMENTCHEAT) \
-	{ \
-		emulator_increment_current_cheat_position(); \
-		snprintf(special_action_msg, sizeof(special_action_msg), "Cheat pos. changed to: %d (%s)", Settings.CurrentCheatPosition, FCEUI_GetCheatLabel(Settings.CurrentCheatPosition)); \
-		special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
-	} \
-	if(specialbuttonmap & BTN_DECREMENTCHEAT) \
-	{ \
-		emulator_decrement_current_cheat_position(); \
-		snprintf(special_action_msg, sizeof(special_action_msg), "Cheat pos. changed to: %d (%s)", Settings.CurrentCheatPosition, FCEUI_GetCheatLabel(Settings.CurrentCheatPosition)); \
-		special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
-	} \
 	if(specialbuttonmap & BTN_EXITTOMENU) \
 	{ \
-		Settings.FCEUPPUMode = newppu; \
 		Emulator_StopROMRunning(); \
 		mode_switch = MODE_MENU; \
 	} \
@@ -1158,11 +1109,6 @@ static void emulator_set_input(void)
 	if(specialbuttonmap & BTN_QUICKLOAD) \
 	{ \
 		emulator_load_current_save_state_slot(); \
-	} \
-	if(specialbuttonmap & BTN_TOGGLEPPU) \
-	{ \
-		FCEU_TogglePPU(); \
-		snprintf(special_action_msg, sizeof(special_action_msg), "%s", newppu ? "New PPU Mode enabled" : "Old PPU mode enabled"); \
 	} \
 	if(specialbuttonmap & BTN_DECREMENT_PALETTE) \
 	{ \
@@ -1704,52 +1650,13 @@ static  void ingame_menu(void)
 /* PS3 Frontend - main functions */
 extern uint8 *XBuf;
 
-// Emulator-specific - core emulation loop functions
-#define FCEUI_Emulate(gfx, sound, ssize) \
-	ssize = FlushEmulateSound(); \
-	timestampbase += timestamp; \
-	timestamp = 0; \
-	gfx = XBuf; \
-	sound = WaveFinal;
-
-#define emulation_loop(loop) \
-	if(geniestage != 1) \
-		FCEU_ApplyPeriodicCheats(); \
-	\
-	loop(fskip); \
-	\
-	FCEUI_Emulate(gfx, sound, ssize); \
-	\
-	ps3graphics_draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT); \
-	if(frame_count < special_action_msg_expired) \
-	{ \
-		cellDbgFontPrintf (0.09f, 0.90f, 1.51f, BLUE,	special_action_msg); \
-		cellDbgFontPrintf (0.09f, 0.90f, 1.50f, WHITE,	special_action_msg); \
-		cellDbgFontDraw(); \
-	} \
-	else \
-		special_action_msg_expired = 0; \
-	psglSwap(); \
-	\
-	if(Settings.Throttled) \
-		audio_driver->write(audio_handle, (int16_t*)sound, ssize << 1); \
-	\
-	EMULATOR_INPUT_LOOP(); \
-	FCEU_UpdateInput(); \
-	cell_console_poll(); \
-	cellSysutilCheckCallback();
-
-// emulator-specific - FCEU functionality hosed out of main emulation loop because it was a reset/poweron specific quirk
-// no big if then else block this way for every frame
-#define ppudead_function() \
-	if(ppudead) \
-		ppudead_loop(newppu);
+#define emulation_loop() \
 
 static void emulator_set_paths()
 {
 	//emulator-specific
 	FCEUI_SetBaseDirectory(usrDirPath);
-	FCEUI_SetDirOverride(FCEUIOD_STATES, Settings.PS3PathSaveStates);
+	FCEUI_SetDirOverride(FCEUIOD_STATE, Settings.PS3PathSaveStates);
 	FCEUI_SetDirOverride(FCEUIOD_NV, Settings.PS3PathSRAM);
 	FCEUI_SetDirOverride(FCEUIOD_CHEATS, Settings.PS3PathCheats);
 }
@@ -1798,7 +1705,7 @@ static void emulator_close_game(void)
 	if(rom_loaded)
 	{
 		FCEUI_CloseGame();
-		GameInfo = 0;
+		FCEUGameInfo = 0;
 	}
 }
 
@@ -1810,52 +1717,45 @@ static void emulator_start()
 
 	emulator_set_paths();
 
-	if (!rom_loaded)
-	{
-		FCEU_PrintError("No Rom Loaded!");
-		mode_switch = MODE_MENU;
-		return;
-	}
-
 	emulator_set_input();
 
 	emulator_set_custom_palette();
-
-	// FIXME: implement for real
-	int fskip = 0;
 
 	if(ps3graphics_calculate_aspect_ratio_before_game_load())
 		ps3graphics_set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
 
 	if(Settings.Throttled)
 		audio_driver->unpause(audio_handle);
-
-	FCEUD_SoundToggle();
-
-	newppu = Settings.FCEUPPUMode;
-
+	else
+		FCEUI_SetSoundVolume(0);
+	
 	if(hack_prevent_game_sram_from_being_erased)
 	{
 		hack_prevent_game_sram_from_being_erased = 0;
 		Emulator_RequestLoadROM(current_rom, 1);
+		return;
 	}
 
-	ppudead_function();
+	do
+	{
+		FCEUI_Emulate(&gfx, &sound, &ssize);
+		ps3graphics_draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
+		if(frame_count < special_action_msg_expired)
+		{
+			cellDbgFontPrintf (0.09f, 0.90f, 1.51f, BLUE,	special_action_msg);
+			cellDbgFontPrintf (0.09f, 0.90f, 1.50f, WHITE,	special_action_msg);
+			cellDbgFontDraw();
+		}
+		else
+			special_action_msg_expired = 0;
+		psglSwap();
 
-	if(newppu)
-	{
-		do
-		{
-			emulation_loop(FCEUX_PPU_Loop);
-		}while (is_running);
-	}
-	else
-	{
-		do
-		{
-			emulation_loop(FCEUPPU_Loop);
-		}while (is_running);
-	}
+		if(Settings.Throttled)
+			audio_driver->write(audio_handle, (int16_t*)sound, ssize << 1);
+		EMULATOR_INPUT_LOOP();
+		cell_console_poll();
+		cellSysutilCheckCallback();
+	}while (is_running);
 }
 
 /* PS3 Frontend - Main ROM loading function */
@@ -1871,11 +1771,9 @@ void Emulator_RequestLoadROM(const char * filename, uint32_t forceReload)
 			emulator_close_game();
 
 		if(hack_prevent_game_sram_from_being_erased)
-			GameInfo = FCEUI_LoadGame(DEFAULT_GAME_HACK, 1);
+			FCEUGameInfo = FCEUI_LoadGame(DEFAULT_GAME_HACK);
 		else
-			GameInfo = FCEUI_LoadGame(current_rom, 1);
-
-		emulator_load_sram();
+			FCEUGameInfo = FCEUI_LoadGame(current_rom);
 
 		rom_loaded = 1;
 	}
@@ -2003,6 +1901,8 @@ int main (int argc, char **argv)
 	ps3graphics_init_dbgfont();
 
 	emulator_initialized = FCEUI_Initialize();
+	FCEUI_SetSoundVolume(256);
+	FCEUI_Sound(48200);
 
 	emulator_toggle_sound(Settings.SoundMode);
 

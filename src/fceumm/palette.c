@@ -47,13 +47,14 @@ uint8 pale=0;
 
 pal *palo;
 static pal *palpoint[8]=
-     {
-     palette,
-     rp2c04001,
-     rp2c04002,
-     rp2c04003,
-     rp2c05004,
-     };
+{
+	palette,
+	rp2c04001,
+	rp2c04002,
+	rp2c04003,
+	rp2c05004,
+};
+
 
 void FCEUI_SetPaletteArray(uint8 *pal)
 {
@@ -81,6 +82,7 @@ void FCEUI_SetNTSCTH(int n, int tint, int hue)
  ntsccol=n;
  FCEU_ResetPalette();
 }
+
 
 static uint8 lastd=0;
 void SetNESDeemph(uint8 d, int force)
@@ -156,6 +158,7 @@ void WritePalette(void)
 		FCEUD_SetPalette(128+x,palo[x].r,palo[x].g,palo[x].b);
 	SetNESDeemph(lastd,1);
 }
+
 
 /* Converted from Kevin Horton's qbasic palette generator. */
 static void CalculatePalette(void)
@@ -245,12 +248,13 @@ static void ChoosePalette(void)
 
 void FCEU_ResetPalette(void)
 {
- if(FCEUGameInfo)
- {
-   ChoosePalette();
-   WritePalette();
- }
+	if(FCEUGameInfo)
+	{
+		ChoosePalette();
+		WritePalette();
+	}
 }
+
 
 
 

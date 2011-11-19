@@ -533,7 +533,7 @@ int iNESLoad(const char *name, FCEUFILE *fp)
 	ResetExState(0,0);
 
 	SetupCartPRGMapping(0,ROM,ROM_size*0x4000,0);
-	//    SetupCartPRGMapping(1,WRAM,8192,1);
+	//SetupCartPRGMapping(1,WRAM,8192,1);
 
 	if(head.ROM_size)
 		FCEU_fread(ROM,0x4000,head.ROM_size,fp);
@@ -1282,36 +1282,36 @@ static BMAPPING bmap[] = {
 
 static int NewiNES_Init(int num)
 {
- BMAPPING *tmp=bmap;
+	BMAPPING *tmp=bmap;
 
- if(FCEUGameInfo->type == GIT_VSUNI)
-  AddExState(FCEUVSUNI_STATEINFO, ~0, 0, 0);
+	if(FCEUGameInfo->type == GIT_VSUNI)
+		AddExState(FCEUVSUNI_STATEINFO, ~0, 0, 0);
 
- while(tmp->init)
- {
-  if(num==tmp->number)
-  {
-   UNIFchrrama=0; // need here for compatibility with UNIF mapper code
-   if(!VROM_size)
-   {
-    int CHRRAMSize;
-    if(num==13)
-      CHRRAMSize=16 * 1024;
-    else if(num==176)
-      CHRRAMSize=32 * 1024;
-    else
-      CHRRAMSize=8 * 1024;
-    VROM=(uint8 *)malloc(CHRRAMSize);
-    UNIFchrrama=VROM;
-    SetupCartCHRMapping(0,VROM,CHRRAMSize,1);
-    AddExState(VROM,CHRRAMSize, 0, "CHRR");
-   }
-   if(head.ROM_type&8)
-     AddExState(ExtraNTARAM, 2048, 0, "EXNR");
-   tmp->init(&iNESCart);
-   return(1);
-  }
-  tmp++;
- }
- return(0);
+	while(tmp->init)
+	{
+		if(num==tmp->number)
+		{
+			UNIFchrrama=0; // need here for compatibility with UNIF mapper code
+			if(!VROM_size)
+			{
+				int CHRRAMSize;
+				if(num==13)
+					CHRRAMSize=16 * 1024;
+				else if(num==176)
+					CHRRAMSize=32 * 1024;
+				else
+					CHRRAMSize=8 * 1024;
+				VROM=(uint8 *)malloc(CHRRAMSize);
+				UNIFchrrama=VROM;
+				SetupCartCHRMapping(0,VROM,CHRRAMSize,1);
+				AddExState(VROM,CHRRAMSize, 0, "CHRR");
+			}
+			if(head.ROM_type&8)
+				AddExState(ExtraNTARAM, 2048, 0, "EXNR");
+			tmp->init(&iNESCart);
+			return(1);
+		}
+		tmp++;
+	}
+	return(0);
 }
