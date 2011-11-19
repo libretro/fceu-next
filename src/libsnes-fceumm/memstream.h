@@ -7,10 +7,11 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct memstream memstream_t;
 
-memstream_t *memstream_open(void);
+memstream_t *memstream_open(bool writing);
 void memstream_close(memstream_t *stream);
 
 size_t memstream_read(memstream_t *stream, void *data, size_t bytes);

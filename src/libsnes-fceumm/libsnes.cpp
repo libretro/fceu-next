@@ -488,10 +488,10 @@ unsigned snes_serialize_size(void)
       // Something arbitrarily big.
       uint8_t *buffer = (uint8_t*)malloc(1000000);
       memstream_set_buffer(buffer, 1000000);
-      free(buffer);
 
       FCEUSS_Save();
       serialize_size = memstream_get_last_size();
+      free(buffer);
    }
 
    return serialize_size;

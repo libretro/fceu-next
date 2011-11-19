@@ -185,7 +185,7 @@ static int WriteStateChunk_Mem(memstream_t *mem, int type, SFORMAT *sf)
 
 	memstream_putc(mem, type);
 
-	bsize = SubWrite(0,sf);
+	bsize = SubWrite_Mem(0,sf);
 	write32le_mem(bsize, mem);
 
 	if (!SubWrite_Mem(mem, sf))
@@ -374,7 +374,7 @@ extern int geniestage;
 #ifdef __LIBSNES__
 void FCEUSS_Load(void)
 {
-   memstream_t *mem = memstream_open();
+   memstream_t *mem = memstream_open(false);
 
    uint8 header[16];
    int stateversion;
@@ -408,13 +408,16 @@ void FCEUSS_Load(void)
 
 void FCEUSS_Save(void)
 {
-   memstream_t *mem = memstream_open();
+   memstream_t *mem = memstream_open(true);
 
-   static uint32 totalsize;
-   static uint8 header[16] = "FCS";
+   uint32 totalsize;
+   uint8 header[16] = {0};
 
-   memset(header + 4, 0, 12);
+   header[0] = 'F';
+   header[1] = 'C';
+   header[2] = 'S';
    header[3] = 0xFF;
+
    FCEU_en32lsb(header + 8, FCEU_VERSION_NUMERIC);
    memstream_write(mem, header, 16);
 
