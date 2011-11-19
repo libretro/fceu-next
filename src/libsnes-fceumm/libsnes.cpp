@@ -623,7 +623,6 @@ bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned r
 
    FCEUI_SetSoundVolume(256);
    FCEUI_SetSoundQuality(0);
-   FCEUI_SetLowPass(0);
    FCEUI_Sound(32050);
 
    // Append basename to detect certain ROM types from filename (Hack).

@@ -12,35 +12,6 @@
 static uint32 mrindex;
 static uint32 mrratio;
 
-void SexyFilter2(int32 *in, int32 count)
-{
- #ifdef moo
- static int64 acc=0;
- double x,p;
- int64 c;
-
- x=2*M_PI*6000/FSettings.SndRate;
- p=((double)2-cos(x)) - sqrt(pow((double)2-cos(x),2) -1 );
-
- c=p*0x100000;
- //printf("%f\n",(double)c/0x100000);
- #endif
- static int64 acc=0;
-
- while(count--)
- {
-  int64 dropcurrent;
-  dropcurrent=((*in<<16)-acc)>>3;
-
-  acc+=dropcurrent;
-  *in=acc>>16;
-  in++;
-  //acc=((int64)0x100000-c)* *in + ((c*acc)>>20);
-  //*in=acc>>20;
-  //in++;
- }
-}
-
 void SexyFilter(int32 *in, int32 *out, int32 count)
 {
  static int64 acc1=0,acc2=0;
@@ -152,8 +123,6 @@ int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
    GameExpSound.NeoFill(outsave,count);
 
   SexyFilter(outsave,outsave,count);
-  if(FSettings.lowpass)
-   SexyFilter2(outsave,count);
   return(count);
 }
 

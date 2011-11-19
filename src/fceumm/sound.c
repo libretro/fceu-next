@@ -1024,8 +1024,6 @@ int FlushEmulateSound(void)
 
    SexyFilter(Wave,WaveFinal,end>>4);
 
-   //if(FSettings.lowpass)
-   // SexyFilter2(WaveFinal,end>>4);
    if(end&0xF)
     Wave[0]=Wave[(end>>4)];
    Wave[end>>4]=0;
@@ -1181,11 +1179,6 @@ void FCEUI_Sound(int Rate)
 {
  FSettings.SndRate=Rate;
  SetSoundVariables();
-}
-
-void FCEUI_SetLowPass(int q)
-{
- FSettings.lowpass=q;
 }
 
 void FCEUI_SetSoundQuality(int quality)

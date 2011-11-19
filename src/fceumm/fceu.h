@@ -72,7 +72,6 @@ typedef struct {
      int UsrLastSLine[2];
      uint32 SndRate;
      int soundq;
-     int lowpass;
 } FCEUS;
 
 extern FCEUS FSettings;
