@@ -263,12 +263,6 @@ void FCEUSS_Save(char *fname)
 	FILE *st=NULL;
 	char *fn;
 
-	if(geniestage==1)
-	{
-		//FCEU_DispMessage("Cannot save FCS in GG screen.");
-		return;
-	}
-
 	if(fname)
 		st=fopen(fname, "wb");
 	else
@@ -277,7 +271,7 @@ void FCEUSS_Save(char *fname)
 		free(fn);
 	}
 
-	if(st == NULL)
+	if(st == NULL || geniestage == 1)
 	{
 		//FCEU_DispMessage("State %d save error.",CurrentState);
 		return;
