@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -28,8 +29,9 @@
 
 #include "fceu.h"
 #include "sound.h"
-#include "filter.h"
 #include "state.h"
+
+#include "fcoeffs.h"
 
 static uint32 wlookup1[32];
 static uint32 wlookup2[203];
@@ -778,6 +780,41 @@ void SetNESSoundMap(void)
 	SetReadHandler(0x4015,0x4015,StatusRead);
 }
 
+static uint32 mrindex;
+static uint32 mrratio;
+
+static void SexyFilter(int32 *in, int32 *out, int32 count)
+{
+	static int64 acc1=0,acc2=0;
+	int32 mul1,mul2,vmul;
+
+	mul1=(94<<16)/FSettings.SndRate;
+	mul2=(24<<16)/FSettings.SndRate;
+	vmul=(FSettings.SoundVolume<<16)*3/4/100;
+
+	if(FSettings.soundq)
+		vmul/=4;
+	else
+		vmul*=2;      /* TODO:  Increase volume in low quality sound rendering code itself */
+
+	while(count)
+	{
+		int64 ino=(int64)*in*vmul;
+		acc1+=((ino-acc1)*mul1)>>16;
+		acc2+=((ino-acc1-acc2)*mul2)>>16;
+		*in=0;
+		{
+			int32 t=(acc1-ino+acc2)>>16;
+			if(t>32767) t=32767;
+			if(t<-32768) t=-32768;
+			*out=t;
+		}
+		in++;
+		out++;
+		count--;
+	}
+}
+
 static int32 inbuf=0;
 int FlushEmulateSound(void)
 {
@@ -876,6 +913,49 @@ void FCEUSND_Power(void)
 		ChannelBC[x]=0;
 	soundtsoffs=0;
 	LoadDMCPeriod(DMCFormat&0xF);
+}
+
+static void MakeFilters(int32 rate)
+{
+	int32 *tabs[6]={C44100NTSC,C44100PAL,C48000NTSC,C48000PAL,C96000NTSC,
+		C96000PAL};
+	int32 *sq2tabs[6]={SQ2C44100NTSC,SQ2C44100PAL,SQ2C48000NTSC,SQ2C48000PAL,
+		SQ2C96000NTSC,SQ2C96000PAL};
+
+	int32 *tmp;
+	int32 x;
+	uint32 nco;
+
+	if(FSettings.soundq==2)
+		nco=SQ2NCOEFFS;
+	else
+		nco=NCOEFFS;
+
+	mrindex=(nco+1)<<16;
+	mrratio=(PAL?(int64)(PAL_CPU*65536):(int64)(NTSC_CPU*65536))/rate;
+
+	if(FSettings.soundq==2)
+		tmp=sq2tabs[(PAL?1:0)|(rate==48000?2:0)|(rate==96000?4:0)];
+	else
+		tmp=tabs[(PAL?1:0)|(rate==48000?2:0)|(rate==96000?4:0)];
+
+	if(FSettings.soundq==2)
+		for(x=0;x<SQ2NCOEFFS>>1;x++)
+			sq2coeffs[x]=sq2coeffs[SQ2NCOEFFS-1-x]=tmp[x];
+	else
+		for(x=0;x<NCOEFFS>>1;x++)
+			coeffs[x]=coeffs[NCOEFFS-1-x]=tmp[x];
+
+#ifdef MOO
+	/* Some tests involving precision and error. */
+	{
+		static int64 acc=0;
+		int x;
+		for(x=0;x<SQ2NCOEFFS;x++)
+			acc+=(int64)32767*sq2coeffs[x];
+		printf("Foo: %lld\n",acc);
+	}
+#endif
 }
 
 void SetSoundVariables(void)
