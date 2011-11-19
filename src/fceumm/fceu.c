@@ -354,11 +354,16 @@ void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize)
 	int ssize;
 
 	FCEU_UpdateInput();
+
 	if(geniestage!=1)
 		FCEU_ApplyPeriodicCheats();
+
 	FCEUPPU_Loop();
 
-	ssize = FlushEmulateSound();
+	if(timestamp)
+		ssize = FlushEmulateSound();
+	else
+		ssize = 0;
 
 	timestampbase += timestamp;
 
