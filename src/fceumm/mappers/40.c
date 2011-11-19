@@ -34,7 +34,7 @@ static DECLFW(Mapper40_write)
  }
 }
 
-static void FP_FASTAPASS(1) Mapper40IRQ(int a)
+static void Mapper40IRQ(int a)
 {
  if(IRQa)
  {

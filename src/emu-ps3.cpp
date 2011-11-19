@@ -792,7 +792,7 @@ void FCEUD_VideoChanged()
 bool FCEUD_ShouldDrawInputAids() { return 1; }
 void FCEUD_Message(const char *s) { printf("MESSAGE: %s\n", s); }
 void FCEUD_PrintError(const char *s) { printf("ERROR: %s\n", s); }
-
+extern "C" const char * GetKeyboard(void) {}
 
 struct st_palettes palettes[] = {
 	{ "asqrealc", "AspiringSquire's Real palette",

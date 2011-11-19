@@ -33,7 +33,7 @@ typedef struct {
 
 static ZAPPER ZD[2];
 
-static void FP_FASTAPASS(3) ZapperFrapper(int w, uint8 *bg, uint8 *spr, uint32 linets, int final)
+static void ZapperFrapper(int w, uint8 *bg, uint8 *spr, uint32 linets, int final)
 {
  int xs,xe;
  int zx,zy;
@@ -94,7 +94,7 @@ static INLINE int CheckColor(int w)
  return(1);
 }
 
-static uint8 FP_FASTAPASS(1) ReadZapperVS(int w)
+static uint8 ReadZapperVS(int w)
 {
 	uint8 ret=0;
 
@@ -114,40 +114,40 @@ static uint8 FP_FASTAPASS(1) ReadZapperVS(int w)
 	return ret;
 }
 
-static void FP_FASTAPASS(1) StrobeZapperVS(int w)
+static void StrobeZapperVS(int w)
 {
-                        ZD[w].zap_readbit=0;
+	ZD[w].zap_readbit=0;
 }
 
-static uint8 FP_FASTAPASS(1) ReadZapper(int w)
+static uint8 ReadZapper(int w)
 {
-                uint8 ret=0;
-                if(ZD[w].bogo)
-                 ret|=0x10;
-                if(CheckColor(w))
-                 ret|=0x8;
-                return ret;
+	uint8 ret=0;
+	if(ZD[w].bogo)
+		ret|=0x10;
+	if(CheckColor(w))
+		ret|=0x8;
+	return ret;
 }
 
-static void FASTAPASS(3) DrawZapper(int w, uint8 *buf, int arg)
+static void DrawZapper(int w, uint8 *buf, int arg)
 {
- if(arg)
-  FCEU_DrawGunSight(buf, ZD[w].mzx,ZD[w].mzy);
+	if(arg)
+		FCEU_DrawGunSight(buf, ZD[w].mzx,ZD[w].mzy);
 }
 
-static void FP_FASTAPASS(3) UpdateZapper(int w, void *data, int arg)
+static void UpdateZapper(int w, void *data, int arg)
 {
-  uint32 *ptr=(uint32 *)data;
+	uint32 *ptr=(uint32 *)data;
 
- //FCEU_DispMessage("%3d:%3d",ZD[w].mzx,ZD[w].mzy);
-  if(ZD[w].bogo)
-   ZD[w].bogo--;
-  if(ptr[2]&3 && (!(ZD[w].mzb&3)))
-   ZD[w].bogo=5;
+	//FCEU_DispMessage("%3d:%3d",ZD[w].mzx,ZD[w].mzy);
+	if(ZD[w].bogo)
+		ZD[w].bogo--;
+	if(ptr[2]&3 && (!(ZD[w].mzb&3)))
+		ZD[w].bogo=5;
 
-  ZD[w].mzx=ptr[0];
-  ZD[w].mzy=ptr[1];
-  ZD[w].mzb=ptr[2];
+	ZD[w].mzx=ptr[0];
+	ZD[w].mzy=ptr[1];
+	ZD[w].mzb=ptr[2];
 }
 
 static INPUTC ZAPC={ReadZapper,0,0,UpdateZapper,ZapperFrapper,DrawZapper};
@@ -155,11 +155,11 @@ static INPUTC ZAPVSC={ReadZapperVS,0,StrobeZapperVS,UpdateZapper,ZapperFrapper,D
 
 INPUTC *FCEU_InitZapper(int w)
 {
-  memset(&ZD[w],0,sizeof(ZAPPER));
-  if(FCEUGameInfo->type == GIT_VSUNI)
-   return(&ZAPVSC);
-  else
-   return(&ZAPC);
+	memset(&ZD[w],0,sizeof(ZAPPER));
+	if(FCEUGameInfo->type == GIT_VSUNI)
+		return(&ZAPVSC);
+	else
+		return(&ZAPC);
 }
 
 

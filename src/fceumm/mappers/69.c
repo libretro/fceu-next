@@ -218,7 +218,7 @@ static void AYHiSync(int32 ts)
   CAYBC[x]=ts;
 }
 
-static void FP_FASTAPASS(1) SunIRQHook(int a)
+static void SunIRQHook(int a)
 {
   if(IRQa)
   {

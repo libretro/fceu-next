@@ -39,41 +39,41 @@ static uint16 matrix[13][2][4]=
   {AK(F9),      AK(NUMPAD3),  AK(DECIMAL),   AK(NUMPAD0) }},
 };
 
-static void FP_FASTAPASS(1) SuborKB_Write(uint8 v)
+static void SuborKB_Write(uint8 v)
 {
- v>>=1;
- if(v&2)
- {
-  if((ksmode&1) && !(v&1))
-   ksindex=(ksindex+1)%13;
- }
- ksmode=v;
+	v>>=1;
+	if(v&2)
+	{
+		if((ksmode&1) && !(v&1))
+			ksindex=(ksindex+1)%13;
+	}
+	ksmode=v;
 }
 
-static uint8 FP_FASTAPASS(2) SuborKB_Read(int w, uint8 ret)
+static uint8 SuborKB_Read(int w, uint8 ret)
 {
- if(w)
- {
-  int x;
+	if(w)
+	{
+		int x;
 
-  ret&=~0x1E;
-  for(x=0;x<4;x++)
-    if(bufit[matrix[ksindex][ksmode&1][x]&0xFF]||bufit[matrix[ksindex][ksmode&1][x]>>8])
-      ret|=1<<(x+1);
-  ret^=0x1E;
- }
- return(ret);
+		ret&=~0x1E;
+		for(x=0;x<4;x++)
+			if(bufit[matrix[ksindex][ksmode&1][x]&0xFF]||bufit[matrix[ksindex][ksmode&1][x]>>8])
+				ret|=1<<(x+1);
+		ret^=0x1E;
+	}
+	return(ret);
 }
 
 static void SuborKB_Strobe(void)
 {
- ksmode=0;
- ksindex=0;
+	ksmode=0;
+	ksindex=0;
 }
 
-static void FP_FASTAPASS(2) SuborKB_Update(void *data, int arg)
+static void SuborKB_Update(void *data, int arg)
 {
- memcpy(bufit+1,data,0x60);
+	memcpy(bufit+1,data,0x60);
 }
 
 static INPUTCFC SuborKB={SuborKB_Read,SuborKB_Write,SuborKB_Strobe,SuborKB_Update,0,0};

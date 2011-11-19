@@ -24,7 +24,7 @@
 #include "mapinc.h"
 
 
-static void FP_FASTAPASS(1) Mapper50IRQ(int a)
+static void Mapper50IRQ(int a)
 {
  if(IRQa)
  {

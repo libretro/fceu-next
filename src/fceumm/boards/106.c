@@ -84,7 +84,7 @@ static void M106Close(void)
   WRAM=NULL;
 }
 
-void FP_FASTAPASS(1) M106CpuHook(int a)
+void M106CpuHook(int a)
 {
   if(IRQa)
   {

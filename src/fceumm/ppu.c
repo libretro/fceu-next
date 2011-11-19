@@ -73,7 +73,7 @@ int FCEU_InitVirtualVideo(void)
 }
 
 static void FetchSpriteData(void);
-static void FASTAPASS(1) RefreshLine(int lastpixel);
+static void RefreshLine(int lastpixel);
 static void RefreshSprites(void);
 static void CopySprites(uint8 *target);
 
@@ -105,7 +105,7 @@ static uint8 deemp=0;
 static int deempcnt[8];
 
 void (*GameHBIRQHook)(void), (*GameHBIRQHook2)(void);
-void FP_FASTAPASS(1) (*PPU_hook)(uint32 A);
+void (*PPU_hook)(uint32 A);
 
 uint8 vtoggle=0;
 uint8 XOffset=0;
@@ -415,7 +415,7 @@ static int spork=0;     /* spork the world.  Any sprites on this line?
                         */
                           
 // lasttile is really "second to last tile."
-static void FASTAPASS(1) RefreshLine(int lastpixel)
+static void RefreshLine(int lastpixel)
 {
         static uint32 pshift[2];
         static uint32 atlatch;

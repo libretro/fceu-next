@@ -114,7 +114,7 @@ DECLFW(Mapper85_write)
         }
 }
 
-static void FP_FASTAPASS(1) KonamiIRQHook(int a)
+static void KonamiIRQHook(int a)
 {
   #define ACBOO 341
 //  #define ACBOO ((227*2)+1)

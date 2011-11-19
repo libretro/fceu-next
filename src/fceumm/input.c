@@ -330,7 +330,7 @@ static void CheckSLHook(void)
 			InputScanlineHook=SLHLHook;
 }
 
-static void FASTAPASS(1) SetInputStuff(int x)
+static void SetInputStuff(int x)
 {
 	switch(JPType[x])
 	{

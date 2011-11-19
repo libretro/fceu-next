@@ -74,7 +74,7 @@ static void UNLSMB2JReset(void)
   Sync();
 }
 
-static void FP_FASTAPASS(1) UNLSMB2JIRQHook(int a)
+static void UNLSMB2JIRQHook(int a)
 {
   if(IRQa)
   {

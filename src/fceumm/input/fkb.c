@@ -51,7 +51,7 @@ static uint16 matrix[9][2][4]=
         {AK(DOWN),AK(SPACE),AK(DELETE),AK(INSERT)}},
 };
 
-static void FP_FASTAPASS(1) FKB_Write(uint8 v)
+static void FKB_Write(uint8 v)
 {
  v>>=1;
  if(v&2)
@@ -62,7 +62,7 @@ static void FP_FASTAPASS(1) FKB_Write(uint8 v)
  ksmode=v;
 }
 
-static uint8 FP_FASTAPASS(2) FKB_Read(int w, uint8 ret)
+static uint8 FKB_Read(int w, uint8 ret)
 {
  if(w)
  {
@@ -83,7 +83,7 @@ static void FKB_Strobe(void)
  ksindex=0;
 }
 
-static void FP_FASTAPASS(2) FKB_Update(void *data, int arg)
+static void FKB_Update(void *data, int arg)
 {
  memcpy(bufit+1,data,0x48);
 }

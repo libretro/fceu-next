@@ -139,7 +139,7 @@ static DECLFR(M190Read)
 //  FCEU_printf("read  %04x:%04x %d, %d\n",A,regs[(A&0x0F00)>>8],scanline,timestamp);
   return regs[(A&0x0F00)>>8]+regs[0x0B];
 }
-static void FP_FASTAPASS(1) VRC5IRQ(int a)
+static void VRC5IRQ(int a)
 {
   if(IRQa)
   {
@@ -152,7 +152,7 @@ static void FP_FASTAPASS(1) VRC5IRQ(int a)
   }
 }
 
-//static void FP_FASTAPASS(1) Mapper190_PPU(uint32 A)
+//static void Mapper190_PPU(uint32 A)
 //{
 //  if(A<0x2000)
 //     setchr4r(0x10,0x1000,QTAINTRAM[A&0x1FFF]&1);

@@ -165,7 +165,7 @@ static void PrepDPCM()
 
 /* Instantaneous?  Maybe the new freq value is being calculated all of the time... */
 
-static int FASTAPASS(2) CheckFreq(uint32 cf, uint8 sr)
+static int CheckFreq(uint32 cf, uint8 sr)
 {
 	uint32 mod;
 	if(!(sr&0x8))
@@ -358,7 +358,7 @@ static DECLFR(StatusRead)
 	return ret;
 }
 
-static void FASTAPASS(1) FrameSoundStuff(int V)
+static void FrameSoundStuff(int V)
 {
 	int P;
 
@@ -514,7 +514,7 @@ static INLINE void DMCDMA(void)
 	}
 }
 
-void FASTAPASS(1) FCEU_SoundCPUHook(int cycles)
+void FCEU_SoundCPUHook(int cycles)
 {
 	fhcnt-=cycles*48;
 	if(fhcnt<=0)

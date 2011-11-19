@@ -30,20 +30,20 @@ typedef struct {
 
 static MOUSE Mouse;
 
-static void FP_FASTAPASS(1) StrobeMOUSE(int w)
+static void StrobeMOUSE(int w)
 {
-  Mouse.readbit=0;
-  if((Mouse.mzxold-Mouse.mzx)>0)
-    Mouse.data|=0x0C;
-  else if((Mouse.mzxold-Mouse.mzx)<0)
-    Mouse.data|=0x04;
-  if((Mouse.mzyold-Mouse.mzy)>0)
-    Mouse.data|=0x30;
-  else if((Mouse.mzyold-Mouse.mzy)<0)
-    Mouse.data|=0x10;
+	Mouse.readbit=0;
+	if((Mouse.mzxold-Mouse.mzx)>0)
+		Mouse.data|=0x0C;
+	else if((Mouse.mzxold-Mouse.mzx)<0)
+		Mouse.data|=0x04;
+	if((Mouse.mzyold-Mouse.mzy)>0)
+		Mouse.data|=0x30;
+	else if((Mouse.mzyold-Mouse.mzy)<0)
+		Mouse.data|=0x10;
 }
 
-static uint8 FP_FASTAPASS(1) ReadMOUSE(int w)
+static uint8 ReadMOUSE(int w)
 {
 	uint8 ret=0;
 	if(Mouse.readbit>=8)
@@ -56,7 +56,7 @@ static uint8 FP_FASTAPASS(1) ReadMOUSE(int w)
 	return(ret);
 }
 
-static void FP_FASTAPASS(3) UpdateMOUSE(int w, void *data, int arg)
+static void UpdateMOUSE(int w, void *data, int arg)
 {
   uint32 *ptr=(uint32*)data;
   Mouse.data=0;

@@ -138,7 +138,7 @@ static void M23Power(void)
   SetWriteHandler(0x8000,0xFFFF,M23Write);
 }
 
-void FP_FASTAPASS(1) M23IRQHook(int a)
+void M23IRQHook(int a)
 {
   #define LCYCS 341
   if(IRQa)

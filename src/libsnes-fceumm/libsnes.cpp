@@ -49,7 +49,7 @@ extern CartInfo UNIFCart;
 
 /* emulator-specific callback functions */
 
-char *GetKeyboard(void) {}
+extern "C" const char * GetKeyboard(void) {}
 void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b)
 {
    r >>= 3;

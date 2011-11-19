@@ -125,7 +125,7 @@ static void MYOKOReset(void)
   Sync();  
 }
 
-static void FP_FASTAPASS(1) MYOKOIRQHook(int a)
+static void MYOKOIRQHook(int a)
 {
   if(IRQa)
   {

@@ -30,7 +30,7 @@ static uint8 is2kbank, isnot2kbank, dipreg;
  
 } 
 */
-static void FP_FASTAPASS(1) m83IRQHook(int a)
+static void m83IRQHook(int a)
 {
   if(IRQa)
   {
