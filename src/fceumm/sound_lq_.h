@@ -139,13 +139,6 @@ static char DMCHaveDMA=0;
 static uint8 DMCDMABuf=0;
 static char DMCHaveSample=0;
 
-static void Dummyfunc(void) {};
-static void (*DoNoise)(void)=Dummyfunc;
-static void (*DoTriangle)(void)=Dummyfunc;
-static void (*DoPCM)(void)=Dummyfunc;
-static void (*DoSQ1)(void)=Dummyfunc;
-static void (*DoSQ2)(void)=Dummyfunc;
-
 static uint32 ChannelBC[5];
 
 static void LoadDMCPeriod(uint8 V)
@@ -176,14 +169,96 @@ static int FASTAPASS(2) CheckFreq(uint32 cf, uint8 sr)
 	return(1);
 }
 
+static void RDoSQLQ(void)
+{
+	int32 start,end;
+	int32 V;
+	int32 amp[2];
+	int32 rthresh[2];
+	int32 freq[2];
+	int x;
+	int32 inie[2];
+
+	int32 ttable[2][8];
+	int32 totalout;
+
+	start=ChannelBC[0];
+	end=(SOUNDTS<<16)/soundtsinc;
+	if(end<=start) return;
+	ChannelBC[0]=end;
+
+	for(x=0;x<2;x++)
+	{
+		int y;
+
+		inie[x]=nesincsize;
+		if(curfreq[x]<8 || curfreq[x]>0x7ff)
+			inie[x]=0;
+		if(!CheckFreq(curfreq[x],PSG[(x<<2)|0x1]))
+			inie[x]=0;
+		if(!lengthcount[x])
+			inie[x]=0;
+
+		if(EnvUnits[x].Mode&0x1)
+			amp[x]=EnvUnits[x].Speed;
+		else
+			amp[x]=EnvUnits[x].decvolume;
+
+		if(!inie[x]) amp[x]=0;    /* Correct? Buzzing in MM2, others otherwise... */
+
+		rthresh[x]=RectDuties[(PSG[x*4]&0xC0)>>6];
+
+		for(y=0;y<8;y++)
+		{
+			if(y < rthresh[x])
+				ttable[x][y] = amp[x];
+			else
+				ttable[x][y] = 0;
+		}
+		freq[x]=(curfreq[x]+1)<<1;
+		freq[x]<<=17;
+	}
+
+	totalout = wlookup1[ ttable[0][RectDutyCount[0]] + ttable[1][RectDutyCount[1]] ];
+
+	if(!inie[0] && !inie[1])
+	{
+		for(V=start;V<end;V++)
+			Wave[V>>4]+=totalout;
+	}
+	else
+		for(V=start;V<end;V++)
+		{
+			Wave[V>>4]+=totalout; //tmpamp;
+
+			sqacc[0]-=inie[0];
+			sqacc[1]-=inie[1];
+
+			if(sqacc[0]<=0)
+			{
+rea:
+				sqacc[0]+=freq[0];
+				RectDutyCount[0]=(RectDutyCount[0]+1)&7;
+				if(sqacc[0]<=0) goto rea;
+				totalout = wlookup1[ ttable[0][RectDutyCount[0]] + ttable[1][RectDutyCount[1]] ];
+			}
+
+			if(sqacc[1]<=0)
+			{
+rea2:
+				sqacc[1]+=freq[1];
+				RectDutyCount[1]=(RectDutyCount[1]+1)&7;
+				if(sqacc[1]<=0) goto rea2;
+				totalout = wlookup1[ ttable[0][RectDutyCount[0]] + ttable[1][RectDutyCount[1]] ];
+			}
+		}
+}
+
 static void SQReload(int x, uint8 V)
 {
 	if(EnabledChannels&(1<<x))
 	{
-		if(x)
-			DoSQ2();
-		else
-			DoSQ1();
+		RDoSQLQ();
 		lengthcount[x]=lengthtable[(V>>3)&0x1f];
 	}
 
@@ -196,13 +271,152 @@ static void SQReload(int x, uint8 V)
 	//reloadfreq[x]=1;
 }
 
+static void RDoTriangleNoisePCMLQ(void)
+{
+	static uint32 tcout=0;
+	static int32 triacc=0;
+	static int32 noiseacc=0;
+
+	int32 V;
+	int32 start,end;
+	int32 freq[2];
+	int32 inie[2];
+	uint32 amptab[2];
+	uint32 noiseout;
+	int nshift;
+
+	int32 totalout;
+
+	start=ChannelBC[2];
+	end=(SOUNDTS<<16)/soundtsinc;
+	if(end<=start) return;
+	ChannelBC[2]=end;
+
+	inie[0]=inie[1]=nesincsize;
+
+	freq[0]=(((PSG[0xa]|((PSG[0xb]&7)<<8))+1));
+
+	if(!lengthcount[2] || !TriCount || freq[0]<=4)
+		inie[0]=0;
+
+	freq[0]<<=17;
+	if(EnvUnits[2].Mode&0x1)
+		amptab[0]=EnvUnits[2].Speed;
+	else
+		amptab[0]=EnvUnits[2].decvolume;
+	amptab[1]=0;
+	amptab[0]<<=1;
+
+	if(!lengthcount[3])
+		amptab[0]=inie[1]=0;  /* Quick hack speedup, set inie[1] to 0 */
+
+	noiseout=amptab[(nreg>>0xe)&1];
+
+	if(PSG[0xE]&0x80)
+		nshift=8;
+	else
+		nshift=13;
+
+
+	totalout = wlookup2[tcout+noiseout+RawDALatch];
+
+	if(inie[0] && inie[1])
+	{
+		for(V=start;V<end;V++)
+		{
+			Wave[V>>4]+=totalout;
+
+			triacc-=inie[0];
+			noiseacc-=inie[1];
+
+			if(triacc<=0)
+			{
+rea:
+				triacc+=freq[0]; //t;
+				tristep=(tristep+1)&0x1F;
+				if(triacc<=0) goto rea;
+				tcout=(tristep&0xF);
+				if(!(tristep&0x10)) tcout^=0xF;
+				tcout=tcout*3;
+				totalout = wlookup2[tcout+noiseout+RawDALatch];
+			}
+
+			if(noiseacc<=0)
+			{
+rea2:
+				//used to added <<(16+2) when the noise table
+				//values were half.
+				if(PAL)
+					noiseacc+=PALNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
+				else
+					noiseacc+=NTSCNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
+				nreg=(nreg<<1)+(((nreg>>nshift)^(nreg>>14))&1);
+				nreg&=0x7fff;
+				noiseout=amptab[(nreg>>0xe)&1];
+				if(noiseacc<=0) goto rea2;
+				totalout = wlookup2[tcout+noiseout+RawDALatch];
+			} /* noiseacc<=0 */
+		} /* for(V=... */
+	}
+	else if(inie[0])
+	{
+		for(V=start;V<end;V++)
+		{
+			Wave[V>>4]+=totalout;
+
+			triacc-=inie[0];
+
+			if(triacc<=0)
+			{
+area:
+				triacc+=freq[0]; //t;
+				tristep=(tristep+1)&0x1F;
+				if(triacc<=0) goto area;
+				tcout=(tristep&0xF);
+				if(!(tristep&0x10)) tcout^=0xF;
+				tcout=tcout*3;
+				totalout = wlookup2[tcout+noiseout+RawDALatch];
+			}
+		}
+	}
+	else if(inie[1])
+	{
+		for(V=start;V<end;V++)
+		{
+			Wave[V>>4]+=totalout;
+			noiseacc-=inie[1];
+			if(noiseacc<=0)
+			{
+area2:
+				//used to be added <<(16+2) when the noise table
+				//values were half.
+				if(PAL)
+					noiseacc+=PALNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
+				else
+					noiseacc+=NTSCNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
+				nreg=(nreg<<1)+(((nreg>>nshift)^(nreg>>14))&1);
+				nreg&=0x7fff;
+				noiseout=amptab[(nreg>>0xe)&1];
+				if(noiseacc<=0) goto area2;
+				totalout = wlookup2[tcout+noiseout+RawDALatch];
+			} /* noiseacc<=0 */
+		}
+	}
+	else
+	{
+		for(V=start;V<end;V++)
+			Wave[V>>4]+=totalout;
+	}
+}
+
 static DECLFW(Write_PSG)
 {
 	// FCEU_printf("APU1 %04x:%04x\n",A,V);
 	A&=0x1F;
 	switch(A)
 	{
-		case 0x0:DoSQ1();
+		case 0x0:
+			RDoSQLQ();
 			 EnvUnits[0].Mode=(V&0x30)>>4;
 			 EnvUnits[0].Speed=(V&0xF);
 			 break;
@@ -210,7 +424,7 @@ static DECLFW(Write_PSG)
 			 sweepon[0]=V&0x80;
 			 break;
 		case 0x2:
-			 DoSQ1();
+			RDoSQLQ();
 			 curfreq[0]&=0xFF00;
 			 curfreq[0]|=V;
 			 break;
@@ -218,41 +432,46 @@ static DECLFW(Write_PSG)
 			 SQReload(0,V);
 			 break;
 		case 0x4:
-			 DoSQ2();
+			 RDoSQLQ();
 			 EnvUnits[1].Mode=(V&0x30)>>4;
 			 EnvUnits[1].Speed=(V&0xF);
 			 break;
 		case 0x5:
 			 sweepon[1]=V&0x80;
 			 break;
-		case 0x6:DoSQ2();
+		case 0x6:
+			 RDoSQLQ();
 			 curfreq[1]&=0xFF00;
 			 curfreq[1]|=V;
 			 break;
 		case 0x7:
 			 SQReload(1,V);
 			 break;
-		case 0xa:DoTriangle();
+		case 0xa:
+			 RDoTriangleNoisePCMLQ();
 			 break;
 		case 0xb:
-			 DoTriangle();
+			 RDoTriangleNoisePCMLQ();
 			 if(EnabledChannels&0x4)
 				 lengthcount[2]=lengthtable[(V>>3)&0x1f];
 			 TriMode=1;  // Load mode
 			 break;
-		case 0xC:DoNoise();
+		case 0xC:
+			 RDoTriangleNoisePCMLQ();
 			 EnvUnits[2].Mode=(V&0x30)>>4;
 			 EnvUnits[2].Speed=(V&0xF);
 			 break;
-		case 0xE:DoNoise();
+		case 0xE:
+			 RDoTriangleNoisePCMLQ();
 			 break;
 		case 0xF:
-			 DoNoise();
+			 RDoTriangleNoisePCMLQ();
 			 if(EnabledChannels&0x8)
 				 lengthcount[3]=lengthtable[(V>>3)&0x1f];
 			 EnvUnits[2].reloaddec=1;
 			 break;
-		case 0x10:DoPCM();
+		case 0x10:
+			 RDoTriangleNoisePCMLQ();
 			  LoadDMCPeriod(V&0xF);
 
 			  if(SIRQStat&0x80)
@@ -276,8 +495,9 @@ static DECLFW(Write_DMCRegs)
 
 	switch(A)
 	{
-		case 0x00:DoPCM();
-			  LoadDMCPeriod(V&0xF);
+		case 0x00:
+			RDoTriangleNoisePCMLQ();
+			LoadDMCPeriod(V&0xF);
 
 			  if(SIRQStat&0x80)
 			  {
@@ -290,7 +510,8 @@ static DECLFW(Write_DMCRegs)
 			  }
 			  DMCFormat=V;
 			  break;
-		case 0x01:DoPCM();
+		case 0x01:
+			  RDoTriangleNoisePCMLQ();
 			  RawDALatch=V&0x7F;
 			  break;
 		case 0x02:DMCAddressLatch=V;break;
@@ -305,11 +526,11 @@ static DECLFW(StatusWrite)
 	int x;
 	//  FCEU_printf("APU1 %04x:%04x\n",A,V);
 
-	DoSQ1();
-	DoSQ2();
-	DoTriangle();
-	DoNoise();
-	DoPCM();
+	RDoSQLQ();
+	RDoSQLQ();
+	RDoTriangleNoisePCMLQ();
+	RDoTriangleNoisePCMLQ();
+	RDoTriangleNoisePCMLQ();
 	for(x=0;x<4;x++)
 		if(!(V&(1<<x)))
 			lengthcount[x]=0;   /* Force length counters to 0. */
@@ -348,10 +569,10 @@ static void FASTAPASS(1) FrameSoundStuff(int V)
 {
 	int P;
 
-	DoSQ1();
-	DoSQ2();
-	DoNoise();
-	DoTriangle();
+	RDoSQLQ();
+	RDoSQLQ();
+	RDoTriangleNoisePCMLQ();
+	RDoTriangleNoisePCMLQ();
 
 	if(!(V&1)) /* Envelope decay, linear counter, length counter, freq sweep */
 	{
@@ -520,7 +741,7 @@ void FASTAPASS(1) FCEU_SoundCPUHook(int cycles)
 			int t=((DMCShift&1)<<2)-2;
 			/* Unbelievably ugly hack */
 			soundtsoffs+=DMCacc;
-			DoPCM();
+			RDoTriangleNoisePCMLQ();
 			soundtsoffs-=DMCacc;
 			RawDALatch+=t;
 			if(RawDALatch&0x80)
@@ -608,90 +829,6 @@ static void RDoSQ2(void)
 	RDoSQ(1);
 }
 
-static void RDoSQLQ(void)
-{
-	int32 start,end;
-	int32 V;
-	int32 amp[2];
-	int32 rthresh[2];
-	int32 freq[2];
-	int x;
-	int32 inie[2];
-
-	int32 ttable[2][8];
-	int32 totalout;
-
-	start=ChannelBC[0];
-	end=(SOUNDTS<<16)/soundtsinc;
-	if(end<=start) return;
-	ChannelBC[0]=end;
-
-	for(x=0;x<2;x++)
-	{
-		int y;
-
-		inie[x]=nesincsize;
-		if(curfreq[x]<8 || curfreq[x]>0x7ff)
-			inie[x]=0;
-		if(!CheckFreq(curfreq[x],PSG[(x<<2)|0x1]))
-			inie[x]=0;
-		if(!lengthcount[x])
-			inie[x]=0;
-
-		if(EnvUnits[x].Mode&0x1)
-			amp[x]=EnvUnits[x].Speed;
-		else
-			amp[x]=EnvUnits[x].decvolume;
-
-		if(!inie[x]) amp[x]=0;    /* Correct? Buzzing in MM2, others otherwise... */
-
-		rthresh[x]=RectDuties[(PSG[x*4]&0xC0)>>6];
-
-		for(y=0;y<8;y++)
-		{
-			if(y < rthresh[x])
-				ttable[x][y] = amp[x];
-			else
-				ttable[x][y] = 0;
-		}
-		freq[x]=(curfreq[x]+1)<<1;
-		freq[x]<<=17;
-	}
-
-	totalout = wlookup1[ ttable[0][RectDutyCount[0]] + ttable[1][RectDutyCount[1]] ];
-
-	if(!inie[0] && !inie[1])
-	{
-		for(V=start;V<end;V++)
-			Wave[V>>4]+=totalout;
-	}
-	else
-		for(V=start;V<end;V++)
-		{
-			Wave[V>>4]+=totalout; //tmpamp;
-
-			sqacc[0]-=inie[0];
-			sqacc[1]-=inie[1];
-
-			if(sqacc[0]<=0)
-			{
-rea:
-				sqacc[0]+=freq[0];
-				RectDutyCount[0]=(RectDutyCount[0]+1)&7;
-				if(sqacc[0]<=0) goto rea;
-				totalout = wlookup1[ ttable[0][RectDutyCount[0]] + ttable[1][RectDutyCount[1]] ];
-			}
-
-			if(sqacc[1]<=0)
-			{
-rea2:
-				sqacc[1]+=freq[1];
-				RectDutyCount[1]=(RectDutyCount[1]+1)&7;
-				if(sqacc[1]<=0) goto rea2;
-				totalout = wlookup1[ ttable[0][RectDutyCount[0]] + ttable[1][RectDutyCount[1]] ];
-			}
-		}
-}
 
 static void RDoTriangle(void)
 {
@@ -730,143 +867,6 @@ static void RDoTriangle(void)
 	ChannelBC[2]=SOUNDTS;
 }
 
-static void RDoTriangleNoisePCMLQ(void)
-{
-	static uint32 tcout=0;
-	static int32 triacc=0;
-	static int32 noiseacc=0;
-
-	int32 V;
-	int32 start,end;
-	int32 freq[2];
-	int32 inie[2];
-	uint32 amptab[2];
-	uint32 noiseout;
-	int nshift;
-
-	int32 totalout;
-
-	start=ChannelBC[2];
-	end=(SOUNDTS<<16)/soundtsinc;
-	if(end<=start) return;
-	ChannelBC[2]=end;
-
-	inie[0]=inie[1]=nesincsize;
-
-	freq[0]=(((PSG[0xa]|((PSG[0xb]&7)<<8))+1));
-
-	if(!lengthcount[2] || !TriCount || freq[0]<=4)
-		inie[0]=0;
-
-	freq[0]<<=17;
-	if(EnvUnits[2].Mode&0x1)
-		amptab[0]=EnvUnits[2].Speed;
-	else
-		amptab[0]=EnvUnits[2].decvolume;
-	amptab[1]=0;
-	amptab[0]<<=1;
-
-	if(!lengthcount[3])
-		amptab[0]=inie[1]=0;  /* Quick hack speedup, set inie[1] to 0 */
-
-	noiseout=amptab[(nreg>>0xe)&1];
-
-	if(PSG[0xE]&0x80)
-		nshift=8;
-	else
-		nshift=13;
-
-
-	totalout = wlookup2[tcout+noiseout+RawDALatch];
-
-	if(inie[0] && inie[1])
-	{
-		for(V=start;V<end;V++)
-		{
-			Wave[V>>4]+=totalout;
-
-			triacc-=inie[0];
-			noiseacc-=inie[1];
-
-			if(triacc<=0)
-			{
-rea:
-				triacc+=freq[0]; //t;
-				tristep=(tristep+1)&0x1F;
-				if(triacc<=0) goto rea;
-				tcout=(tristep&0xF);
-				if(!(tristep&0x10)) tcout^=0xF;
-				tcout=tcout*3;
-				totalout = wlookup2[tcout+noiseout+RawDALatch];
-			}
-
-			if(noiseacc<=0)
-			{
-rea2:
-				//used to added <<(16+2) when the noise table
-				//values were half.
-				if(PAL)
-					noiseacc+=PALNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
-				else
-					noiseacc+=NTSCNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
-				nreg=(nreg<<1)+(((nreg>>nshift)^(nreg>>14))&1);
-				nreg&=0x7fff;
-				noiseout=amptab[(nreg>>0xe)&1];
-				if(noiseacc<=0) goto rea2;
-				totalout = wlookup2[tcout+noiseout+RawDALatch];
-			} /* noiseacc<=0 */
-		} /* for(V=... */
-	}
-	else if(inie[0])
-	{
-		for(V=start;V<end;V++)
-		{
-			Wave[V>>4]+=totalout;
-
-			triacc-=inie[0];
-
-			if(triacc<=0)
-			{
-area:
-				triacc+=freq[0]; //t;
-				tristep=(tristep+1)&0x1F;
-				if(triacc<=0) goto area;
-				tcout=(tristep&0xF);
-				if(!(tristep&0x10)) tcout^=0xF;
-				tcout=tcout*3;
-				totalout = wlookup2[tcout+noiseout+RawDALatch];
-			}
-		}
-	}
-	else if(inie[1])
-	{
-		for(V=start;V<end;V++)
-		{
-			Wave[V>>4]+=totalout;
-			noiseacc-=inie[1];
-			if(noiseacc<=0)
-			{
-area2:
-				//used to be added <<(16+2) when the noise table
-				//values were half.
-				if(PAL)
-					noiseacc+=PALNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
-				else
-					noiseacc+=NTSCNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
-				nreg=(nreg<<1)+(((nreg>>nshift)^(nreg>>14))&1);
-				nreg&=0x7fff;
-				noiseout=amptab[(nreg>>0xe)&1];
-				if(noiseacc<=0) goto area2;
-				totalout = wlookup2[tcout+noiseout+RawDALatch];
-			} /* noiseacc<=0 */
-		}
-	}
-	else
-	{
-		for(V=start;V<end;V++)
-			Wave[V>>4]+=totalout;
-	}
-}
 
 
 static void RDoNoise(void)
@@ -960,54 +960,27 @@ int FlushEmulateSound(void)
 	int x;
 	int32 end,left;
 
-	DoSQ1();
-	DoSQ2();
-	DoTriangle();
-	DoNoise();
-	DoPCM();
+	RDoSQLQ();
+	RDoSQLQ();
+	RDoTriangleNoisePCMLQ();
+	RDoTriangleNoisePCMLQ();
+	RDoTriangleNoisePCMLQ();
 
-	if(FSettings.soundq >= 1)
-	{
-		int32 *tmpo=&WaveHi[soundtsoffs];
+	end=(SOUNDTS<<16)/soundtsinc;
+	if(GameExpSound.Fill)
+		GameExpSound.Fill(end&0xF);
 
-		if(GameExpSound.HiFill)
-			GameExpSound.HiFill();
+	SexyFilter(Wave,WaveFinal,end>>4);
 
-		for(x=timestamp;x;x--)
-		{
-			uint32 b=*tmpo;
-			*tmpo=(b&65535)+wlookup2[(b>>16)&255]+wlookup1[b>>24];
-			tmpo++;
-		}
-		end=NeoFilterSound(WaveHi,WaveFinal,SOUNDTS,&left);
+	if(end&0xF)
+		Wave[0]=Wave[(end>>4)];
+	Wave[end>>4]=0;
 
-		memmove(WaveHi,WaveHi+SOUNDTS-left,left*sizeof(uint32));
-		memset(WaveHi+left,0,sizeof(WaveHi)-left*sizeof(uint32));
+	for(x=0;x<5;x++)
+		ChannelBC[x]=end & 0xF;
 
-		if(GameExpSound.HiSync) GameExpSound.HiSync(left);
-		for(x=0;x<5;x++)
-			ChannelBC[x]=left;
-
-		soundtsoffs=left;
-	}
-	else
-	{
-		end=(SOUNDTS<<16)/soundtsinc;
-		if(GameExpSound.Fill)
-			GameExpSound.Fill(end&0xF);
-
-		SexyFilter(Wave,WaveFinal,end>>4);
-
-		if(end&0xF)
-			Wave[0]=Wave[(end>>4)];
-		Wave[end>>4]=0;
-
-		for(x=0;x<5;x++)
-			ChannelBC[x]=end & 0xF;
-
-		soundtsoffs = (soundtsinc*(end&0xF))>>16;
-		end>>=4;
-	}
+	soundtsoffs = (soundtsinc*(end&0xF))>>16;
+	end>>=4;
 
 	inbuf=end;
 
@@ -1094,37 +1067,17 @@ void SetSoundVariables(void)
 		for(x=1;x<32;x++)
 		{
 			wlookup1[x]=(double)16*16*16*4*95.52/((double)8128/(double)x+100);
-			if(!FSettings.soundq)
-				wlookup1[x]>>=4;
+			wlookup1[x] >>= 4;
 		}
 		wlookup2[0]=0;
 		for(x=1;x<203;x++)
 		{
 			wlookup2[x]=(double)16*16*16*4*163.67/((double)24329/(double)x+100);
-			if(!FSettings.soundq)
-				wlookup2[x]>>=4;
-		}
-		if(FSettings.soundq>=1)
-		{
-			DoNoise=RDoNoise;
-			DoTriangle=RDoTriangle;
-			DoPCM=RDoPCM;
-			DoSQ1=RDoSQ1;
-			DoSQ2=RDoSQ2;
-		}
-		else
-		{
-			DoNoise=DoTriangle=DoPCM=DoSQ1=DoSQ2=Dummyfunc;
-			DoSQ1=RDoSQLQ;
-			DoSQ2=RDoSQLQ;
-			DoTriangle=RDoTriangleNoisePCMLQ;
-			DoNoise=RDoTriangleNoisePCMLQ;
-			DoPCM=RDoTriangleNoisePCMLQ;
+			wlookup2[x] >>= 4;
 		}
 	}
 	else
 	{
-		DoNoise=DoTriangle=DoPCM=DoSQ1=DoSQ2=Dummyfunc;
 		return;
 	}
 
