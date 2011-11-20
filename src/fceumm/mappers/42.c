@@ -40,12 +40,16 @@ static void Mapper42IRQ(int a)
 {
  if(IRQa)
  {
-        IRQCount+=a;
-        if(IRQCount>=32768) IRQCount-=32768;
-        if(IRQCount>=24576)
-         X6502_IRQBegin(FCEU_IQEXT);
-        else
-         X6502_IRQEnd(FCEU_IQEXT);
+	 IRQCount+=a;
+	 if(IRQCount>=32768) IRQCount-=32768;
+	 if(IRQCount>=24576)
+	 {
+		 X6502_IRQBegin(FCEU_IQEXT);
+	 }
+	 else
+	 {
+		 X6502_IRQEnd(FCEU_IQEXT);
+	 }
  }
 }
 

@@ -22,6 +22,7 @@
 
 #include "types.h"
 #include "x6502.h"
+#include "x6502struct.h"
 #include "fceu.h"
 #include "sound.h"
 
@@ -51,25 +52,10 @@ void (*MapIRQHook)(int a);
  timestamp+=__x;  \
 }
 
-static INLINE uint8 RdMemNorm(unsigned int A)
-{
- return(_DB=ARead[A](A));
-}
-
-static INLINE void WrMemNorm(unsigned int A, uint8 V)
-{
- BWrite[A](A,V);
-}
-
-static INLINE uint8 RdRAMFast(unsigned int A)
-{
- return(_DB=RAM[A]);
-}
-
-static INLINE void WrRAMFast(unsigned int A, uint8 V)
-{
- RAM[A]=V;
-}
+#define RdMemNorm(A) (_DB=ARead[A](A))
+#define WrMemNorm(A, V) BWrite[A](A,V);
+#define RdRAMFast(A) (_DB=RAM[A])
+#define WrRAMFast(A, V) RAM[A]=V;
 
 uint8 X6502_DMR(uint32 A)
 {
@@ -163,7 +149,7 @@ static uint8 ZNTable[256];
 
 #define CMP    CMPL(_A,x)
 #define CPX    CMPL(_X,x)
-#define CPY          CMPL(_Y,x)
+#define CPY    CMPL(_Y,x)
 
 /* The following operations modify the byte being worked on. */
 #define DEC         x--;X_ZN(x)
@@ -349,31 +335,6 @@ static uint8 CycTable[256] =
 /*0xF0*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
 };
 
-void X6502_IRQBegin(int w)
-{
- _IRQlow|=w;
-}
-
-void X6502_IRQEnd(int w)
-{
- _IRQlow&=~w;
-}
-
-void TriggerNMI(void)
-{
- _IRQlow|=FCEU_IQNMI;
-}
-
-void TriggerNMI2(void)
-{
- _IRQlow|=FCEU_IQNMI2;
-}
-
-void X6502_Reset(void)
-{
- _IRQlow=FCEU_IQRESET;
-}
-
 void X6502_Init(void)
 {
   int x;
@@ -387,9 +348,9 @@ void X6502_Init(void)
 
 void X6502_Power(void)
 {
- _count=_tcount=_IRQlow=_PC=_A=_X=_Y=_S=_P=_PI=_DB=_jammed=0;
- timestamp=0;
- X6502_Reset();
+	_count=_tcount=_IRQlow=_PC=_A=_X=_Y=_S=_P=_PI=_DB=_jammed=0;
+	timestamp=0;
+	X6502_Reset();
 }
 
 void X6502_Run(int32 cycles)

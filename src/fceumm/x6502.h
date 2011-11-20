@@ -19,6 +19,7 @@
  */
 
 #ifndef _X6502H
+#define _X6502H
 
 #include "x6502struct.h"
 
@@ -52,17 +53,9 @@ extern void (*MapIRQHook)(int a);
 #define FCEU_IQTEMP     0x800
 
 void X6502_Init(void);
-void X6502_Reset(void);
 void X6502_Power(void);
-
-void TriggerNMI(void);
-void TriggerNMI2(void);
 
 uint8 X6502_DMR(uint32 A);
 void X6502_DMW(uint32 A, uint8 V);
 
-void X6502_IRQBegin(int w);
-void X6502_IRQEnd(int w);
-
-#define _X6502H
 #endif

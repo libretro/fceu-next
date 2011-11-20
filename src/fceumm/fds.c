@@ -24,6 +24,7 @@
 
 #include "types.h"
 #include "x6502.h"
+#include "x6502struct.h"
 #include "fceu.h"
 #include "fds.h"
 #include "sound.h"

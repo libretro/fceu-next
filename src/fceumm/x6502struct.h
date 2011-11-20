@@ -1,4 +1,5 @@
 #ifndef _X6502STRUCTH
+#define _X6502STRUCTH
 
 typedef struct __X6502 {
   int32 tcount;     /* Temporary cycle counter */
@@ -15,5 +16,11 @@ typedef struct __X6502 {
 
   int preexec;      /* Pre-exec'ing for debug breakpoints. */
 } X6502;
-#define _X6502STRUCTH
+
+#define TriggerNMI() X.IRQlow |= FCEU_IQNMI;
+#define TriggerNMI2() X.IRQlow |= FCEU_IQNMI2;
+#define X6502_Reset() X.IRQlow = FCEU_IQRESET;
+#define X6502_IRQBegin(w) X.IRQlow |= w;
+#define X6502_IRQEnd(w)	X.IRQlow &= ~w;
+
 #endif
