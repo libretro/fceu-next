@@ -1209,6 +1209,7 @@ static BMAPPING bmap[] = {
     {164, Mapper164_Init},
     {165, Mapper165_Init},
     {168, Mapper168_Init},
+    {170, Mapper170_Init},
     {171, Mapper171_Init},
     {172, Mapper172_Init},
     {173, Mapper173_Init},
