@@ -1066,7 +1066,6 @@ static void emulator_set_custom_palette()
 static void emulator_set_input(void)
 {
 	InputDPR = &JSReturn;
-
 	//commented out Zapper code
 	#if 0
 	zapperdata[0] = NULL;
@@ -1077,13 +1076,15 @@ static void emulator_set_input(void)
 	FCEUI_SetInput(1, SI_ZAPPER, myzappers[1], 0);
 	#endif
 
-	// FIXME: Default ports back to gamepad - init 4 players always for now
 	FCEUI_SetInput(0, SI_GAMEPAD, InputDPR, 0);
 	FCEUI_SetInput(1, SI_GAMEPAD, InputDPR, 0);
-	FCEUI_SetInput(2, SI_GAMEPAD, InputDPR, 0);
-	FCEUI_SetInput(3, SI_GAMEPAD, InputDPR, 0);
 }
 
+static void ingame_menu_enable (int enable)
+{
+	is_running = 0;
+	is_ingame_menu_running = enable;
+}
 
 #define special_actions(specialbuttonmap) \
 	if(specialbuttonmap & BTN_CHEATENABLE) \
@@ -1222,70 +1223,64 @@ static int _y = 0;
 			myzappers[1][2] = 0;
 #endif
 
-#define EMULATOR_INPUT_LOOP() \
-	unsigned char pad[4] = { 0, 0, 0, 0}; \
-	JSReturn = 0; \
-	uint32_t pads_connected = cell_pad_input_pads_connected(); \
-	\
-	for (uint8_t i = 0; i < pads_connected; i++) \
-	{ \
-		uint32_t special_action = 0; \
-		const uint64_t state = cell_pad_input_poll_device(i); \
-		const uint64_t button_was_pressed = old_state[i] & (old_state[i] ^ state); \
-		const uint64_t button_was_held = old_state[i] & state; \
-		const uint64_t button_was_not_held = ~(old_state[i] & state); \
-		const uint64_t button_was_not_pressed = ~(state); \
-		\
-		special_button_mappings(i,PS3Input.DPad_Up[i], (CTRL_UP(state) || CTRL_LSTICK_UP(state))); \
-		special_button_mappings(i,PS3Input.DPad_Down[i], (CTRL_DOWN(state) || CTRL_LSTICK_DOWN(state))); \
-		special_button_mappings(i,PS3Input.DPad_Left[i], (CTRL_LEFT(state) || CTRL_LSTICK_LEFT(state))); \
-		special_button_mappings(i,PS3Input.DPad_Right[i], (CTRL_RIGHT(state) || CTRL_LSTICK_RIGHT(state))); \
-		special_button_mappings(i,PS3Input.ButtonSquare[i], (CTRL_SQUARE(state))); \
-		special_button_mappings(i,PS3Input.ButtonCross[i], (CTRL_CROSS(state))); \
-		special_button_mappings(i,PS3Input.ButtonCircle[i], (CTRL_CIRCLE(state))); \
-		special_button_mappings(i,PS3Input.ButtonTriangle[i], (CTRL_TRIANGLE(state))); \
-		special_button_mappings(i,PS3Input.ButtonStart[i], (CTRL_START(state))); \
-		special_button_mappings(i,PS3Input.ButtonSelect[i], (CTRL_SELECT(state))); \
-		special_button_mappings(i,PS3Input.ButtonL1[i], (CTRL_L1(state))); \
-		special_button_mappings(i,PS3Input.ButtonL2[i], (CTRL_L2(state))); \
-		special_button_mappings(i,PS3Input.ButtonL3[i], (CTRL_L3(state) && CTRL_R3(button_was_not_held))); \
-		special_button_mappings(i,PS3Input.ButtonR1[i], (CTRL_R1(state))); \
-		special_button_mappings(i,PS3Input.ButtonR2[i], (CTRL_R2(state))); \
-		special_button_mappings(i,PS3Input.ButtonR3[i], (CTRL_R3(state) && CTRL_L3(button_was_not_held))); \
-		special_button_mappings(i,PS3Input.ButtonR3_ButtonL3[i], (CTRL_R3(state) && CTRL_L3(state))); \
-		special_button_mappings(i,PS3Input.ButtonR2_ButtonR3[i], (CTRL_R2(state) && CTRL_R3(state))); \
-		special_button_mappings(i,PS3Input.ButtonL2_ButtonR3[i], (CTRL_R3(state) && CTRL_L2(state))); \
-		special_button_mappings(i,PS3Input.ButtonL2_ButtonL3[i], (CTRL_L2(state) && CTRL_L3(state))); \
-		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Right[i], (CTRL_L2(state) && CTRL_RSTICK_RIGHT(button_was_pressed))); \
-		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Left[i], (CTRL_L2(state) && CTRL_RSTICK_LEFT(button_was_pressed))); \
-		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Up[i], (CTRL_L2(state) && CTRL_RSTICK_UP(button_was_pressed))); \
-		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Down[i], (CTRL_L2(state) && CTRL_RSTICK_DOWN(button_was_pressed))); \
-		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Right[i], (CTRL_R2(state) && CTRL_RSTICK_RIGHT(button_was_pressed))); \
-		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Left[i], (CTRL_R2(state) && CTRL_RSTICK_LEFT(button_was_pressed))); \
-		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Up[i], (CTRL_R2(state) && CTRL_RSTICK_UP(button_was_pressed))); \
-		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Down[i], (CTRL_R2(state) && CTRL_RSTICK_DOWN(button_was_pressed))); \
-		special_button_mappings(i,PS3Input.AnalogR_Down[i],(PS3Input.AnalogR_Down_Type[i] ? CTRL_RSTICK_DOWN(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_DOWN(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held))); \
-		special_button_mappings(i,PS3Input.AnalogR_Up[i],(PS3Input.AnalogR_Up_Type[i] ? CTRL_RSTICK_UP(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_UP(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held))); \
-		special_button_mappings(i,PS3Input.AnalogR_Left[i],(PS3Input.AnalogR_Left_Type[i] ? CTRL_RSTICK_LEFT(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_LEFT(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held))); \
-		special_button_mappings(i,PS3Input.AnalogR_Right[i],(PS3Input.AnalogR_Right_Type[i] ? CTRL_RSTICK_RIGHT(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_RIGHT(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held))); \
-		\
-		old_state[i] = state; \
-		if(special_action) \
-		{ \
-			special_actions(special_action); \
-		} \
-	} \
-	\
-	JSReturn = pad[0] | pad[1] << 8 | pad[2] << 16 | pad[3] << 24;
+static void emulator_input_loop() 
+{
+	static uint64_t old_state[MAX_PADS];
+	unsigned char pad[2] = {0, 0};
+	uint32_t pads_connected = cell_pad_input_pads_connected();
+
+	for (uint8_t i = 0; i < pads_connected; i++)
+	{
+		uint32_t special_action = 0;
+		const uint64_t state = cell_pad_input_poll_device(i);
+		const uint64_t button_was_pressed = old_state[i] & (old_state[i] ^ state);
+		const uint64_t button_was_held = old_state[i] & state;
+		const uint64_t button_was_not_held = ~(old_state[i] & state);
+		const uint64_t button_was_not_pressed = ~(state);
+		special_button_mappings(i,PS3Input.DPad_Up[i], (CTRL_UP(state) || CTRL_LSTICK_UP(state)));
+		special_button_mappings(i,PS3Input.DPad_Down[i], (CTRL_DOWN(state) || CTRL_LSTICK_DOWN(state)));
+		special_button_mappings(i,PS3Input.DPad_Left[i], (CTRL_LEFT(state) || CTRL_LSTICK_LEFT(state)));
+		special_button_mappings(i,PS3Input.DPad_Right[i], (CTRL_RIGHT(state) || CTRL_LSTICK_RIGHT(state)));
+		special_button_mappings(i,PS3Input.ButtonSquare[i], (CTRL_SQUARE(state)));
+		special_button_mappings(i,PS3Input.ButtonCross[i], (CTRL_CROSS(state)));
+		special_button_mappings(i,PS3Input.ButtonCircle[i], (CTRL_CIRCLE(state)));
+		special_button_mappings(i,PS3Input.ButtonTriangle[i], (CTRL_TRIANGLE(state)));
+		special_button_mappings(i,PS3Input.ButtonStart[i], (CTRL_START(state)));
+		special_button_mappings(i,PS3Input.ButtonSelect[i], (CTRL_SELECT(state)));
+		special_button_mappings(i,PS3Input.ButtonL1[i], (CTRL_L1(state)));
+		special_button_mappings(i,PS3Input.ButtonL2[i], (CTRL_L2(state)));
+		special_button_mappings(i,PS3Input.ButtonL3[i], (CTRL_L3(state) && CTRL_R3(button_was_not_held)));
+		special_button_mappings(i,PS3Input.ButtonR1[i], (CTRL_R1(state)));
+		special_button_mappings(i,PS3Input.ButtonR2[i], (CTRL_R2(state)));
+		special_button_mappings(i,PS3Input.ButtonR3[i], (CTRL_R3(state) && CTRL_L3(button_was_not_held)));
+		special_button_mappings(i,PS3Input.ButtonR3_ButtonL3[i], (CTRL_R3(state) && CTRL_L3(state)));
+		special_button_mappings(i,PS3Input.ButtonR2_ButtonR3[i], (CTRL_R2(state) && CTRL_R3(state)));
+		special_button_mappings(i,PS3Input.ButtonL2_ButtonR3[i], (CTRL_R3(state) && CTRL_L2(state)));
+		special_button_mappings(i,PS3Input.ButtonL2_ButtonL3[i], (CTRL_L2(state) && CTRL_L3(state)));
+		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Right[i], (CTRL_L2(state) && CTRL_RSTICK_RIGHT(button_was_pressed)));
+		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Left[i], (CTRL_L2(state) && CTRL_RSTICK_LEFT(button_was_pressed)));
+		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Up[i], (CTRL_L2(state) && CTRL_RSTICK_UP(button_was_pressed)));
+		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Down[i], (CTRL_L2(state) && CTRL_RSTICK_DOWN(button_was_pressed)));
+		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Right[i], (CTRL_R2(state) && CTRL_RSTICK_RIGHT(button_was_pressed)));
+		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Left[i], (CTRL_R2(state) && CTRL_RSTICK_LEFT(button_was_pressed)));
+		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Up[i], (CTRL_R2(state) && CTRL_RSTICK_UP(button_was_pressed)));
+		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Down[i], (CTRL_R2(state) && CTRL_RSTICK_DOWN(button_was_pressed)));
+		special_button_mappings(i,PS3Input.AnalogR_Down[i],(PS3Input.AnalogR_Down_Type[i] ? CTRL_RSTICK_DOWN(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_DOWN(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held)));
+		special_button_mappings(i,PS3Input.AnalogR_Up[i],(PS3Input.AnalogR_Up_Type[i] ? CTRL_RSTICK_UP(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_UP(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held)));
+		special_button_mappings(i,PS3Input.AnalogR_Left[i],(PS3Input.AnalogR_Left_Type[i] ? CTRL_RSTICK_LEFT(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_LEFT(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held)));
+		special_button_mappings(i,PS3Input.AnalogR_Right[i],(PS3Input.AnalogR_Right_Type[i] ? CTRL_RSTICK_RIGHT(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_RIGHT(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held)));
+		if(special_action)
+		{
+			special_actions(special_action);
+		}
+		old_state[i] = state;
+	}
+	JSReturn = pad[0] | pad[1] << 8;
+}
 
 
 /* PS3 frontend - ingame menu-related functions */
 
-static void ingame_menu_enable (int enable)
-{
-	is_running = 0;
-	is_ingame_menu_running = enable;
-}
 
 //FIXME: Turn GREEN into WHITE and RED into LIGHTBLUE once the overlay is in
 #define ingame_menu_reset_entry_colors(ingame_menu_item) \
@@ -1718,7 +1713,6 @@ static void emulator_start()
 {
 	int32 *sound=0;
 	int32 ssize=0;
-	uint64_t old_state[MAX_PADS];
 
 	emulator_set_paths();
 
@@ -1757,7 +1751,7 @@ static void emulator_start()
 
 		if(Settings.Throttled)
 			audio_driver->write(audio_handle, (int16_t*)sound, ssize << 1);
-		EMULATOR_INPUT_LOOP();
+		emulator_input_loop();
 		cell_console_poll();
 		cellSysutilCheckCallback();
 	}while (is_running);

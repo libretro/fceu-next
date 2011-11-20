@@ -10,7 +10,7 @@ MULTIMAN_SUPPORT	= 0
 SDK_340			= 1
 
 #specify build tools
-CELL_BUILD_TOOLS	=	SNC
+CELL_BUILD_TOOLS	=	GCC
 #explicitly set some cell sdk defaults
 CELL_SDK		?=	/usr/local/cell
 # CELL_GPU_TYPE (currently RSX is only one option)  
