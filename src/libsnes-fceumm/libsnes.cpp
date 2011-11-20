@@ -543,6 +543,18 @@ bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned r
 
    fceu_init();
 
+   if (environ_cb)
+   {
+   	snes_system_timing timing;
+	timing.sample_rate = 32050.0;
+	if (FSettings.PAL)
+		timing.fps = 838977920.0;
+	else
+		timing.fps = 1008307711.0;
+	
+	environ_cb(SNES_ENVIRONMENT_SET_TIMING, &timing);
+   }
+
    return true;
 }
 
