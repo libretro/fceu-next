@@ -741,7 +741,6 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 {
 	FILE *zp;
 	int x;
-	char *fn;
 
 	FCEU_fseek(fp,0,SEEK_SET);
 
@@ -749,7 +748,7 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 		return(0);
 
 
-	fn = FCEU_MakeFName(FCEUMKF_FDSROM,0,0);
+	const char * fn = FCEU_MakeFName(FCEUMKF_FDSROM,0,0);
 
 	if(!(zp=fopen(fn,"rb")))
 	{
@@ -772,31 +771,28 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 	fclose(zp);
 
 
+	FCEUFILE *tp;
+	const char *fn2 = FCEU_MakeFName(FCEUMKF_FDS,0,0);
+
+	for(x=0;x<TotalSides;x++)
 	{
-		FCEUFILE *tp;
-		char *fn=FCEU_MakeFName(FCEUMKF_FDS,0,0);
-
-		int x;
-		for(x=0;x<TotalSides;x++)
-		{
-			diskdatao[x]=(uint8 *)FCEU_malloc(65500);
-			memcpy(diskdatao[x],diskdata[x],65500);
-		}
-
-		if((tp=FCEU_fopen(fn,0,"rb",0)))
-		{
-			FreeFDSMemory();
-			if(!SubLoad(tp))
-			{
-				FCEU_PrintError("Error reading auxillary FDS file.");
-				free(fn);
-				return(0);
-			}
-			FCEU_fclose(tp);
-			DiskWritten=1;  /* For save state handling. */
-		}
-		free(fn);
+		diskdatao[x]=(uint8 *)FCEU_malloc(65500);
+		memcpy(diskdatao[x],diskdata[x],65500);
 	}
+
+	if((tp=FCEU_fopen(fn2,0,"rb",0)))
+	{
+		FreeFDSMemory();
+		if(!SubLoad(tp))
+		{
+			FCEU_PrintError("Error reading auxillary FDS file.");
+			free(fn2);
+			return(0);
+		}
+		FCEU_fclose(tp);
+		DiskWritten=1;  /* For save state handling. */
+	}
+	free(fn2);
 
 	FCEUGameInfo->type=GIT_FDS;
 	GameInterface=FDSGI;
@@ -833,9 +829,9 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 	memset(CHRRAM,0,8192);
 	memset(FDSRAM,0,32768);
 
-	#ifdef FCEU_LOG
+#ifdef FCEU_LOG
 	FCEU_printf(" Sides: %d\n\n",TotalSides);
-	#endif
+#endif
 	return 1;
 }
 
@@ -843,7 +839,7 @@ void FDSClose(void)
 {
 	FILE *fp;
 	int x;
-	char *fn=FCEU_MakeFName(FCEUMKF_FDS,0,0);
+	const char *fn=FCEU_MakeFName(FCEUMKF_FDS,0,0);
 
 	if(!DiskWritten) return;
 

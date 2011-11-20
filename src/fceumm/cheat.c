@@ -189,7 +189,6 @@ void FCEU_LoadGameCheats(FILE *override)
 	char linebuf[2048];
 	char *namebuf;
 	int tc=0;
-	char *fn;
 
 	numsubcheats=savecheats=0;
 
@@ -197,7 +196,7 @@ void FCEU_LoadGameCheats(FILE *override)
 		fp = override;
 	else
 	{
-		fn=FCEU_MakeFName(FCEUMKF_CHEAT,0,0);
+		const char * fn=FCEU_MakeFName(FCEUMKF_CHEAT,0,0);
 		fp=fopen(fn,"rb");
 		free(fn);
 		if(!fp)
@@ -294,10 +293,7 @@ void FCEU_FlushGameCheats(FILE *override, int nosave)
 	}
 	else
 	{
-		char *fn = 0;
-
-		if(!override)
-			fn = FCEU_MakeFName(FCEUMKF_CHEAT,0,0);
+		const char *fn = !override ? FCEU_MakeFName(FCEUMKF_CHEAT,0,0) : 0;
 
 		if(cheats)
 		{

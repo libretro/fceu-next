@@ -126,10 +126,6 @@ PPU_CFLAGS		+= 	-Xbranchless=1 -Xfastmath=1 -Xassumecorrectsign=1 -Xassumecorrec
 				-Xunroll=1 -Xautovecreg=1
 PPU_CXXFLAGS		+=	-Xbranchless=1 -Xfastmath=1 -Xassumecorrectsign=1 -Xassumecorrectalignment=1 \
 				-Xunroll=1 -Xautovecreg=1
-else
-PPU_CFLAGS		+=	-funroll-loops
-PPU_CXXFLAGS		+=	-funroll-loops
-PPU_LDFLAGS		+=	-Wl
 endif
 
 ifeq ($(SDK_340),1)

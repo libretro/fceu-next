@@ -639,9 +639,7 @@ void FCEU_SaveGameSave(CartInfo *LocalHWInfo)
 	if(LocalHWInfo->battery && LocalHWInfo->SaveGame[0])
 	{
 		FILE *sp;
-		char *soot;
-
-		soot=FCEU_MakeFName(FCEUMKF_SAV,0,"sav");
+		const char * soot=FCEU_MakeFName(FCEUMKF_SAV,0,"sav");
 		if((sp=fopen(soot,"wb"))==NULL)
 		{
 			FCEU_PrintError("WRAM file \"%s\" cannot be written to.\n",soot);
@@ -665,9 +663,7 @@ void FCEU_LoadGameSave(CartInfo *LocalHWInfo)
 	if(LocalHWInfo->battery && LocalHWInfo->SaveGame[0])
 	{
 		FILE *sp;
-		char *soot;
-
-		soot=FCEU_MakeFName(FCEUMKF_SAV,0,"sav");
+		const char * soot= FCEU_MakeFName(FCEUMKF_SAV,0,"sav");
 		sp= fopen(soot,"rb");
 		if(sp!=NULL)
 		{
@@ -681,4 +677,3 @@ void FCEU_LoadGameSave(CartInfo *LocalHWInfo)
 		free(soot);
 	}
 }
-

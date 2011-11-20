@@ -211,11 +211,10 @@ void FCEU_LoadGamePalette(void)
 {
 	uint8 ptmp[192];
 	FILE *fp;
-	char *fn;
 
 	ipalette=0;
 
-	fn=FCEU_MakeFName(FCEUMKF_PALETTE,0,0);
+	const char * fn=FCEU_MakeFName(FCEUMKF_PALETTE,0,0);
 
 	if((fp=fopen(fn,"rb")))
 	{
