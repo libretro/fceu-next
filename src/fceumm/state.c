@@ -467,18 +467,9 @@ static int FCEUSS_SaveFP(FILE *st)
 	return(1);
 }
 
-void FCEUSS_Save(const char *fname, int slot)
+void FCEUSS_Save(const char *fname)
 {
-	FILE *st=NULL;
-
-	if(fname)
-		st=fopen(fname, "wb");
-	else
-	{
-		const char *fn = FCEU_MakeFName(FCEUMKF_STATE, slot,0);
-		st=fopen(fn,"wb");
-		free(fn);
-	}
+	FILE * st = fopen(fname, "wb");
 
 	if(st == NULL || geniestage == 1)
 		return;	//State save error
@@ -519,18 +510,9 @@ static int FCEUSS_LoadFP(FILE *st)
 	return(x);
 }
 
-int FCEUSS_Load(const char *fname, int slot)
+int FCEUSS_Load(const char *fname)
 {
-	FILE *st;
-
-	if(fname)
-		st=fopen(fname, "rb");
-	else
-	{
-		const char *fn = FCEU_MakeFName(FCEUMKF_STATE, slot, fname);
-		st=fopen(fn,"rb");
-		free(fn);
-	}
+	FILE * st= fopen(fname, "rb");
 
 	if(st == NULL || geniestage == 1)
 		return(0);	// State load error

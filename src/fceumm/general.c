@@ -71,7 +71,7 @@ static int asprintf(char **strp, const char *fmt, ...)
 }
 #endif
 
-const char *FCEU_MakeFName(int type, int id1, char *cd1)
+const char * FCEU_MakeFName(int type, int id1, const char *cd1)
 {
 	char *ret=0;
 	struct stat tmpstat;

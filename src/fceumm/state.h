@@ -28,8 +28,8 @@ extern "C" {
 void FCEUSS_Load(void);
 void FCEUSS_Save(void);
 #else
-void FCEUSS_Save(const char *, int slot);
-int FCEUSS_Load(const char *, int slot);
+void FCEUSS_Save(const char * fname);
+int FCEUSS_Load(const char * fname);
 #endif
 
 typedef struct {

@@ -1,7 +1,15 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void GetFileBase(const char *f);
 extern uint32 uppow2(uint32 n);
 
-const char * FCEU_MakeFName(int type, int id1, char *cd1);
+const char * FCEU_MakeFName(int type, int id1, const char *cd1);
+
+#ifdef __cplusplus
+}
+#endif
 
 #define FCEUMKF_STATE  1
 #define FCEUMKF_SAV  3

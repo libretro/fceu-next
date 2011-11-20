@@ -25,6 +25,7 @@
 
 #include "fceumm/types.h"
 #include "fceumm/file.h"
+#include "fceumm/general.h"
 
 /* PS3 frontend includes */
 
@@ -102,7 +103,9 @@ static unsigned int myzappers[2][3];
 
 #define emulator_load_current_save_state_slot() \
 	/* emulator-specific */ \
-	int ret = FCEUSS_Load(NULL, Settings.CurrentSaveStateSlot); \
+	int slot = Settings.CurrentSaveStateSlot; \
+	const char * fname = FCEU_MakeFName(FCEUMKF_STATE, slot, 0); \
+	int ret = FCEUSS_Load(fname); \
 	if(ret) \
 		snprintf(special_action_msg, sizeof(special_action_msg), "Loaded save state slot #%d", Settings.CurrentSaveStateSlot); \
 	else \
@@ -111,7 +114,9 @@ static unsigned int myzappers[2][3];
 
 #define emulator_save_current_save_state_slot() \
 	/* emulator-specific */ \
-	FCEUSS_Save(NULL, Settings.CurrentSaveStateSlot); \
+	int slot = Settings.CurrentSaveStateSlot; \
+	const char * fname = FCEU_MakeFName(FCEUMKF_STATE, slot, 0); \
+	FCEUSS_Save(fname); \
 	snprintf(special_action_msg, sizeof(special_action_msg), "Saved to save state slot #%d", Settings.CurrentSaveStateSlot); \
 	special_action_msg_expired = ps3graphics_set_text_message_speed(60);
 
