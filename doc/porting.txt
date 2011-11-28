@@ -1,8 +1,5 @@
-FCE Ultra Porting Guide
- Updated:  October 4, 2003
-
-*Incomplete*
-
+FCEU Next Porting Guide
+ Updated: November 28, 2011
 
 ***Driver-supplied functions:
 	These functions will only be called after the driver code calls
@@ -20,8 +17,6 @@ void FCEUD_Update(uint8 *XBuf, int32 *Buffer, int Count);
 	  done to make the contents of XBuf visible on screen).
           Each line is 256 pixels(and bytes) in width, and there can be 240
           lines.  The pitch for each line is 272 bytes.
-	  XBuf will be 0 if the symbol FRAMESKIP is defined and this frame
-	  was skipped.
 	3.
           Write the contents of "Buffer" to the sound device.  "Count" is the
           number of samples to write.  Only the lower 16-bits of each
@@ -40,25 +35,6 @@ void FCEUD_PrintError(char *s);
 
 void FCEUD_Message(char *s);
 	Display a status message string.
-
-
-int FCEUD_NetworkConnect(void);
-	Initialize a network connection.  Return 0 if an error occurs.
-
-int FCEUD_GetDataFromClients(uint8 *data);
-
-/* Sends 5 bytes of data to all clients. */
-int FCEUD_SendDataToClients(uint8 *data);
-
-/* Sends 1 byte of data to server, and maybe a command. */
-int FCEUD_SendDataToServer(uint8 v, uint8 cmd);
-
-/* Gets 5 bytes of data from the server. This function must block. */
-int FCEUD_GetDataFromServer(uint8 *data);
-
-void FCEUD_NetworkClose(void);
-	Close the network connection.
-
 
 ***FCE Ultra functions(called by the driver code):
 	The FCEUI_* functions may only be called before FCEUI_Emulate() is 
@@ -91,19 +67,9 @@ void FCEUI_SetInputFC(int type, void *ptr, int attrib);
 void FCEUI_DisableFourScore(int s);
 	Disables four-score emulation if s is nonzero.
 
-void FCEUI_SetSnapName(int a);
-	0 to order screen snapshots numerically(0.png), 1 to order them file
-	base-numerically(smb3-0.png).
-
 void FCEUI_DisableSpriteLimitation(int a);
 	Disables the 8-sprite-per-scanline limitation of the NES if "a"
 	is nonzero.  The default behavior is the limitation is enabled.
-
-void FCEUI_SaveExtraDataUnderBase(int a);
-	If "a" is nonzero, save extra non-volatile game data(battery-backed
-	RAM) under FCE Ultra's base directory.  Otherwise, the behavior is
-	to save it under the same directory the game is located in(this is
-	the default behavior).
 
 FCEUGI *FCEUI_LoadGame(char *name);
 	Loads a new file.  "name" is the full path of the file to load.
@@ -123,7 +89,6 @@ void FCEUI_SetDirOverride(int which, char *n);
         FCEUIOD_CHEATS  - Cheats
         FCEUIOD_MISC    - Miscellaneous stuff(custom game palettes)
         FCEUIOD_NV      - Non-volatile game data(battery backed RAM)
-        FCEUIOD_SNAPS   - Screen snapshots
         FCEUIOD_STATE   - Save states
 
 void FCEUI_Emulate(void);
@@ -147,14 +112,6 @@ void FCEUI_SetRenderedLines(int ntscf, int ntscl, int palf, int pall);
 	up as follows:
 		ntscf=8, ntscl=231, palf=0, pall=239
 		
-void FCEUI_SetNetworkPlay(int type);
-	Sets status of network play according to "type".  If type is 0,
-	then network play is disabled.  If type is 1, then we are server.  
-	If type is 2, then we are a client.
-
-void FCEUI_SelectState(int w);
-	Selects the state "slot" to save to and load from.
-
 void FCEUI_SaveState(void);
 	Saves the current virtual NES state from the "slot" selected by 
 	FCEUI_SelectState().
@@ -163,18 +120,9 @@ void FCEUI_LoadState(void);
         Loads the current virtual NES state from the "slot" selected by
         FCEUI_SelectState().
 
-void FCEUI_SaveSnapshot(void);
-	Saves a screen snapshot.  
-
 void FCEUI_DispMessage(char *msg);
 	Displays a short, one-line message using FCE Ultra's built-in
 	functions and ASCII font data.
-
-int32 FCEUI_GetDesiredFPS(void);
-	Returns the desired FPS based on whether NTSC or PAL emulation is
-	enabled, shifted left by 24 bits(this is necessary because the real
-	FPS value is not a whole integer).  This function should only be 
-	necessary if sound emulation is disabled.  
 
 int FCEUI_GetCurrentVidSystem(int *slstart, int *slend);
 	Convenience function(not strictly necessary, but reduces excessive code
@@ -237,37 +185,10 @@ void FCEUI_MemPoke(uint16 a, uint8 v, int hl);
 	Write a byte to specified address.  Set hl to 1 to attempt to store
 	it to ROM("high-level" write).
 
-void FCEUI_NMI(void);
-	Triggers(queues) an NMI.
-
-void FCEUI_IRQ(void);
-	Triggers(queues) an IRQ.
-
-void FCEUI_Disassemble(uint16 a, int (*callb)(uint16 a, char *s));
-	Text disassembly.
-
-void FCEUI_GetIVectors(uint16 *reset, uint16 *irq, uint16 *nmi);
-	Get current interrupt vectors.
-
-
 ***Recognized defined symbols:
 
 The following defined symbols affect the way FCE Ultra is compiled:
 
-	C80x86
-	- Include 80x86 inline assembly in AT&T syntax, if available.  Also
-	use special 80x86-specific C constructs if the compiler is compatible.
-
-	FRAMESKIP
-	- Include frame skipping code.
-
-	NETWORK
-	- Include network play code.
-
-	FPS
-	- Compile code that prints out a number when FCE Ultra exits 
-	  that represents the average fps.
-	
 	ZLIB
 	- Compile support for compressed PKZIP-style files AND gzip compressed
 	  files.  "unzip.c" will need to be compiled and linked in by you if 

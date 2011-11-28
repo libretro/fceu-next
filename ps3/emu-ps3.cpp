@@ -23,9 +23,9 @@
 
 /* emulator-specific includes */
 
-#include "fceumm/types.h"
-#include "fceumm/file.h"
-#include "fceumm/general.h"
+#include "../src-fceumm/types.h"
+#include "../src-fceumm/file.h"
+#include "../src-fceumm/general.h"
 
 /* PS3 frontend includes */
 
@@ -1292,7 +1292,7 @@ static void emulator_input_loop()
 
 static  void ingame_menu(void)
 {
-	uint64_t menuitem_colors[MENU_ITEM_LAST];
+	uint32_t menuitem_colors[MENU_ITEM_LAST];
 	char comment[256];
 	char aspectratio[256];
 

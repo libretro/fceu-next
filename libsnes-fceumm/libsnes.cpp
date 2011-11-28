@@ -1,27 +1,29 @@
 #include "libsnes.hpp"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string>
 
 /* emulator-specific includes */
 
-#include "../fceu/driver.h"
-#include "../fceu/emufile.h"
-#include "../fceu/types.h"
-#include "../fceu/file.h"
-#include "../fceu/fceu.h"
-#include "../fceu/input.h"
-#include "../fceu/state.h"
-#include "../fceu/ppu.h"
-#include "../fceu/cart.h"
-#include "../fceu/x6502.h"
-#include "../fceu/git.h"
-#include "../fceu/palette.h"
-#include "../fceu/sound.h"
-#include "../fceu/file.h"
-#include "../fceu/cheat.h"
-#include "../fceu/ines.h"
-#include "../fceu/unif.h"
-#include "../fceu/fds.h"
+#include "../src-fceumm/fceu.h"
+#include "../src-fceumm/myendian.h"
+#include "../src-fceumm/input.h"
+#include "../src-fceumm/state.h"
+#include "../src-fceumm/ppu.h"
+#include "../src-fceumm/cart.h"
+#include "../src-fceumm/x6502.h"
+#include "../src-fceumm/git.h"
+#include "../src-fceumm/palette.h"
+#include "../src-fceumm/sound.h"
+#include "../src-fceumm/file.h"
+#include "../src-fceumm/cheat.h"
+#include "../src-fceumm/ines.h"
+#include "../src-fceumm/unif.h"
+#include "../src-fceumm/fds.h"
+
+#include <string.h>
+#include "memstream.h"
 
 static snes_video_refresh_t video_cb = NULL;
 static snes_audio_sample_t audio_cb = NULL;
@@ -35,19 +37,19 @@ static uint16_t palette[256];
 static int32 *sound = 0;
 static int32 ssize = 0;
 static uint8 *gfx = 0;
-static uint8 JSReturn[2];
+static uint32 JSReturn = 0;
 void *InputDPR;
 static uint32 current_palette = 0;
 
 // extern forward decls.
-extern int FCEUX_PPU_Loop(int skip);
-extern FCEUGI *GameInfo;
+extern FCEUGI *FCEUGameInfo;
+extern uint8 *XBuf;
 extern CartInfo iNESCart;
 extern CartInfo UNIFCart;
-extern uint8 *XBuf;
 
 /* emulator-specific callback functions */
 
+extern "C" const char * GetKeyboard(void) {}
 void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b)
 {
    r >>= 3;
@@ -56,12 +58,9 @@ void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, uns
    palette[index] = (r << 10) | (g << 5) | (b << 0);
 }
 
-void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC fcexp) {}
-FCEUFILE* FCEUD_OpenArchive(ArchiveScanRecord& asr, std::string& fname, std::string* innerFilename) { return 0; }
-FCEUFILE* FCEUD_OpenArchiveIndex(ArchiveScanRecord& asr, std::string &fname, int innerIndex) { return 0; }
 bool FCEUD_ShouldDrawInputAids() { return 1; }
-void FCEUD_PrintError(const char *c) { FCEU_DispMessage(c, 20); }
-void FCEUD_Message(const char *text) { FCEU_DispMessage(text, 20); }
+void FCEUD_PrintError(const char *c) { }
+void FCEUD_Message(const char *text) { }
 void FCEUD_SoundToggle() { FCEUI_SetSoundVolume(100); }
 void FCEUD_VideoChanged() {}
 
@@ -378,12 +377,11 @@ void snes_init(void)
    }
 }
 
-static unsigned serialize_size = 0;
-
 static void emulator_set_input(void)
 {
-	FCEUI_SetInput(0, SI_GAMEPAD, &JSReturn[0], 0);
-	FCEUI_SetInput(1, SI_GAMEPAD, &JSReturn[1], 0);
+	InputDPR = &JSReturn;
+	FCEUI_SetInput(0, SI_GAMEPAD, InputDPR, 0);
+	FCEUI_SetInput(1, SI_GAMEPAD, InputDPR, 0);
 }
 
 static void emulator_set_custom_palette()
@@ -395,7 +393,7 @@ static void emulator_set_custom_palette()
 	else
 	{
 		// Now setup this palette
-		u8 i,r,g,b;
+		uint8 i,r,g,b;
 
 		for ( i = 0; i < 64; i++ )
 		{
@@ -412,22 +410,10 @@ static void emulator_set_custom_palette()
 
 static void fceu_init(void)
 {
-   /*
-	if (iNESCart.battery)
-		FCEU_LoadGameSave(&iNESCart);
-	if (UNIFCart.battery)
-		FCEU_LoadGameSave(&UNIFCart);
-      */
-
 	emulator_set_input();
 	emulator_set_custom_palette();
 
 	FCEUD_SoundToggle();
-
-	newppu = 1; //for now, just use new PPU mode
-	
-	if(ppudead)
-		ppudead_loop(newppu);
 }
 
 void snes_term(void) {}
@@ -462,58 +448,68 @@ static const keymap bindmap[] = {
 
 static void update_input(void)
 {
-   poll_cb();
-   JSReturn[0] = 0;
-   JSReturn[1] = 0;
-   for (unsigned i = 0; i < 8; i++)
-      JSReturn[0] |= input_cb(SNES_PORT_1, SNES_DEVICE_JOYPAD, 0, bindmap[i].snes) ? bindmap[i].nes : 0;
-   for (unsigned i = 0; i < 8; i++)
-      JSReturn[1] |= input_cb(SNES_PORT_2, SNES_DEVICE_JOYPAD, 0, bindmap[i].snes) ? bindmap[i].nes : 0;
-   FCEU_UpdateInput();
+	poll_cb();
+	unsigned char pad[2] = {0, 0};
+	for (unsigned i = 0; i < 8; i++)
+		pad[0] |= input_cb(SNES_PORT_1, SNES_DEVICE_JOYPAD, 0, bindmap[i].snes) ? bindmap[i].nes : 0;
+	for (unsigned i = 0; i < 8; i++)
+		pad[1] |= input_cb(SNES_PORT_2, SNES_DEVICE_JOYPAD, 0, bindmap[i].snes) ? bindmap[i].nes : 0;
+	JSReturn = pad[0] | pad[1] << 8;
 }
 
 void snes_run(void)
 {
-	if (geniestage != 1)
-		FCEU_ApplyPeriodicCheats();
+	int32 ssize = 0;
+	FCEUI_Emulate(&gfx, &sound, &ssize);
 
-   update_input();
+	static uint16_t video_out[1024 * 240];
+	const uint8_t *gfx = XBuf;
+	for (unsigned y = 0; y < 240; y++)
+		for (unsigned x = 0; x < 256; x++, gfx++)
+			video_out[y * 1024 + x] = palette[*gfx];
 
-	FCEUX_PPU_Loop(0);			//for now, just use new PPU
+	video_cb(video_out, 256, 240);
+	update_input();
 
-	ssize = FlushEmulateSound();
-	timestampbase += timestamp;
-	timestamp = 0;
-	gfx = XBuf;
-	sound = WaveFinal;
-
-   static uint16_t video_out[1024 * 240];
-   const uint8_t *gfx = XBuf;
-   for (unsigned y = 0; y < 240; y++)
-      for (unsigned x = 0; x < 256; x++, gfx++)
-         video_out[y * 1024 + x] = palette[*gfx];
-
-   video_cb(video_out, 256, 240);
-
-   for (unsigned i = 0; i < ssize; i++)
-      audio_cb(sound[i] & 0xffff, sound[i] & 0xffff);
+	for (unsigned i = 0; i < ssize; i++)
+		audio_cb(sound[i] & 0xffff, sound[i] & 0xffff);
 }
 
 
+static unsigned serialize_size = 0;
 unsigned snes_serialize_size(void)
 {
-   return FCEUSS_SizeMemory();
+   if (serialize_size == 0)
+   {
+      // Something arbitrarily big.
+      uint8_t *buffer = (uint8_t*)malloc(1000000);
+      memstream_set_buffer(buffer, 1000000);
+
+      FCEUSS_Save();
+      serialize_size = memstream_get_last_size();
+      free(buffer);
+   }
+
+   return serialize_size;
 }
 
 bool snes_serialize(uint8_t *data, unsigned size)
 {
-   FCEUSS_SaveMemory(data, size);
+   if (size != snes_serialize_size())
+      return false;
+
+   memstream_set_buffer(data, size);
+   FCEUSS_Save();
    return true;
 }
 
 bool snes_unserialize(const uint8_t *data, unsigned size)
 {
-   FCEUSS_LoadMemory(data, size);
+   if (size != snes_serialize_size())
+      return false;
+
+   memstream_set_buffer((uint8_t*)data, size);
+   FCEUSS_Load();
    return true;
 }
 
@@ -526,6 +522,9 @@ void snes_cheat_set(unsigned, bool, const char*)
 bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned rom_size)
 {
    FCEUI_Initialize();
+
+   FCEUI_SetSoundVolume(256);
+   FCEUI_Sound(32050);
 
    // Append basename to detect certain ROM types from filename (Hack).
    std::string actual_path = "FCEU_tmp_";
@@ -540,10 +539,22 @@ bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned r
    fwrite(rom_data, 1, rom_size, file);
    fclose(file);
    //FIXME: we need a real filename with real file extension here
-   GameInfo = FCEUI_LoadGame(actual_path.c_str(), 1);
+   FCEUGameInfo = FCEUI_LoadGame(actual_path.c_str());
    unlink(actual_path.c_str());
 
    fceu_init();
+
+   if (environ_cb)
+   {
+   	snes_system_timing timing;
+	timing.sample_rate = 32050.0;
+	if (FSettings.PAL)
+		timing.fps = 838977920.0/16777215.0;
+	else
+		timing.fps = 1008307711.0/16777215.0;
+	
+	environ_cb(SNES_ENVIRONMENT_SET_TIMING, &timing);
+   }
 
    return true;
 }
@@ -589,7 +600,7 @@ uint8_t *snes_get_memory_data(unsigned id)
       return NULL;
 
    if (iNESCart.battery)
-      return iNESCart.SaveGame[0];
+	   return iNESCart.SaveGame[0];
    if (UNIFCart.battery)
       return UNIFCart.SaveGame[0];
 
@@ -608,4 +619,3 @@ unsigned snes_get_memory_size(unsigned id)
 
    return 0;
 }
-

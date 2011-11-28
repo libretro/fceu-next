@@ -4,13 +4,11 @@ CELL_DEBUG_FPS		= 0
 CELL_DEBUG_LOGGER	= 0
 CELL_DEBUG_PRINTF	= 0
 CELL_DEBUG_PRINTF_DELAY = 700000
-CELL_DEBUG_IP		= \"192.168.1.7\"
-CELL_DEBUG_PORT		= 3490
 MULTIMAN_SUPPORT	= 0
 SDK_340			= 1
 
 #specify build tools
-CELL_BUILD_TOOLS	=	GCC
+CELL_BUILD_TOOLS	=	SNC
 #explicitly set some cell sdk defaults
 CELL_SDK		?=	/usr/local/cell
 # CELL_GPU_TYPE (currently RSX is only one option)  
@@ -26,20 +24,20 @@ include $(CELL_MK_DIR)/sdk.makedef.mk
 
 # Geohot CFW defines
 MKSELF_GEOHOT		=	make_self_npdrm
-MKPKG_PSLIGHT		=	buildtools/PS3Py/pkg.py
+MKPKG_PSLIGHT		=	ps3/buildtools/PS3Py/pkg.py
 PKG_FINALIZE		=	package_finalize
 
 STRIP			=	$(CELL_HOST_PATH)/ppu/bin/ppu-lv2-strip
 
 # important directories
 UTILS_DIR		=	./utils
-SRC_DIR			=	./src
-CELL_FRAMEWORK_DIR	=	./src/cellframework
-CELL_FRAMEWORK2_DIR	=	./src/cellframework2
-FCEU_API_DIR		=	./src/fceumm
+SRC_DIR			=	./ps3
+CELL_FRAMEWORK_DIR	=	./ps3/cellframework
+CELL_FRAMEWORK2_DIR	=	./ps3/cellframework2
+FCEU_API_DIR		=	./src-fceumm
 
 EMULATOR_VERSION	= 1.6
-PPU_OPTIMIZE_LV      := -O2
+PPU_OPTIMIZE_LV		:= -O2
 
 # all source directories
 SOURCES			= $(SRC_DIR) \
@@ -116,10 +114,9 @@ $(FCEU_API_DIR)/x6502.c
 PPU_SRCS += $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.c))
 
 PPU_TARGET		=	fceu-ps3.ppu.elf
-
-
-PPU_CXXFLAGS	+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -DPSS_STYLE=1 -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
-PPU_CFLAGS		+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -DPSS_STYLE=1 -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
+DEFINES			+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -DPSS_STYLE=1 -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
+PPU_CXXFLAGS		+=	$(DEFINES)
+PPU_CFLAGS		+=	$(DEFINES)
 
 ifeq ($(CELL_BUILD_TOOLS),SNC)
 PPU_CFLAGS		+= 	-Xbranchless=1 -Xfastmath=1 -Xassumecorrectsign=1 -Xassumecorrectalignment=1 \
@@ -144,29 +141,29 @@ include $(CELL_MK_DIR)/sdk.target.mk
 .PHONY: pkg
 pkg: $(PPU_TARGET)
 ifeq ($(MULTIMAN_SUPPORT),1)
-	$(MKFSELF_WC) $(PPU_TARGET) pkg/USRDIR/RELOAD.SELF
+	$(MKFSELF_WC) $(PPU_TARGET) ps3/pkg/USRDIR/RELOAD.SELF
 else
-	$(MAKE_FSELF_NPDRM) $(PPU_TARGET) pkg/USRDIR/EBOOT.BIN
+	$(MAKE_FSELF_NPDRM) $(PPU_TARGET) ps3/pkg/USRDIR/EBOOT.BIN
 endif
-	$(MAKE_PACKAGE_NPDRM) pkg/package.conf pkg
+	$(MAKE_PACKAGE_NPDRM) ps3/pkg/package.conf ps3/pkg
 
 #massively reduced filesize using MKSELF_GEOHOT - use this for normal jailbreak builds
 .PHONY: pkg-signed
 pkg-signed: $(PPU_TARGET)
 ifeq ($(MULTIMAN_SUPPORT),1)
-	$(MKFSELF_WC) $(PPU_TARGET) pkg/USRDIR/RELOAD.SELF
+	$(MKFSELF_WC) $(PPU_TARGET) ps3/pkg/USRDIR/RELOAD.SELF
 else
-	$(MKSELF_GEOHOT) $(PPU_TARGET) pkg/USRDIR/EBOOT.BIN FCEU90000
+	$(MKSELF_GEOHOT) $(PPU_TARGET) ps3/pkg/USRDIR/EBOOT.BIN FCEU90000
 endif
-	$(PYTHONBIN) $(MKPKG_PSLIGHT) --contentid IV0002-FCEU90000_00-SAMPLE0000000001 pkg/ fceunext-ps3-v$(EMULATOR_VERSION)-fw3.41.pkg
+	$(PYTHONBIN) $(MKPKG_PSLIGHT) --contentid IV0002-FCEU90000_00-SAMPLE0000000001 ps3/pkg/ fceunext-ps3-v$(EMULATOR_VERSION)-fw3.41.pkg
 
 #use this to create a PKG for use with Geohot CFW 3.55
 .PHONY: pkg-signed-cfw
 pkg-signed-cfw:
 ifeq ($(MULTIMAN_SUPPORT),1)
-	$(MKFSELF_WC) $(PPU_TARGET) pkg/USRDIR/RELOAD.SELF
+	$(MKFSELF_WC) $(PPU_TARGET) ps3/pkg/USRDIR/RELOAD.SELF
 else
-	$(MKSELF_GEOHOT) $(PPU_TARGET) pkg/USRDIR/EBOOT.BIN.SELF FCEU90000
+	$(MKSELF_GEOHOT) $(PPU_TARGET) ps3/pkg/USRDIR/EBOOT.BIN.SELF FCEU90000
 endif
-	$(PYTHONBIN) $(MKPKG_PSLIGHT) --contentid IV0002-FCEU90000_00-SAMPLE0000000001 pkg/ fceunext-ps3-v$(EMULATOR_VERSION)-cfw3.55.pkg
+	$(PYTHONBIN) $(MKPKG_PSLIGHT) --contentid IV0002-FCEU90000_00-SAMPLE0000000001 ps3/pkg/ fceunext-ps3-v$(EMULATOR_VERSION)-cfw3.55.pkg
 	$(PKG_FINALIZE) fceunext-ps3-v$(EMULATOR_VERSION)-cfw3.55.pkg

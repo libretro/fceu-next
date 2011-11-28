@@ -127,9 +127,6 @@ int FCEUI_SetCheat(uint32 which, const char *name, int32 a, int32 v, int compare
 
 void FCEUI_SetDirOverride(int which, const char *n);
 
-void FCEUI_NMI(void);
-void FCEUI_IRQ(void);
-
 uint32 FCEUI_CRC32(uint32 crc, uint8 *buf, uint32 len);
 
 void FCEUI_VSUniToggleDIPView(void);

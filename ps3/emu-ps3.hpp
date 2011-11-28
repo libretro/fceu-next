@@ -19,20 +19,20 @@
 
 /* Emulator-specific includes */
 
-#include "fceumm/fceu.h"
-#include "fceumm/input.h"
-#include "fceumm/state.h"
-#include "fceumm/ppu.h"
-#include "fceumm/cart.h"
-#include "fceumm/x6502.h"
-#include "fceumm/git.h"
-#include "fceumm/palette.h"
-#include "fceumm/sound.h"
-#include "fceumm/file.h"
-#include "fceumm/cheat.h"
-#include "fceumm/ines.h"
-#include "fceumm/unif.h"
-#include "fceumm/fds.h"
+#include "../src-fceumm/fceu.h"
+#include "../src-fceumm/input.h"
+#include "../src-fceumm/state.h"
+#include "../src-fceumm/ppu.h"
+#include "../src-fceumm/cart.h"
+#include "../src-fceumm/x6502.h"
+#include "../src-fceumm/git.h"
+#include "../src-fceumm/palette.h"
+#include "../src-fceumm/sound.h"
+#include "../src-fceumm/file.h"
+#include "../src-fceumm/cheat.h"
+#include "../src-fceumm/ines.h"
+#include "../src-fceumm/unif.h"
+#include "../src-fceumm/fds.h"
 
 /* PS3 frontend includes */
 
