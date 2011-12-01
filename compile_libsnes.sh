@@ -90,7 +90,7 @@ function display_all_options()
 
 function display_usage()
 {
-	echo "Usage: compile_wii.sh [options]"
+	echo "Usage: compile_libsnes.sh [options]"
 	echo "Options:"
 	display_all_options
 }
