@@ -11,7 +11,8 @@
 
 //actually 2, but since we're just shifting left, << 1 is * 2
 #define port_channels 1
-#define samples_times_two 512
+#define CELL_AUDIO_BLOCK_SAMPLES 256
+#define CELL_AUDIO_BLOCK_SAMPLES_X2 512
 
 static void init_audioport(void)
 {
@@ -64,30 +65,29 @@ static void* event_loop(void *data)
    //pull_event_loop - BEGIN
    sys_event_t event;
 
-   int16_t *in_buf = memalign(128, samples_times_two * sizeof(int16_t));
-   float *conv_buf = memalign(128, samples_times_two * sizeof(float));
+   int16_t *in_buf = memalign(128, CELL_AUDIO_BLOCK_SAMPLES_X2 * sizeof(int16_t));
+   float *conv_buf = memalign(128, CELL_AUDIO_BLOCK_SAMPLES_X2 * sizeof(float));
    do
    {
       uint32_t has_read = 0;
       if (port->sample_cb)
-         has_read = port->sample_cb(in_buf, samples_times_two, port->userdata);
+         has_read = port->sample_cb(in_buf, CELL_AUDIO_BLOCK_SAMPLES_X2, port->userdata);
       else
       {
-         has_read = samples_times_two;
+         has_read = CELL_AUDIO_BLOCK_SAMPLES_X2;
          sys_lwmutex_lock(&port->lock, SYS_NO_TIMEOUT);
          uint32_t avail = fifo_read_avail(port->buffer);
-         if (avail < samples_times_two * sizeof(int16_t))
+         if (avail < CELL_AUDIO_BLOCK_SAMPLES_X2 * sizeof(int16_t))
             has_read = avail / sizeof(int16_t);
 
          fifo_read(port->buffer, in_buf, has_read * sizeof(int16_t));
          sys_lwmutex_unlock(&port->lock);
       }
 
-      if (has_read < samples_times_two)
-         memset(in_buf + has_read, 0, (samples_times_two - has_read) * sizeof(int16_t));
+      if (has_read < CELL_AUDIO_BLOCK_SAMPLES_X2)
+         memset(in_buf + has_read, 0, (CELL_AUDIO_BLOCK_SAMPLES_X2 - has_read) * sizeof(int16_t));
 
-      #define samples_divided_by_two 256
-      for (uint32_t i = 0; i < samples_divided_by_two; i++)
+      for (uint32_t i = 0; i < CELL_AUDIO_BLOCK_SAMPLES; i++)
       {
          uint32_t times_two_i = 2 * i;
          float val = (float)in_buf[times_two_i + 1]/0x8000;
@@ -229,11 +229,7 @@ static int32_t audioport_write(cell_audio_handle_t handle, const int16_t *data, 
          data += to_write >> 1;
       }
       else
-      {
-         sys_lwmutex_lock(&port->cond_lock, SYS_NO_TIMEOUT);
          sys_lwcond_wait(&port->cond, 0);
-         sys_lwmutex_unlock(&port->cond_lock);
-      }
    }while(bytes);
 
    return ret;

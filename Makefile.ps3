@@ -32,7 +32,6 @@ STRIP			=	$(CELL_HOST_PATH)/ppu/bin/ppu-lv2-strip
 # important directories
 UTILS_DIR		=	./utils
 SRC_DIR			=	./ps3
-CELL_FRAMEWORK_DIR	=	./ps3/cellframework
 CELL_FRAMEWORK2_DIR	=	./ps3/cellframework2
 FCEU_API_DIR		=	./src-fceumm
 
@@ -44,7 +43,7 @@ SOURCES			= $(SRC_DIR) \
                  $(SRC_DIR)/conf \
                  $(CELL_FRAMEWORK2_DIR)/input \
                  $(CELL_FRAMEWORK2_DIR)/audio \
-                 $(CELL_FRAMEWORK_DIR)/fileio \
+                 $(CELL_FRAMEWORK2_DIR)/fileio \
                  $(CELL_FRAMEWORK2_DIR)/utility \
                  $(FCEU_API_DIR)/mappers \
                  $(FCEU_API_DIR)/input \
