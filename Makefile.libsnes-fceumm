@@ -31,6 +31,15 @@ else ifeq ($(platform), ps3)
    AR = ppu-lv2-ar
    ENDIANNESS_DEFINES = 
    PLATFORM_DEFINES := -D__CELLOS_LV2
+else ifeq ($(platform), xenon)
+   TARGET := libsnes.a
+   SHARED := -shared, -Wl, --version-script=libsnes/link.T
+   CC = xenon-gcc
+   CXX = xenon-g++
+   AR = xenon-ar
+   ENDIANNESS_DEFINES = 
+   PLATFORM_DEFINES := -D__LIBXENON__
+   CFLAGS += -DHAVE_ASPRINTF
 else
    TARGET := snes.dll
    CC = gcc
@@ -60,7 +69,7 @@ FCEU_COBJ := $(FCEU_CSRCS:.c=.o)
 
 OBJS := $(FCEU_COBJ) $(FCEU_CXXOBJ)
 
-FCEU_DEFINES := -D__LIBSNES__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DPSS_STYLE=1
+FCEU_DEFINES := -D__LIBSNES__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DPSS_STYLE=1 $(PLATFORM_DEFINES)
 
 CFLAGS += -std=gnu99 $(fpic) -Wno-write-strings $(FCEU_DEFINES)
 CXXFLAGS += $(fpic) -Wno-write-strings $(FCEU_DEFINES)
@@ -71,6 +80,8 @@ LIBS :=
 
 $(TARGET): $(OBJS)
 ifeq ($(platform), ps3)
+	$(AR) rcs $@ $(OBJECTS)
+else ifeq ($(platform), xenon)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	$(CXX) -o $@ $(SHARED) $(OBJS) $(LDFLAGS) $(LIBS)

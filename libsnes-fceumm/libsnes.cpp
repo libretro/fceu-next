@@ -540,8 +540,10 @@ bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned r
    fclose(file);
    //FIXME: we need a real filename with real file extension here
    FCEUGameInfo = FCEUI_LoadGame(actual_path.c_str());
-   #ifndef __CELLOS_LV2__
+   #if !defined(__CELLOS_LV2__)
+   #if !defined(__LIBXENON__)
    unlink(actual_path.c_str());
+   #endif
    #endif
 
    fceu_init();
