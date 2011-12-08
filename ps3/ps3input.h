@@ -7,10 +7,6 @@
 #ifndef PS3INPUT_H_
 #define PS3INPUT_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <string.h>
 
 /* Input bitmasks */
@@ -104,9 +100,5 @@ extern PS3InputList PS3Input;
 
 const char * Input_PrintMappedButton(uint32_t mappedbutton);
 int Input_GetAdjacentButtonmap(uint32_t buttonmap, uint32_t next);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

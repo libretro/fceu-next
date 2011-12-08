@@ -18,10 +18,6 @@
 #ifndef __SSNES_SNES_STATE_H
 #define __SSNES_SNES_STATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdint.h>
 
 enum snes_tracker_type
@@ -77,9 +73,5 @@ snes_tracker_t* snes_tracker_init(const struct snes_tracker_info *info);
 void snes_tracker_free(snes_tracker_t *tracker);
 
 unsigned snes_get_uniform(snes_tracker_t *tracker, struct snes_tracker_uniform *uniforms, unsigned elem, unsigned frame_count);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

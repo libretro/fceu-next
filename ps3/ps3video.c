@@ -4,11 +4,10 @@
  *  Created on: Nov 4, 2010
 ********************************************************************************/
 
-#include <vector>
-
 #include "cellframework2/input/pad_input.h"
 
-#include "ps3video.hpp"
+#include <string.h>
+#include "ps3video.h"
 
 #ifdef CELL_DEBUG_FPS
 #include <sys/sys_time.h>
@@ -19,7 +18,7 @@
 struct lookup_texture
 {
 	GLuint tex;
-	std::string id;
+	char id[512];
 };
 
 /* public  variables */
@@ -35,7 +34,7 @@ static uint32_t m_pal60Hz;
 static uint32_t m_smooth, m_smooth2;
 static uint8_t *decode_buffer;
 static uint32_t m_viewport_x, m_viewport_y, m_viewport_width, m_viewport_height;
-static uint32_t m_viewport_x_temp, m_viewport_y_temp, m_viewport_width_temp, m_viewport_height_temp, m_delta_temp;
+static uint32_t m_viewport_x_temp, m_viewport_y_temp, m_viewport_width_temp, m_viewport_height_temp;
 static uint32_t m_vsync;
 static int m_calculate_aspect_ratio_before_game_load;
 static int m_currentResolutionPos;
@@ -61,7 +60,9 @@ static GLuint vbo[2];
 static GLfloat m_left, m_right, m_bottom, m_top, m_zNear, m_zFar;
 static char curFragmentShaderPath[3][MAX_PATH_LENGTH];
 
-static std::vector<uint32_t> m_supportedResolutions;
+static uint32_t * m_supportedResolutions;
+static uint32_t m_supportedResolutions_count;
+
 static CGcontext _cgContext;
 static CGprogram _vertexProgram[3];
 static CGprogram _fragmentProgram[3];
@@ -81,7 +82,7 @@ static PSGLdevice* psgl_device;
 static PSGLcontext* psgl_context;
 static CellVideoOutState m_stored_video_state;
 //snes_tracker_t *tracker; // State tracker
-static std::vector<lookup_texture> lut_textures; // Lookup textures in use.
+//static std::vector<lookup_texture> lut_textures; // Lookup textures in use.
 
 uint16_t ps3graphics_palette[256];
 
@@ -89,63 +90,65 @@ uint16_t ps3graphics_palette[256];
 	Calculate macros
 ********************************************************************************/
 
-#define CalculateViewports() \
-	float device_aspect = psglGetDeviceAspectRatio(psgl_device); \
-	GLuint temp_width = gl_width; \
-	GLuint temp_height = gl_height; \
-	/* calculate the glOrtho matrix needed to transform the texture to the desired aspect ratio */ \
-	/* If the aspect ratios of screen and desired aspect ratio are sufficiently equal (floating point stuff), assume they are actually equal */ \
-	float delta; \
-	if (m_ratio == SCREEN_CUSTOM_ASPECT_RATIO) \
-	{ \
-		m_viewport_x_temp = m_viewport_x; \
-		m_viewport_y_temp = m_viewport_y; \
-		m_viewport_width_temp = m_viewport_width;  \
-		m_viewport_height_temp = m_viewport_height; \
-	} \
-else if ( (int)(device_aspect*1000) > (int)(m_ratio * 1000) ) \
-{ \
-	delta = (m_ratio / device_aspect - 1.0) / 2.0 + 0.5; \
-	m_viewport_x_temp = temp_width * (0.5 - delta); \
-	m_viewport_y_temp = 0; \
-	m_viewport_width_temp = (int)(2.0 * temp_width * delta); \
-	m_viewport_height_temp = temp_height; \
-} \
-else if ( (int)(device_aspect*1000) < (int)(m_ratio * 1000) ) \
-{ \
-	delta = (device_aspect / m_ratio - 1.0) / 2.0 + 0.5; \
-	m_viewport_x_temp = 0; \
-	m_viewport_y_temp = temp_height * (0.5 - delta); \
-	m_viewport_width_temp = temp_width; \
-	m_viewport_height_temp = (int)(2.0 * temp_height * delta); \
-} \
-else \
-{ \
-	m_viewport_x_temp = 0; \
-	m_viewport_y_temp = 0; \
-	m_viewport_width_temp = temp_width; \
-	m_viewport_height_temp = temp_height; \
-} \
-if (m_overscan) \
-{ \
-	m_left = -m_overscan_amount/2; \
-	m_right = 1 + m_overscan_amount/2; \
-	m_bottom = -m_overscan_amount/2; \
-	m_top = 1 + m_overscan_amount/2; \
-	m_zFar = -1; \
-	m_zNear = 1; \
-} \
-else \
-{ \
-	m_left = 0; \
-	m_right = 1; \
-	m_bottom = 0; \
-	m_top = 1; \
-	m_zNear = -1; \
-	m_zFar = 1; \
-} \
-_cgViewWidth = m_viewport_width_temp; \
-_cgViewHeight = m_viewport_height_temp;
+static void CalculateViewports()
+{
+	float device_aspect = psglGetDeviceAspectRatio(psgl_device);
+	GLuint temp_width = gl_width;
+	GLuint temp_height = gl_height;
+	/* calculate the glOrtho matrix needed to transform the texture to the desired aspect ratio */
+	/* If the aspect ratios of screen and desired aspect ratio are sufficiently equal (floating point stuff), assume they are actually equal */
+	float delta;
+	if (m_ratio == SCREEN_CUSTOM_ASPECT_RATIO)
+	{
+		m_viewport_x_temp = m_viewport_x;
+		m_viewport_y_temp = m_viewport_y;
+		m_viewport_width_temp = m_viewport_width;
+		m_viewport_height_temp = m_viewport_height;
+	}
+	else if ( (int)(device_aspect*1000) > (int)(m_ratio * 1000) )
+	{
+		delta = (m_ratio / device_aspect - 1.0) / 2.0 + 0.5;
+		m_viewport_x_temp = temp_width * (0.5 - delta);
+		m_viewport_y_temp = 0;
+		m_viewport_width_temp = (int)(2.0 * temp_width * delta);
+		m_viewport_height_temp = temp_height;
+	}
+	else if ( (int)(device_aspect*1000) < (int)(m_ratio * 1000) )
+	{
+		delta = (device_aspect / m_ratio - 1.0) / 2.0 + 0.5;
+		m_viewport_x_temp = 0;
+		m_viewport_y_temp = temp_height * (0.5 - delta);
+		m_viewport_width_temp = temp_width;
+		m_viewport_height_temp = (int)(2.0 * temp_height * delta);
+	}
+	else
+	{
+		m_viewport_x_temp = 0;
+		m_viewport_y_temp = 0;
+		m_viewport_width_temp = temp_width;
+		m_viewport_height_temp = temp_height;
+	}
+	if (m_overscan)
+	{
+		m_left = -m_overscan_amount/2;
+		m_right = 1 + m_overscan_amount/2;
+		m_bottom = -m_overscan_amount/2;
+		m_top = 1 + m_overscan_amount/2;
+		m_zFar = -1;
+		m_zNear = 1;
+	}
+	else
+	{
+		m_left = 0;
+		m_right = 1;
+		m_bottom = 0;
+		m_top = 1;
+		m_zNear = -1;
+		m_zFar = 1;
+	}
+	_cgViewWidth = m_viewport_width_temp;
+	_cgViewHeight = m_viewport_height_temp;
+}
 
 /*******************************************************************************
 	Set macros
@@ -374,24 +377,33 @@ static void ps3graphics_get_all_available_resolutions()
 
 	// Provide future expandability of the videomode array
 	uint16_t num_videomodes = sizeof(videomode)/sizeof(uint32_t);
+
+	uint32_t resolution_count = 0;
+	for (int i=0; i < num_videomodes; i++)
+		if (cellVideoOutGetResolutionAvailability(CELL_VIDEO_OUT_PRIMARY, videomode[i], CELL_VIDEO_OUT_ASPECT_AUTO,0))
+			resolution_count++;
+	
+	m_supportedResolutions = malloc(resolution_count * sizeof(uint32_t));
+
+	m_supportedResolutions_count = 0;
 	for (int i=0; i < num_videomodes; i++) {
 		if (cellVideoOutGetResolutionAvailability(CELL_VIDEO_OUT_PRIMARY, videomode[i], CELL_VIDEO_OUT_ASPECT_AUTO,0))
 		{
-			m_supportedResolutions.push_back(videomode[i]);
+			m_supportedResolutions[m_supportedResolutions_count++] = videomode[i];
 			m_initialResolution = videomode[i];
 
 			if (m_currentResolutionId == videomode[i])
 			{
 				defaultresolution = false;
-				m_currentResolutionPos = m_supportedResolutions.size()-1;
+				m_currentResolutionPos = m_supportedResolutions_count-1;
 			}
 		}
 	}
 
 	// In case we didn't specify a resolution - make the last resolution
 	// that was added to the list (the highest resolution) the default resolution
-	if (m_currentResolutionPos > num_videomodes | defaultresolution)
-		m_currentResolutionPos = m_supportedResolutions.size()-1;
+	if (m_currentResolutionPos > num_videomodes || defaultresolution)
+		m_currentResolutionPos = m_supportedResolutions_count-1;
 }
 
 static void ps3graphics_set_resolution()
@@ -935,7 +947,7 @@ int ps3graphics_check_resolution(uint32_t resId)
 
 void ps3graphics_next_resolution()
 {
-	if(m_currentResolutionPos+1 < m_supportedResolutions.size())
+	if(m_currentResolutionPos+1 < m_supportedResolutions_count)
 	{
 		m_currentResolutionPos++;
 		m_currentResolutionId = m_supportedResolutions[m_currentResolutionPos];
@@ -1294,7 +1306,7 @@ static int img_free(void *ptr, void * a)
 	Image decompression - libJPEG
 ********************************************************************************/
 
-static bool ps3graphics_load_jpeg(const char * path, unsigned &width, unsigned &height, uint8_t *data)
+static bool ps3graphics_load_jpeg(const char * path, uint32_t * width, uint32_t * height, uint8_t *data)
 {
 	// More Holy shit
 	CtrlMallocArg              MallocArg;
@@ -1376,8 +1388,8 @@ static bool ps3graphics_load_jpeg(const char * path, unsigned &width, unsigned &
 		goto error;
 	}
 
-	width = outParam.outputWidth;
-	height = outParam.outputHeight;
+	*width = outParam.outputWidth;
+	*height = outParam.outputHeight;
 
 	cellJpgDecClose(mHandle, sHandle);
 	cellJpgDecDestroy(mHandle);
@@ -1396,7 +1408,7 @@ error:
 	Image decompression - libPNG
 ********************************************************************************/
 
-static bool ps3graphics_load_png(const char * path, unsigned &width, unsigned &height, uint8_t *data)
+static bool ps3graphics_load_png(const char * path, uint32_t * width, uint32_t * height, uint8_t *data)
 {
 	// Holy shit, Sony!
 	CtrlMallocArg              MallocArg;
@@ -1466,8 +1478,8 @@ static bool ps3graphics_load_png(const char * path, unsigned &width, unsigned &h
 	if (ret != CELL_OK || dOutInfo.status != CELL_PNGDEC_DEC_STATUS_FINISH)
 		goto error;
 
-	width = outParam.outputWidth;
-	height = outParam.outputHeight;
+	*width = outParam.outputWidth;
+	*height = outParam.outputHeight;
 
 	cellPngDecClose(mHandle, sHandle);
 	cellPngDecDestroy(mHandle);
@@ -1482,7 +1494,7 @@ error:
 	return false;
 }
 
-static void ps3graphics_setup_texture(GLuint tex, unsigned width, unsigned height)
+static void ps3graphics_setup_texture(GLuint tex, uint32_t * width, uint32_t * height)
 {
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -1523,12 +1535,12 @@ bool ps3graphics_load_menu_texture(enum menu_type type, const char * path)
 	unsigned width, height;
 	if(strstr(path, ".PNG") != NULL || strstr(path, ".png") != NULL)
 	{
-		if (!ps3graphics_load_png(path, width, height, decode_buffer))
+		if (!ps3graphics_load_png(path, &width, &height, decode_buffer))
 			return false;
 	}
 	else
 	{
-		if (!ps3graphics_load_jpeg(path, width, height, decode_buffer))
+		if (!ps3graphics_load_jpeg(path, &width, &height, decode_buffer))
 			return false;
 	}
 

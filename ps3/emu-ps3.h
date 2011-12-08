@@ -15,8 +15,6 @@
 #include <cell/control_console.h>
 #endif
 
-#include <string>
-
 /* Emulator-specific includes */
 
 #include "../src-fceumm/fceu.h"
@@ -40,7 +38,7 @@
 #include "cellframework2/input/pad_input.h"
 #include "cellframework2/utility/oskutil.h"
 
-#include "ps3video.hpp"
+#include "ps3video.h"
 #include "ps3input.h"
 #include "emu-ps3-constants.h"
 
@@ -101,7 +99,7 @@ void emulator_implementation_set_shader_preset(const char * fname);
 void emulator_implementation_set_texture(const char * fname);
 void emulator_toggle_sound(uint64_t soundmode);
 void Emulator_RequestLoadROM(const char * rom, uint32_t forceReload);
-void Emulator_StartROMRunning(uint32_t set_is_running = 1);
+void Emulator_StartROMRunning(uint32_t set_is_running);
 
 /* Emulator-specific extern function prototypes */
 

@@ -7,7 +7,6 @@
 #ifndef FCEUGRAPHICS_H_
 #define FCEUGRAPHICS_H_
 
-#include <string>
 #include <cell/codec.h>
 
 #include <sys/types.h>

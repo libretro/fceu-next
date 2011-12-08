@@ -28,6 +28,8 @@
 #ifndef __CELL_PAD_INPUT_H
 #define __CELL_PAD_INPUT_H
 
+#include <stdint.h>
+
 #define MAX_PADS 7
 
 #define CTRL_SELECT_MASK 0x01
@@ -93,10 +95,6 @@
 #define CTRL_AXIS_RSTICK_X(state) ((uint8_t)(((0xFF00000000LLU & state) >> 32) & 0xFF))
 #define CTRL_AXIS_RSTICK_Y(state) ((uint8_t)(((0xFF0000000000LLU & state) >> 40) & 0xFF))
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // Init and destruction of device.
 int cell_pad_input_init(void);
 void cell_pad_input_deinit(void);
@@ -105,9 +103,5 @@ void cell_pad_input_deinit(void);
 uint32_t cell_pad_input_pads_connected(void);
 
 uint64_t cell_pad_input_poll_device(uint32_t id);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

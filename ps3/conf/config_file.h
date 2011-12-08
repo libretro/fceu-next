@@ -21,14 +21,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
-
-#ifndef __cplusplus
 #include <stdbool.h>
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 typedef struct config_file config_file_t;
 
@@ -79,11 +72,6 @@ bool config_file_write(config_file_t *conf, const char *path);
 
 // Dump the current config to an already opened file. Does not close the file.
 void config_file_dump(config_file_t *conf, FILE *file);
-
-#ifdef __cplusplus
-}
-#endif
-
 
 #endif
 

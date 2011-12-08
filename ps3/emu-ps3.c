@@ -29,9 +29,9 @@
 
 /* PS3 frontend includes */
 
-#include "emu-ps3.hpp"
+#include "emu-ps3.h"
 #include "conf/settings.h"
-#include "menu.hpp"
+#include "menu.h"
 
 SYS_PROCESS_PARAM(1001, 0x10000);
 
@@ -687,7 +687,7 @@ void emulator_save_settings(uint64_t filetosave)
 
 void emulator_toggle_sound(uint64_t soundmode)
 {
-	cell_audio_params params;
+	struct cell_audio_params params;
 	memset(&params, 0, sizeof(params));
 	params.channels = 2;
 	params.samplerate = 48000;
@@ -797,7 +797,7 @@ void FCEUD_VideoChanged()
 bool FCEUD_ShouldDrawInputAids() { return 1; }
 void FCEUD_Message(const char *s) { printf("MESSAGE: %s\n", s); }
 void FCEUD_PrintError(const char *s) { printf("ERROR: %s\n", s); }
-extern "C" const char * GetKeyboard(void) {}
+const char * GetKeyboard(void) {}
 
 struct st_palettes palettes[] = {
 	{ "asqrealc", "AspiringSquire's Real palette",
@@ -1234,9 +1234,7 @@ static void emulator_input_loop()
 		uint32_t special_action = 0;
 		const uint64_t state = cell_pad_input_poll_device(i);
 		const uint64_t button_was_pressed = old_state[i] & (old_state[i] ^ state);
-		const uint64_t button_was_held = old_state[i] & state;
 		const uint64_t button_was_not_held = ~(old_state[i] & state);
-		const uint64_t button_was_not_pressed = ~(state);
 		special_button_mappings(i,PS3Input.DPad_Up[i], (CTRL_UP(state) || CTRL_LSTICK_UP(state)));
 		special_button_mappings(i,PS3Input.DPad_Down[i], (CTRL_DOWN(state) || CTRL_LSTICK_DOWN(state)));
 		special_button_mappings(i,PS3Input.DPad_Left[i], (CTRL_LEFT(state) || CTRL_LSTICK_LEFT(state)));

@@ -36,7 +36,7 @@ CELL_FRAMEWORK2_DIR	=	./ps3/cellframework2
 FCEU_API_DIR		=	./src-fceumm
 
 EMULATOR_VERSION	= 1.6
-PPU_OPTIMIZE_LV		:= -O2
+PPU_OPTIMIZE_LV		:= -O3
 
 # all source directories
 SOURCES			= $(SRC_DIR) \

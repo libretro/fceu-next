@@ -10,8 +10,8 @@
 #include "cellframework2/input/pad_input.h"
 #include "cellframework2/fileio/file_browser.h"
 
-#include "emu-ps3.hpp"
-#include "menu.hpp"
+#include "emu-ps3.h"
+#include "menu.h"
 #include "conf/settings.h"
 
 #define MIN(x,y) ((x) < (y) ? (x) : (y))
@@ -257,7 +257,7 @@ static void do_controls_settings(void)
 		if (rom_loaded)
 		{
 			menu_is_running = 0;
-			Emulator_StartROMRunning();
+			Emulator_StartROMRunning(1);
 		}
 		old_state = state;
 		return;
@@ -656,7 +656,7 @@ static void do_settings(menu * menu_obj)
 		if (rom_loaded)
 		{
 			menu_is_running = 0;
-			Emulator_StartROMRunning();
+			Emulator_StartROMRunning(1);
 		}
 		old_state = state;
 		return;
@@ -727,7 +727,7 @@ static void do_ROMMenu(void)
 			menu_is_running = 0;
 
 			// switch emulator to emulate mode
-			Emulator_StartROMRunning();
+			Emulator_StartROMRunning(1);
 
 			Emulator_RequestLoadROM(rom_path, 1);
 
@@ -742,7 +742,7 @@ static void do_ROMMenu(void)
 		if (rom_loaded)
 		{
 			menu_is_running = 0;
-			Emulator_StartROMRunning();
+			Emulator_StartROMRunning(1);
 		}
 		old_state = state;
 		return;
