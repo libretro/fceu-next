@@ -52,6 +52,8 @@ const char * Input_PrintMappedButton(uint32_t mappedbutton)
 			return "Next Palette";
 		case BTN_DECREMENT_PALETTE:
 			return "Previous Palette";
+		case BTN_FASTFORWARD:
+			return "Fast forward";
 		case BTN_INGAME_MENU:
 			return "Ingame Menu";
 		default:
@@ -87,9 +89,11 @@ int Input_GetAdjacentButtonmap(uint32_t buttonmap, uint32_t next)
 		case BTN_INCREMENTCHEAT:
 			return next ? BTN_DECREMENTCHEAT : BTN_QUICKLOAD;
 		case BTN_DECREMENTCHEAT:
-			return next ? BTN_EXITTOMENU : BTN_INCREMENTCHEAT;
+			return next ? BTN_FASTFORWARD : BTN_INCREMENTCHEAT;
+		case BTN_FASTFORWARD:
+			return next ? BTN_EXITTOMENU : BTN_DECREMENTCHEAT;
 		case BTN_EXITTOMENU:
-			return next ? BTN_CHEATENABLE : BTN_DECREMENTCHEAT;
+			return next ? BTN_CHEATENABLE : BTN_FASTFORWARD;
 		case BTN_CHEATENABLE:
 			return next ? BTN_CHEATDISABLE : BTN_EXITTOMENU;
 		case BTN_CHEATDISABLE:

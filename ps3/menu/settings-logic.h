@@ -640,15 +640,15 @@ static void producesettingentry(uint64_t switchvalue)
 					Settings.FCEUControlstyle = control_style;
 					if(control_style == CONTROL_STYLE_ORIGINAL)
 					{
-						PS3Input.ButtonCircle[currently_selected_controller_menu] = BTN_B;
-						PS3Input.ButtonCross[currently_selected_controller_menu] = BTN_A;
-						PS3Input.ButtonSquare[currently_selected_controller_menu] = BTN_NONE;
+						control_binds[currently_selected_controller_menu][CTRL_CIRCLE_DEF] = BTN_B;
+						control_binds[currently_selected_controller_menu][CTRL_CROSS_DEF] = BTN_A;
+						control_binds[currently_selected_controller_menu][CTRL_SQUARE_DEF] = BTN_NONE;
 					}
 					else
 					{
-						PS3Input.ButtonSquare[currently_selected_controller_menu] = BTN_A;
-						PS3Input.ButtonCross[currently_selected_controller_menu] = BTN_B;
-						PS3Input.ButtonCircle[currently_selected_controller_menu] = BTN_NONE;
+						control_binds[currently_selected_controller_menu][CTRL_SQUARE_DEF] = BTN_A;
+						control_binds[currently_selected_controller_menu][CTRL_CROSS_DEF] = BTN_B;
+						control_binds[currently_selected_controller_menu][CTRL_CIRCLE_DEF] = BTN_NONE;
 					}
 					sys_timer_usleep(FILEBROWSER_DELAY);
 				}
@@ -656,9 +656,9 @@ static void producesettingentry(uint64_t switchvalue)
 				{
 					control_style = CONTROL_STYLE_ORIGINAL;
 					Settings.FCEUControlstyle = control_style;
-					PS3Input.ButtonCircle[currently_selected_controller_menu] = BTN_B;
-					PS3Input.ButtonCross[currently_selected_controller_menu] = BTN_A;
-					PS3Input.ButtonSquare[currently_selected_controller_menu] = BTN_NONE;
+					control_binds[currently_selected_controller_menu][CTRL_CIRCLE_DEF] = BTN_B;
+					control_binds[currently_selected_controller_menu][CTRL_CROSS_DEF] = BTN_A;
+					control_binds[currently_selected_controller_menu][CTRL_SQUARE_DEF] = BTN_NONE;
 					sys_timer_usleep(FILEBROWSER_DELAY);
 				}
 				break;

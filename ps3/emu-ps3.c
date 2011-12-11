@@ -56,7 +56,7 @@ char MULTIMAN_GAME_TO_BOOT[MAX_PATH_LENGTH];
 cell_audio_handle_t audio_handle;
 const struct cell_audio_driver *audio_driver = &cell_audio_audioport;
 oskutil_params oskutil_handle;
-PS3InputList PS3Input;
+uint32_t control_binds[MAX_PADS][BTN_DEF_MAX];
 
 struct SSettings Settings;
 
@@ -87,19 +87,32 @@ static unsigned int myzappers[2][3];
 
 /* PS3 frontend - save state/emulator SRAM related functions */
 
-#define emulator_decrement_current_save_state_slot() \
-	if (Settings.CurrentSaveStateSlot != MIN_SAVE_STATE_SLOT) \
-	{ \
-		Settings.CurrentSaveStateSlot--; \
-	} \
-	snprintf(special_action_msg, sizeof(special_action_msg), "Save state slot changed to: #%d", Settings.CurrentSaveStateSlot); \
-	special_action_msg_expired = ps3graphics_set_text_message_speed(60);
+void set_text_message(const char * message, uint32_t speed)
+{
+	snprintf(special_action_msg, sizeof(special_action_msg), message);
+	special_action_msg_expired = ps3graphics_set_text_message_speed(speed);
+}
 
-#define emulator_increment_current_save_state_slot() \
-	Settings.CurrentSaveStateSlot++; \
-	/* emulator-specific */ \
-	snprintf(special_action_msg, sizeof(special_action_msg), "Save state slot changed to: #%d", Settings.CurrentSaveStateSlot); \
-	special_action_msg_expired = ps3graphics_set_text_message_speed(60);
+static void emulator_decrement_current_save_state_slot(void)
+{
+	char msg[512];
+
+	if (Settings.CurrentSaveStateSlot != MIN_SAVE_STATE_SLOT)
+		Settings.CurrentSaveStateSlot--;
+	snprintf(msg, sizeof(msg), "Save state slot changed to: #%d", Settings.CurrentSaveStateSlot);
+
+	set_text_message(msg, 60);
+}
+
+static void emulator_increment_current_save_state_slot(void)
+{
+	char msg[512];
+
+	Settings.CurrentSaveStateSlot++;
+	snprintf(msg, sizeof(msg), "Save state slot changed to: #%d", Settings.CurrentSaveStateSlot);
+	
+	set_text_message(msg, 60);
+}
 
 #define emulator_load_current_save_state_slot() \
 	/* emulator-specific */ \
@@ -192,6 +205,19 @@ static void sysutil_exit_callback (uint64_t status, uint64_t param, void *userda
 	}
 }
 
+static void emulator_toggle_throttle(bool enable)
+{
+	char msg[512];
+
+	ps3graphics_set_vsync(enable);
+	if(enable)
+		snprintf(msg, sizeof(msg), "Throttle mode: ON");
+	else
+		snprintf(msg, sizeof(msg), "Throttle mode: OFF");
+
+	set_text_message(msg, 60);
+}
+
 /* PS3 frontend - controls related macros */
 
 #define init_setting_uint(charstring, setting, defaultvalue) \
@@ -214,168 +240,110 @@ static void sysutil_exit_callback (uint64_t status, uint64_t param, void *userda
 	if(!(config_get_char_array(currentconfig, charstring, setting, sizeof(setting)))) \
 		strncpy(setting,defaultvalue, sizeof(setting));
 
+#if 0
+void emulator_implementation_set_gameaware(const char * fname)
+{
+	ps3graphics_init_state_uniforms(fname);
+	strcpy(Settings.PS3CurrentShader, ps3graphics_get_fragment_shader_path(0));
+	strcpy(Settings.PS3CurrentShader2, ps3graphics_get_fragment_shader_path(1));
+}
+#endif
 
-#define string_concat_ps3_controls(padno, string) "PS3Player"#padno"::"#string""
+static void map_ps3_standard_controls(const char * config_file)
+{
+	char filetitle_tmp[512];
+	char string_tmp[256];
+	config_file_t * currentconfig = config_file_new(config_file);
+	for(uint32_t i = 0; i < MAX_PADS; i++)
+	{
+		for(uint32_t j = 0; j < BTN_DEF_MAX; j++)
+		{
+			snprintf(string_tmp, sizeof(string_tmp), "PS3Player%d::%d", i, j);
+			config_set_uint(currentconfig, string_tmp,control_binds[i][j]);
+		}
+	}
+	config_set_string(currentconfig, "InputPresetTitle", filetitle_tmp);
+	config_file_write(currentconfig, config_file);
+}
 
-#define map_ps3_standard_controls(padno) \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, DPad_Up),PS3Input.DPad_Up[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, DPad_Down),PS3Input.DPad_Down[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, DPad_Left),PS3Input.DPad_Left[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, DPad_Right),PS3Input.DPad_Right[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonCircle),PS3Input.ButtonCircle[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonCross), PS3Input.ButtonCross[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonTriangle), PS3Input.ButtonTriangle[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonSquare), PS3Input.ButtonSquare[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonSelect), PS3Input.ButtonSelect[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonStart), PS3Input.ButtonStart[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonL1), PS3Input.ButtonL1[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonR1), PS3Input.ButtonR1[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonL2), PS3Input.ButtonL2[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonR2), PS3Input.ButtonR2[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonL2_ButtonL3), PS3Input.ButtonL2_ButtonL3[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonL2_ButtonR3),PS3Input.ButtonL2_ButtonR3[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonR3),PS3Input.ButtonR3[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonL3), PS3Input.ButtonL3[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonL2_AnalogR_Right), PS3Input.ButtonL2_AnalogR_Right[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonL2_AnalogR_Left),PS3Input.ButtonL2_AnalogR_Left[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonL2_AnalogR_Up), PS3Input.ButtonL2_AnalogR_Up[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonL2_AnalogR_Down), PS3Input.ButtonL2_AnalogR_Down[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonR2_AnalogR_Right),PS3Input.ButtonR2_AnalogR_Right[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonR2_AnalogR_Left), PS3Input.ButtonR2_AnalogR_Left[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonR2_AnalogR_Up), PS3Input.ButtonR2_AnalogR_Up[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonR2_AnalogR_Down),PS3Input.ButtonR2_AnalogR_Down[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonR2_ButtonR3), PS3Input.ButtonR2_ButtonR3[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, ButtonR3_ButtonL3), PS3Input.ButtonR3_ButtonL3[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, AnalogR_Up), PS3Input.AnalogR_Up[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, AnalogR_Down), PS3Input.AnalogR_Down[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, AnalogR_Left), PS3Input.AnalogR_Left[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, AnalogR_Right),PS3Input.AnalogR_Right[padno]); \
-   \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, AnalogR_Up_Type), PS3Input.AnalogR_Up_Type[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, AnalogR_Down_Type), PS3Input.AnalogR_Down_Type[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, AnalogR_Left_Type), PS3Input.AnalogR_Left_Type[padno]); \
-   config_set_uint(currentconfig, string_concat_ps3_controls(padno, AnalogR_Right_Type), PS3Input.AnalogR_Right_Type[padno]); \
-   config_set_string(currentconfig, "InputPresetTitle", title);
+static void get_ps3_standard_controls(const char * config_file)
+{
+	config_file_t * currentconfig = config_file_new(config_file);
+	char string_tmp[256];
 
-#define get_ps3_standard_controls(padno) \
-init_setting_uint(string_concat_ps3_controls(padno, DPad_Up),PS3Input.DPad_Up[padno],BTN_UP); \
-init_setting_uint(string_concat_ps3_controls(padno, DPad_Down),PS3Input.DPad_Down[padno],BTN_DOWN); \
-init_setting_uint(string_concat_ps3_controls(padno, DPad_Left),PS3Input.DPad_Left[padno],BTN_LEFT); \
-init_setting_uint(string_concat_ps3_controls(padno, DPad_Right),PS3Input.DPad_Right[padno],BTN_RIGHT); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonCircle),PS3Input.ButtonCircle[padno],BTN_A); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonCross),PS3Input.ButtonCross[padno],BTN_B); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonTriangle),PS3Input.ButtonTriangle[padno],BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonSquare),PS3Input.ButtonSquare[padno],BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonSelect),PS3Input.ButtonSelect[padno],BTN_SELECT); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonStart),PS3Input.ButtonStart[padno],BTN_START); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonL1), PS3Input.ButtonL1[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonR1), PS3Input.ButtonR1[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonL2), PS3Input.ButtonL2[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonR2), PS3Input.ButtonR2[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonL2_ButtonL3), PS3Input.ButtonL2_ButtonL3[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonL2_ButtonR3), PS3Input.ButtonL2_ButtonR3[padno], BTN_QUICKLOAD); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonR3), PS3Input.ButtonR3[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonL3), PS3Input.ButtonL3[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonL2_AnalogR_Right), PS3Input.ButtonL2_AnalogR_Right[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonL2_AnalogR_Left), PS3Input.ButtonL2_AnalogR_Left[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonL2_AnalogR_Up), PS3Input.ButtonL2_AnalogR_Up[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonL2_AnalogR_Down), PS3Input.ButtonL2_AnalogR_Down[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonR2_AnalogR_Right), PS3Input.ButtonL2_AnalogR_Right[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonR2_AnalogR_Left), PS3Input.ButtonR2_AnalogR_Left[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonR2_AnalogR_Up), PS3Input.ButtonR2_AnalogR_Up[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonR2_AnalogR_Down), PS3Input.ButtonR2_AnalogR_Down[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonR2_ButtonR3), PS3Input.ButtonR2_ButtonR3[padno], BTN_QUICKSAVE); \
-init_setting_uint(string_concat_ps3_controls(padno, ButtonR3_ButtonL3), PS3Input.ButtonR3_ButtonL3[padno], BTN_EXITTOMENU); \
-init_setting_uint(string_concat_ps3_controls(padno, AnalogR_Up), PS3Input.AnalogR_Up[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, AnalogR_Down), PS3Input.AnalogR_Down[padno], BTN_NONE); \
-init_setting_uint(string_concat_ps3_controls(padno, AnalogR_Left), PS3Input.AnalogR_Left[padno], BTN_DECREMENTSAVE); \
-init_setting_uint(string_concat_ps3_controls(padno, AnalogR_Right), PS3Input.AnalogR_Right[padno], BTN_INCREMENTSAVE); \
-init_setting_uint(string_concat_ps3_controls(padno, AnalogR_Up_Type), PS3Input.AnalogR_Up_Type[padno], 0); \
-init_setting_uint(string_concat_ps3_controls(padno, AnalogR_Down_Type), PS3Input.AnalogR_Down_Type[padno], 0); \
-init_setting_uint(string_concat_ps3_controls(padno, AnalogR_Left_Type), PS3Input.AnalogR_Left_Type[padno], 0); \
-init_setting_uint(string_concat_ps3_controls(padno, AnalogR_Right_Type), PS3Input.AnalogR_Right_Type[padno], 0); \
-init_setting_char("InputPresetTitle", Settings.PS3CurrentInputPresetTitle, "Default");
+	for(uint32_t i = 0; i < MAX_PADS; i++)
+	{
+		for(uint32_t j = 0; j < BTN_DEF_MAX; j++)
+		{
+			snprintf(string_tmp, sizeof(string_tmp), "PS3Player%d::%d", i, j);
+			init_setting_uint(string_tmp, control_binds[i][j], default_control_binds[j]);
+		}
+	}
 
-#define map_ps3_button_array(buttonarray) \
-   for(int i = 0; i < MAX_PADS; i++) \
-   { \
-      Input_MapButton(PS3Input.DPad_Up[i],false,              buttonarray[0]); \
-      Input_MapButton(PS3Input.DPad_Down[i],false,            buttonarray[1]); \
-      Input_MapButton(PS3Input.DPad_Left[i],false,            buttonarray[2]); \
-      Input_MapButton(PS3Input.DPad_Right[i],false,           buttonarray[3]); \
-      Input_MapButton(PS3Input.ButtonCircle[i],false,         buttonarray[4]); \
-      Input_MapButton(PS3Input.ButtonCross[i],false,          buttonarray[5]); \
-      Input_MapButton(PS3Input.ButtonTriangle[i],false,       buttonarray[6]); \
-      Input_MapButton(PS3Input.ButtonSquare[i],false,         buttonarray[7]); \
-      Input_MapButton(PS3Input.ButtonSelect[i],false,         buttonarray[8]); \
-      Input_MapButton(PS3Input.ButtonStart[i],false,          buttonarray[9]); \
-      Input_MapButton(PS3Input.ButtonL1[i],false,             buttonarray[10]); \
-      Input_MapButton(PS3Input.ButtonL2[i],false,             buttonarray[11]); \
-      Input_MapButton(PS3Input.ButtonR2[i],false,             buttonarray[12]); \
-      Input_MapButton(PS3Input.ButtonL3[i],false,             buttonarray[13]); \
-      Input_MapButton(PS3Input.ButtonR3[i],false,             buttonarray[14]); \
-      Input_MapButton(PS3Input.ButtonR1[i],false,             buttonarray[15]); \
-      Input_MapButton(PS3Input.ButtonL2_ButtonL3[i],false,    buttonarray[16]); \
-      Input_MapButton(PS3Input.ButtonL2_ButtonR3[i],false,    buttonarray[18]); \
-      Input_MapButton(PS3Input.ButtonR2_ButtonR3[i],false,    buttonarray[19]); \
-      Input_MapButton(PS3Input.AnalogR_Up[i],false,           buttonarray[20]); \
-      Input_MapButton(PS3Input.AnalogR_Down[i],false,         buttonarray[21]); \
-      Input_MapButton(PS3Input.AnalogR_Left[i],false,         buttonarray[22]); \
-      Input_MapButton(PS3Input.AnalogR_Right[i],false,        buttonarray[23]); \
-      Input_MapButton(PS3Input.ButtonL2_AnalogR_Right[i],false, buttonarray[24]); \
-      Input_MapButton(PS3Input.ButtonL2_AnalogR_Left[i],false, buttonarray[25]); \
-      Input_MapButton(PS3Input.ButtonL2_AnalogR_Up[i],false, buttonarray[26]); \
-      Input_MapButton(PS3Input.ButtonL2_AnalogR_Down[i],false, buttonarray[27]); \
-      Input_MapButton(PS3Input.ButtonR2_AnalogR_Right[i],false, buttonarray[28]); \
-      Input_MapButton(PS3Input.ButtonR2_AnalogR_Left[i],false, buttonarray[29]); \
-      Input_MapButton(PS3Input.ButtonR2_AnalogR_Up[i],false, buttonarray[30]); \
-      Input_MapButton(PS3Input.ButtonR2_AnalogR_Down[i],false, buttonarray[31]); \
-      Input_MapButton(PS3Input.ButtonR3_ButtonL3[i],false, buttonarray[33]); \
-      PS3Input.AnalogR_Up_Type[i] = buttonarray[34]; \
-      PS3Input.AnalogR_Down_Type[i] = buttonarray[35]; \
-      PS3Input.AnalogR_Left_Type[i] = buttonarray[36]; \
-      PS3Input.AnalogR_Right_Type[i] = buttonarray[37]; \
-   }
+	init_setting_char("InputPresetTitle", Settings.PS3CurrentInputPresetTitle, "Default");
+}
 
+uint32_t default_control_binds[] = {
+	BTN_UP,				// CTRL_UP_DEF
+	BTN_DOWN,			// CTRL_DOWN_DEF
+	BTN_LEFT,			// CTRL_LEFT_DEF
+	BTN_RIGHT,			// CTRL_RIGHT_DEF
+	BTN_A,				// CTRL_CIRCLE_DEF
+	BTN_B,				// CTRL_CROSS_DEF
+	BTN_NONE,			// CTRL_TRIANGLE_DEF
+	BTN_NONE,			// CTRL_SQUARE_DEF
+	BTN_SELECT,			// CTRL_SELECT_DEF
+	BTN_START,			// CTRL_START_DEF
+	BTN_NONE,			// CTRL_L1_DEF
+	BTN_NONE,			// CTRL_R1_DEF
+	BTN_NONE,			// CTRL_L2_DEF
+	BTN_NONE,			// CTRL_R2_DEF
+	BTN_NONE,			// CTRL_L3_DEF
+	BTN_INGAME_MENU,		// CTRL_R3_DEF
+	BTN_NONE,			// CTRL_L2_L3_DEF
+	BTN_NONE,			// CTRL_L2_R3_DEF
+	BTN_INCREMENTCHEAT,		// CTRL_L2_RSTICK_RIGHT_DEF
+	BTN_DECREMENTCHEAT,		// CTRL_L2_RSTICK_LEFT_DEF
+	BTN_NONE,			// CTRL_L2_RSTICK_UP_DEF
+	BTN_NONE,			// CTRL_L2_RSTICK_DOWN_DEF
+	BTN_INCREMENTSAVE,		// CTRL_R2_RSTICK_RIGHT_DEF
+	BTN_DECREMENTSAVE,		// CTRL_R2_RSTICK_LEFT_DEF
+	BTN_QUICKLOAD,			// CTRL_R2_RSTICK_UP_DEF
+	BTN_QUICKSAVE,			// CTRL_R2_RSTICK_DOWN_DEF
+	BTN_NONE,			// CTRL_R2_R3_DEF
+	BTN_EXITTOMENU,			// CTRL_R3_L3_DEF
+	BTN_NONE,			// CTRL_RSTICK_UP_DEF
+	BTN_FASTFORWARD,		// CTRL_RSTICK_DOWN_DEF
+	BTN_DECREMENT_PALETTE,		// CTRL_RSTICK_LEFT_DEF
+	BTN_INCREMENT_PALETTE		// CTRL_RSTICK_RIGHT_DEF
+};
+
+static void map_ps3_button_array(void)
+{
+	for(int i = 0; i < MAX_PADS; i++)
+		for(uint32_t j = 0; j < BTN_DEF_MAX; j++)
+			Input_MapButton(control_binds[i][j],false,default_control_binds[j]);
+}
 
 void emulator_set_controls(const char * config_file, int mapping_enum, const char * title)
 {
 	switch(mapping_enum)
 	{
 		case WRITE_CONTROLS:
-			{
-				char filetitle_tmp[512];
-				config_file_t * currentconfig = config_file_new(config_file);
-				map_ps3_standard_controls(0);
-				map_ps3_standard_controls(1);
-				map_ps3_standard_controls(2);
-				map_ps3_standard_controls(3);
-				map_ps3_standard_controls(4);
-				map_ps3_standard_controls(5);
-				map_ps3_standard_controls(6);
-				map_ps3_standard_controls(MAX_PADS);
-				config_file_write(currentconfig, SYS_CONFIG_FILE);
-				break;
-			}
-		case READ_CONTROLS:
-			{
-				config_file_t * currentconfig = config_file_new(config_file);
-				get_ps3_standard_controls(0);
-				get_ps3_standard_controls(1);
-				get_ps3_standard_controls(2);
-				get_ps3_standard_controls(3);
-				get_ps3_standard_controls(4);
-				get_ps3_standard_controls(5);
-				get_ps3_standard_controls(6);
-				get_ps3_standard_controls(MAX_PADS);
-				break;
-			}
-		case SET_ALL_CONTROLS_TO_DEFAULT:
-			{
-				uint32_t array_btn[] = {BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT, BTN_NONE, BTN_A, BTN_NONE, BTN_B, BTN_SELECT, BTN_START, BTN_NONE, BTN_NONE, BTN_NONE, BTN_NONE, BTN_INGAME_MENU, BTN_NONE, BTN_NONE, BTN_NONE, BTN_NONE, BTN_NONE, BTN_NONE, BTN_NONE, BTN_NONE, BTN_NONE, BTN_INCREMENTCHEAT, BTN_DECREMENTCHEAT, BTN_CHEATENABLE, BTN_NONE, BTN_INCREMENTSAVE, BTN_DECREMENTSAVE, BTN_QUICKLOAD, BTN_QUICKSAVE, BTN_NONE, BTN_EXITTOMENU, 0, 0, 0, 0};
-				map_ps3_button_array(array_btn);
-			}
+		{
+			map_ps3_standard_controls(config_file);
 			break;
+		}
+		case READ_CONTROLS:
+		{
+			get_ps3_standard_controls(config_file);
+			break;
+		}
+		case SET_ALL_CONTROLS_TO_DEFAULT:
+		{
+			map_ps3_button_array();
+			break;
+		}
 	}
 }
 
@@ -1086,57 +1054,71 @@ static void ingame_menu_enable (int enable)
 	is_ingame_menu_running = enable;
 }
 
-#define special_actions(specialbuttonmap) \
-	if(specialbuttonmap & BTN_CHEATENABLE) \
-	{ \
-		if (FCEUI_ToggleCheat(Settings.CurrentCheatPosition)) \
-			snprintf(special_action_msg, sizeof(special_action_msg), "Activated cheat: %d", Settings.CurrentCheatPosition); \
-		else \
-			snprintf(special_action_msg, sizeof(special_action_msg), "Disabled cheat: %d", Settings.CurrentCheatPosition); \
-		special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
-	} \
-	if(specialbuttonmap & BTN_EXITTOMENU) \
-	{ \
-		Emulator_StopROMRunning(); \
-		mode_switch = MODE_MENU; \
-	} \
-	if(specialbuttonmap & BTN_DECREMENTSAVE) \
-	{ \
-		emulator_decrement_current_save_state_slot(); \
-	} \
-	if(specialbuttonmap & BTN_INCREMENTSAVE) \
-	{ \
-		emulator_increment_current_save_state_slot(); \
-	} \
-	if(specialbuttonmap & BTN_QUICKSAVE) \
-	{ \
-		emulator_save_current_save_state_slot(); \
-	} \
-	if(specialbuttonmap & BTN_QUICKLOAD) \
-	{ \
-		emulator_load_current_save_state_slot(); \
-	} \
-	if(specialbuttonmap & BTN_DECREMENT_PALETTE) \
-	{ \
-		if(Settings.FCEUPalette != 0) \
-		{ \
-			Settings.FCEUPalette--; \
-			emulator_set_custom_palette(); \
-			snprintf(special_action_msg, sizeof(special_action_msg), "Palette #%d (%s)", Settings.FCEUPalette, palettes[Settings.FCEUPalette].desc); \
-			special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
-		} \
-	} \
-	if(specialbuttonmap & BTN_INCREMENT_PALETTE) \
-	{ \
-		Settings.FCEUPalette++; \
-		emulator_set_custom_palette(); \
-		snprintf(special_action_msg, sizeof(special_action_msg), "Palette #%d (%s)", Settings.FCEUPalette, palettes[Settings.FCEUPalette].desc); \
-		special_action_msg_expired = ps3graphics_set_text_message_speed(60); \
-	} \
-	if(specialbuttonmap & BTN_INGAME_MENU) \
-	{ \
-		ingame_menu_enable(1); \
+static void special_actions(int specialbuttonmap)
+{
+	if(specialbuttonmap & BTN_CHEATENABLE)
+	{
+		if (FCEUI_ToggleCheat(Settings.CurrentCheatPosition))
+			snprintf(special_action_msg, sizeof(special_action_msg), "Activated cheat: %d", Settings.CurrentCheatPosition);
+		else
+			snprintf(special_action_msg, sizeof(special_action_msg), "Disabled cheat: %d", Settings.CurrentCheatPosition);
+		special_action_msg_expired = ps3graphics_set_text_message_speed(60);
 	}
+	if(specialbuttonmap & BTN_EXITTOMENU)
+	{
+		Emulator_StopROMRunning();
+		mode_switch = MODE_MENU;
+	}
+	if(specialbuttonmap & BTN_DECREMENTSAVE)
+	{
+		emulator_decrement_current_save_state_slot();
+	}
+	if(specialbuttonmap & BTN_INCREMENTSAVE)
+	{
+		emulator_increment_current_save_state_slot();
+	}
+	if(specialbuttonmap & BTN_QUICKSAVE)
+	{
+		emulator_save_current_save_state_slot();
+	}
+	if(specialbuttonmap & BTN_QUICKLOAD)
+	{
+		emulator_load_current_save_state_slot();
+	}
+	if(specialbuttonmap & BTN_DECREMENT_PALETTE)
+	{
+		if(Settings.FCEUPalette != 0)
+		{
+			Settings.FCEUPalette--;
+			emulator_set_custom_palette();
+			snprintf(special_action_msg, sizeof(special_action_msg), "Palette #%d (%s)", Settings.FCEUPalette, palettes[Settings.FCEUPalette].desc);
+			special_action_msg_expired = ps3graphics_set_text_message_speed(60);
+		}
+	}
+	if(specialbuttonmap & BTN_INCREMENT_PALETTE)
+	{
+		Settings.FCEUPalette++;
+		emulator_set_custom_palette();
+		snprintf(special_action_msg, sizeof(special_action_msg), "Palette #%d (%s)", Settings.FCEUPalette, palettes[Settings.FCEUPalette].desc);
+		special_action_msg_expired = ps3graphics_set_text_message_speed(60);
+	}
+	if(specialbuttonmap & BTN_INGAME_MENU)
+	{
+		ingame_menu_enable(1);
+	}
+
+	if(specialbuttonmap & BTN_FASTFORWARD)
+	{
+		if(frame_count < special_action_msg_expired)
+		{
+		}
+		else
+		{
+			Settings.Throttled = !Settings.Throttled;
+			emulator_toggle_throttle(Settings.Throttled);
+		}
+	}
+}
 
 #define special_button_mappings(controllerno, specialbuttonmap, condition) \
 	if(condition) \
@@ -1144,7 +1126,7 @@ static void ingame_menu_enable (int enable)
 		if(specialbuttonmap <= BTN_LASTGAMEBUTTON) \
 			pad[controllerno] |=  specialbuttonmap; \
 		else \
-			special_action = specialbuttonmap; \
+			special_action_to_execute = specialbuttonmap; \
 	}
 
 // emulator-specific - commented out Zapper code
@@ -1231,45 +1213,45 @@ static void emulator_input_loop()
 
 	for (uint8_t i = 0; i < pads_connected; i++)
 	{
-		uint32_t special_action = 0;
+		uint32_t special_action_to_execute = 0;
 		const uint64_t state = cell_pad_input_poll_device(i);
 		const uint64_t button_was_pressed = old_state[i] & (old_state[i] ^ state);
 		const uint64_t button_was_not_held = ~(old_state[i] & state);
-		special_button_mappings(i,PS3Input.DPad_Up[i], (CTRL_UP(state) || CTRL_LSTICK_UP(state)));
-		special_button_mappings(i,PS3Input.DPad_Down[i], (CTRL_DOWN(state) || CTRL_LSTICK_DOWN(state)));
-		special_button_mappings(i,PS3Input.DPad_Left[i], (CTRL_LEFT(state) || CTRL_LSTICK_LEFT(state)));
-		special_button_mappings(i,PS3Input.DPad_Right[i], (CTRL_RIGHT(state) || CTRL_LSTICK_RIGHT(state)));
-		special_button_mappings(i,PS3Input.ButtonSquare[i], (CTRL_SQUARE(state)));
-		special_button_mappings(i,PS3Input.ButtonCross[i], (CTRL_CROSS(state)));
-		special_button_mappings(i,PS3Input.ButtonCircle[i], (CTRL_CIRCLE(state)));
-		special_button_mappings(i,PS3Input.ButtonTriangle[i], (CTRL_TRIANGLE(state)));
-		special_button_mappings(i,PS3Input.ButtonStart[i], (CTRL_START(state)));
-		special_button_mappings(i,PS3Input.ButtonSelect[i], (CTRL_SELECT(state)));
-		special_button_mappings(i,PS3Input.ButtonL1[i], (CTRL_L1(state)));
-		special_button_mappings(i,PS3Input.ButtonL2[i], (CTRL_L2(state)));
-		special_button_mappings(i,PS3Input.ButtonL3[i], (CTRL_L3(state) && CTRL_R3(button_was_not_held)));
-		special_button_mappings(i,PS3Input.ButtonR1[i], (CTRL_R1(state)));
-		special_button_mappings(i,PS3Input.ButtonR2[i], (CTRL_R2(state)));
-		special_button_mappings(i,PS3Input.ButtonR3[i], (CTRL_R3(state) && CTRL_L3(button_was_not_held)));
-		special_button_mappings(i,PS3Input.ButtonR3_ButtonL3[i], (CTRL_R3(state) && CTRL_L3(state)));
-		special_button_mappings(i,PS3Input.ButtonR2_ButtonR3[i], (CTRL_R2(state) && CTRL_R3(state)));
-		special_button_mappings(i,PS3Input.ButtonL2_ButtonR3[i], (CTRL_R3(state) && CTRL_L2(state)));
-		special_button_mappings(i,PS3Input.ButtonL2_ButtonL3[i], (CTRL_L2(state) && CTRL_L3(state)));
-		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Right[i], (CTRL_L2(state) && CTRL_RSTICK_RIGHT(button_was_pressed)));
-		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Left[i], (CTRL_L2(state) && CTRL_RSTICK_LEFT(button_was_pressed)));
-		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Up[i], (CTRL_L2(state) && CTRL_RSTICK_UP(button_was_pressed)));
-		special_button_mappings(i,PS3Input.ButtonL2_AnalogR_Down[i], (CTRL_L2(state) && CTRL_RSTICK_DOWN(button_was_pressed)));
-		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Right[i], (CTRL_R2(state) && CTRL_RSTICK_RIGHT(button_was_pressed)));
-		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Left[i], (CTRL_R2(state) && CTRL_RSTICK_LEFT(button_was_pressed)));
-		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Up[i], (CTRL_R2(state) && CTRL_RSTICK_UP(button_was_pressed)));
-		special_button_mappings(i,PS3Input.ButtonR2_AnalogR_Down[i], (CTRL_R2(state) && CTRL_RSTICK_DOWN(button_was_pressed)));
-		special_button_mappings(i,PS3Input.AnalogR_Down[i],(PS3Input.AnalogR_Down_Type[i] ? CTRL_RSTICK_DOWN(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_DOWN(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held)));
-		special_button_mappings(i,PS3Input.AnalogR_Up[i],(PS3Input.AnalogR_Up_Type[i] ? CTRL_RSTICK_UP(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_UP(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held)));
-		special_button_mappings(i,PS3Input.AnalogR_Left[i],(PS3Input.AnalogR_Left_Type[i] ? CTRL_RSTICK_LEFT(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_LEFT(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held)));
-		special_button_mappings(i,PS3Input.AnalogR_Right[i],(PS3Input.AnalogR_Right_Type[i] ? CTRL_RSTICK_RIGHT(state) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held) : CTRL_RSTICK_RIGHT(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held)));
-		if(special_action)
+		special_button_mappings(i, control_binds[i][CTRL_UP_DEF], (CTRL_UP(state) || CTRL_LSTICK_UP(state)));
+		special_button_mappings(i, control_binds[i][CTRL_DOWN_DEF], (CTRL_DOWN(state) || CTRL_LSTICK_DOWN(state)));
+		special_button_mappings(i, control_binds[i][CTRL_LEFT_DEF], (CTRL_LEFT(state) || CTRL_LSTICK_LEFT(state)));
+		special_button_mappings(i, control_binds[i][CTRL_RIGHT_DEF], (CTRL_RIGHT(state) || CTRL_LSTICK_RIGHT(state)));
+		special_button_mappings(i, control_binds[i][CTRL_SQUARE_DEF], (CTRL_SQUARE(state)));
+		special_button_mappings(i, control_binds[i][CTRL_CROSS_DEF], (CTRL_CROSS(state)));
+		special_button_mappings(i, control_binds[i][CTRL_CIRCLE_DEF], (CTRL_CIRCLE(state)));
+		special_button_mappings(i, control_binds[i][CTRL_TRIANGLE_DEF], (CTRL_TRIANGLE(state)));
+		special_button_mappings(i, control_binds[i][CTRL_START_DEF], (CTRL_START(state)));
+		special_button_mappings(i, control_binds[i][CTRL_SELECT_DEF], (CTRL_SELECT(state)));
+		special_button_mappings(i, control_binds[i][CTRL_L1_DEF], (CTRL_L1(state)));
+		special_button_mappings(i, control_binds[i][CTRL_L2_DEF], (CTRL_L2(state)));
+		special_button_mappings(i, control_binds[i][CTRL_L3_DEF], (CTRL_L3(state) && CTRL_R3(button_was_not_held)));
+		special_button_mappings(i, control_binds[i][CTRL_R1_DEF], (CTRL_R1(state)));
+		special_button_mappings(i, control_binds[i][CTRL_R2_DEF], (CTRL_R2(state)));
+		special_button_mappings(i, control_binds[i][CTRL_R3_DEF], (CTRL_R3(state) && CTRL_L3(button_was_not_held)));
+		special_button_mappings(i, control_binds[i][CTRL_R3_L3_DEF], (CTRL_R3(state) && CTRL_L3(state)));
+		special_button_mappings(i, control_binds[i][CTRL_R2_R3_DEF], (CTRL_R2(state) && CTRL_R3(state)));
+		special_button_mappings(i, control_binds[i][CTRL_L2_R3_DEF], (CTRL_R3(state) && CTRL_L2(state)));
+		special_button_mappings(i, control_binds[i][CTRL_L2_L3_DEF], (CTRL_L2(state) && CTRL_L3(state)));
+		special_button_mappings(i, control_binds[i][CTRL_L2_RSTICK_RIGHT_DEF], (CTRL_L2(state) && CTRL_RSTICK_RIGHT(button_was_pressed)));
+		special_button_mappings(i, control_binds[i][CTRL_L2_RSTICK_LEFT_DEF], (CTRL_L2(state) && CTRL_RSTICK_LEFT(button_was_pressed)));
+		special_button_mappings(i, control_binds[i][CTRL_L2_RSTICK_UP_DEF], (CTRL_L2(state) && CTRL_RSTICK_UP(button_was_pressed)));
+		special_button_mappings(i, control_binds[i][CTRL_L2_RSTICK_DOWN_DEF], (CTRL_L2(state) && CTRL_RSTICK_DOWN(button_was_pressed)));
+		special_button_mappings(i, control_binds[i][CTRL_R2_RSTICK_RIGHT_DEF], (CTRL_R2(state) && CTRL_RSTICK_RIGHT(button_was_pressed)));
+		special_button_mappings(i, control_binds[i][CTRL_R2_RSTICK_LEFT_DEF], (CTRL_R2(state) && CTRL_RSTICK_LEFT(button_was_pressed)));
+		special_button_mappings(i, control_binds[i][CTRL_R2_RSTICK_UP_DEF], (CTRL_R2(state) && CTRL_RSTICK_UP(button_was_pressed)));
+		special_button_mappings(i, control_binds[i][CTRL_R2_RSTICK_DOWN_DEF], (CTRL_R2(state) && CTRL_RSTICK_DOWN(button_was_pressed)));
+		special_button_mappings(i, control_binds[i][CTRL_RSTICK_DOWN_DEF], CTRL_RSTICK_DOWN(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held));
+		special_button_mappings(i, control_binds[i][CTRL_RSTICK_UP_DEF], CTRL_RSTICK_UP(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held));
+		special_button_mappings(i, control_binds[i][CTRL_RSTICK_LEFT_DEF], CTRL_RSTICK_LEFT(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held));
+		special_button_mappings(i, control_binds[i][CTRL_RSTICK_RIGHT_DEF], CTRL_RSTICK_RIGHT(button_was_pressed) && CTRL_R2(button_was_not_held) && CTRL_L2(button_was_not_held));
+		if(special_action_to_execute)
 		{
-			special_actions(special_action);
+			special_actions(special_action_to_execute);
 		}
 		old_state[i] = state;
 	}
