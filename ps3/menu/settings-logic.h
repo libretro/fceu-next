@@ -640,14 +640,14 @@ static void producesettingentry(uint64_t switchvalue)
 					Settings.FCEUControlstyle = control_style;
 					if(control_style == CONTROL_STYLE_ORIGINAL)
 					{
-						control_binds[currently_selected_controller_menu][CTRL_CIRCLE_DEF] = BTN_B;
-						control_binds[currently_selected_controller_menu][CTRL_CROSS_DEF] = BTN_A;
+						control_binds[currently_selected_controller_menu][CTRL_CIRCLE_DEF] = BTN_A;
+						control_binds[currently_selected_controller_menu][CTRL_CROSS_DEF] = BTN_B;
 						control_binds[currently_selected_controller_menu][CTRL_SQUARE_DEF] = BTN_NONE;
 					}
 					else
 					{
-						control_binds[currently_selected_controller_menu][CTRL_SQUARE_DEF] = BTN_A;
-						control_binds[currently_selected_controller_menu][CTRL_CROSS_DEF] = BTN_B;
+						control_binds[currently_selected_controller_menu][CTRL_SQUARE_DEF] = BTN_B;
+						control_binds[currently_selected_controller_menu][CTRL_CROSS_DEF] = BTN_A;
 						control_binds[currently_selected_controller_menu][CTRL_CIRCLE_DEF] = BTN_NONE;
 					}
 					sys_timer_usleep(FILEBROWSER_DELAY);
@@ -656,8 +656,8 @@ static void producesettingentry(uint64_t switchvalue)
 				{
 					control_style = CONTROL_STYLE_ORIGINAL;
 					Settings.FCEUControlstyle = control_style;
-					control_binds[currently_selected_controller_menu][CTRL_CIRCLE_DEF] = BTN_B;
-					control_binds[currently_selected_controller_menu][CTRL_CROSS_DEF] = BTN_A;
+					control_binds[currently_selected_controller_menu][CTRL_CIRCLE_DEF] = BTN_A;
+					control_binds[currently_selected_controller_menu][CTRL_CROSS_DEF] = BTN_B;
 					control_binds[currently_selected_controller_menu][CTRL_SQUARE_DEF] = BTN_NONE;
 					sys_timer_usleep(FILEBROWSER_DELAY);
 				}

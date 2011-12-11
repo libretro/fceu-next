@@ -187,7 +187,7 @@ static void producelabelvalue(uint64_t switchvalue)
 			cellDbgFontPuts(0.5f, menu_emu_settings.items[menu_emu_settings.items[switchvalue].enum_id].text_ypos, Emulator_GetFontSize(), *(menu_emu_settings.items[switchvalue].setting_ptr) ? ORANGE : GREEN, *(menu_emu_settings.items[switchvalue].setting_ptr) ? "ON" : "OFF");
 			break;
 		case SETTING_FCEU_CONTROL_STYLE:
-			cellDbgFontPuts(0.5f, menu_emu_settings.items[menu_emu_settings.items[switchvalue].enum_id].text_ypos, Emulator_GetFontSize(), *(menu_emu_settings.items[switchvalue].setting_ptr) ? GREEN : ORANGE, *(menu_emu_settings.items[switchvalue].setting_ptr) ? "Original (X->B, O->A)" : "Better (X->A, []->B)");
+			cellDbgFontPuts(0.5f, menu_emu_settings.items[menu_emu_settings.items[switchvalue].enum_id].text_ypos, Emulator_GetFontSize(), *(menu_emu_settings.items[switchvalue].setting_ptr) ? GREEN : ORANGE, *(menu_emu_settings.items[switchvalue].setting_ptr) ? "Better (X->A, []->B)" : "Original (X->B, O->A)");
 			break;
 		case SETTING_FCEU_PALETTE:
 			cellDbgFontPuts(0.5f, menu_emu_videosettings.items[menu_emu_videosettings.items[switchvalue].enum_id].text_ypos, Emulator_GetFontSize(), *(menu_emu_videosettings.items[switchvalue].setting_ptr) == 0 ? GREEN : ORANGE, ("#%d: %s", Settings.FCEUPalette, palettes[Settings.FCEUPalette].desc));
