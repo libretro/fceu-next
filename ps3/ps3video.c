@@ -669,6 +669,7 @@ static void ps3graphics_update_cg_params(unsigned width, unsigned height, unsign
 
 void ps3graphics_draw(uint8_t *XBuf, int nesw, int nesh)
 {
+	frame_count++;
 	if(fbo_enable)
 	{
 		glBindTexture(GL_TEXTURE_2D, tex);
@@ -676,7 +677,6 @@ void ps3graphics_draw(uint8_t *XBuf, int nesw, int nesh)
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		frame_count += 1;
 
 		uint16_t* texture = (uint16_t*)glMapBuffer(GL_TEXTURE_REFERENCE_BUFFER_SCE, GL_WRITE_ONLY);
 
@@ -743,8 +743,6 @@ void ps3graphics_draw(uint8_t *XBuf, int nesw, int nesh)
 	}
 	else
 	{
-		frame_count += 1;
-
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		int size = nesw * nesh;
@@ -771,6 +769,7 @@ void ps3graphics_draw(uint8_t *XBuf, int nesw, int nesh)
 
 void ps3graphics_draw_menu(int width, int height)
 {
+	frame_count++;
 	GLuint temp_width = gl_width;
 	GLuint temp_height = gl_height;
 	_cgViewWidth = temp_width;
@@ -1494,7 +1493,7 @@ error:
 	return false;
 }
 
-static void ps3graphics_setup_texture(GLuint tex, uint32_t * width, uint32_t * height)
+static void ps3graphics_setup_texture(GLuint tex, unsigned width, unsigned height)
 {
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);

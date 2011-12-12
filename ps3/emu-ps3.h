@@ -100,6 +100,7 @@ void emulator_implementation_set_texture(const char * fname);
 void emulator_toggle_sound(uint64_t soundmode);
 void Emulator_RequestLoadROM(const char * rom, uint32_t forceReload);
 void Emulator_StartROMRunning(uint32_t set_is_running);
+void set_text_message(const char * message, uint32_t speed);
 
 /* Emulator-specific extern function prototypes */
 
@@ -140,5 +141,6 @@ struct st_palettes {
 };
 
 extern struct st_palettes palettes[];
+extern uint32_t special_action_msg_expired;
 
 #endif
