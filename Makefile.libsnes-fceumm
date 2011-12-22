@@ -67,7 +67,7 @@ OBJS := $(FCEU_COBJ)
 FCEU_DEFINES := -D__LIBSNES__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DPSS_STYLE=1 $(PLATFORM_DEFINES)
 
 CFLAGS += -std=gnu99 $(fpic) -Wno-write-strings $(FCEU_DEFINES)
-LDFLAGS += -Wl,-no-undefined
+LDFLAGS += -lm -Wl,-no-undefined
 
 INCDIRS := -I$(LIBSNES_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers -I$(UTILS_DIR)/zlib 
 LIBS :=

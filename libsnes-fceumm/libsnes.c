@@ -1,8 +1,10 @@
-#include "libsnes.hpp"
-
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include <stdlib.h>
-#include <string>
+#include <string.h>
+
+#include "libsnes.h"
 
 /* emulator-specific includes */
 
@@ -49,7 +51,7 @@ extern CartInfo UNIFCart;
 
 /* emulator-specific callback functions */
 
-extern "C" const char * GetKeyboard(void) {}
+const char * GetKeyboard(void) {}
 void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b)
 {
    r >>= 3;
@@ -347,21 +349,30 @@ void snes_set_input_state(snes_input_state_t cb)
    input_cb = cb;
 }
 
-void snes_set_controller_port_device(bool, unsigned)
+void snes_set_controller_port_device(bool a, unsigned b)
 {}
 
-static std::string g_basename;
-void snes_set_cartridge_basename(const char* path_)
+static char g_basename[1024];
+
+void snes_set_cartridge_basename(const char * path_)
 {
-   char path[1024];
-   strncpy(path, path_, sizeof(path));
-   
-   const char *split = strrchr(path_, '/');
-   if (!split) split = strrchr(path_, '\\');
-   if (split)
-      g_basename = split + 1;
-   else
-      g_basename = path_;
+	char path[1024];
+	strncpy(path, path_, sizeof(path));
+
+	char *split = strrchr(path_, '/');
+	if (!split) split = strrchr(path_, '\\');
+	if (split)
+	{
+		strncpy(g_basename, split + 1, sizeof(g_basename));
+		int len_filename = strlen(path_);
+		int len_split = strlen(split);
+	}
+	else
+	{
+		strncpy(g_basename, path_, sizeof(path_));
+	}
+
+	fprintf(stderr, "BASENAME: %s\n", g_basename);
 }
 
 // SSNES extension.
@@ -372,7 +383,7 @@ void snes_init(void)
 {
    if (environ_cb)
    {
-      snes_geometry geom = { 256, 240, 256, 240 };
+      struct snes_geometry geom = { 256, 240, 256, 240 };
       environ_cb(SNES_ENVIRONMENT_SET_GEOMETRY, &geom);
    }
 }
@@ -384,7 +395,7 @@ static void emulator_set_input(void)
 	FCEUI_SetInput(1, SI_GAMEPAD, InputDPR, 0);
 }
 
-static void emulator_set_custom_palette()
+static void emulator_set_custom_palette (void)
 {
 	if (current_palette == 0 )
 	{
@@ -429,11 +440,11 @@ void snes_reset(void)
 }
 
 
-struct keymap
+typedef struct
 {
    unsigned snes;
    unsigned nes;
-};
+} keymap;
 
 static const keymap bindmap[] = {
    { SNES_DEVICE_ID_JOYPAD_A, JOY_A },
@@ -513,13 +524,11 @@ bool snes_unserialize(const uint8_t *data, unsigned size)
    return true;
 }
 
-void snes_cheat_reset(void)
-{}
+void snes_cheat_reset(void) {}
 
-void snes_cheat_set(unsigned, bool, const char*)
-{}
+void snes_cheat_set(unsigned a, bool b, const char* c) { }
 
-bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned rom_size)
+bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, unsigned rom_size)
 {
    FCEUI_Initialize();
 
@@ -527,23 +536,23 @@ bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned r
    FCEUI_Sound(32050);
 
    // Append basename to detect certain ROM types from filename (Hack).
-   std::string actual_path = "FCEU_tmp_";
-   actual_path += g_basename;
+   char actual_path[512];
+   snprintf(actual_path, sizeof(actual_path), "FCEU_tmp_%s", g_basename);
 
-   fprintf(stderr, "[FCEU]: Using temp path: \"%s\"\n", actual_path.c_str());
+   fprintf(stderr, "[FCEU]: Using temp path: \"%s\"\n", actual_path);
 
-   FILE *file = fopen(actual_path.c_str(), "wb");
+   FILE *file = fopen(actual_path, "wb");
    if (!file)
       return false;
 
    fwrite(rom_data, 1, rom_size, file);
    fclose(file);
    //FIXME: we need a real filename with real file extension here
-   FCEUGameInfo = FCEUI_LoadGame(actual_path.c_str());
+   FCEUGameInfo = FCEUI_LoadGame(actual_path);
    #if !defined(__CELLOS_LV2__)
    #if !defined(__LIBXENON__)
    #if !defined(GEKKO)
-   unlink(actual_path.c_str());
+   unlink(actual_path);
    #endif
    #endif
    #endif
@@ -552,7 +561,7 @@ bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned r
 
    if (environ_cb)
    {
-   	snes_system_timing timing;
+   	struct snes_system_timing timing;
 	timing.sample_rate = 32050.0;
 	if (FSettings.PAL)
 		timing.fps = 838977920.0/16777215.0;
@@ -566,27 +575,27 @@ bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned r
 }
 
 bool snes_load_cartridge_bsx_slotted(
-  const char*, const uint8_t*, unsigned,
-  const char*, const uint8_t*, unsigned
+  const char* a, const uint8_t* b, unsigned c,
+  const char* d, const uint8_t* e, unsigned f
 )
 { return false; }
 
 bool snes_load_cartridge_bsx(
-  const char*, const uint8_t *, unsigned,
-  const char*, const uint8_t *, unsigned
+  const char* a, const uint8_t * b, unsigned c,
+  const char* d, const uint8_t * e, unsigned f
 )
 { return false; }
 
 bool snes_load_cartridge_sufami_turbo(
-  const char*, const uint8_t*, unsigned,
-  const char*, const uint8_t*, unsigned,
-  const char*, const uint8_t*, unsigned
+  const char* a, const uint8_t* b, unsigned c,
+  const char* d, const uint8_t* e, unsigned f,
+  const char* g, const uint8_t* h, unsigned i
 )
 { return false; }
 
 bool snes_load_cartridge_super_game_boy(
-  const char*, const uint8_t*, unsigned,
-  const char*, const uint8_t*, unsigned
+  const char* a, const uint8_t* b, unsigned c,
+  const char* d, const uint8_t* e, unsigned f
 )
 { return false; }
 

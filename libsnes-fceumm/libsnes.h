@@ -1,12 +1,6 @@
 #ifndef LIBSNES_HPP
 #define LIBSNES_HPP
 
-#include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define SNES_PORT_1  0
 #define SNES_PORT_2  1
 
@@ -154,10 +148,6 @@ void snes_unload_cartridge(void);
 bool snes_get_region(void);
 uint8_t* snes_get_memory_data(unsigned id);
 unsigned snes_get_memory_size(unsigned id);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 
