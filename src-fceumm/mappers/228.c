@@ -20,8 +20,8 @@
 
 #include "mapinc.h"
 
-//16 bits of ram in total
-//only use bottom 4 bits as ram though
+/*16 bits of ram in total*/
+/*only use bottom 4 bits as ram though*/
 static uint8 mapper228_ram[4];
 
 static SFORMAT StateRegs[]=
@@ -39,7 +39,7 @@ static DECLFW(Mapper228_write)
 {
  uint32 page,pagel,pageh;
 
-    //write to ram
+    /*write to ram*/
     if (A < 0x6000)
     {
         mapper228_ram[A & 3] = V;

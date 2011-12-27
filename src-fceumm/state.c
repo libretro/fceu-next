@@ -44,7 +44,7 @@ static void (*SPostSave)(void);
 static SFORMAT SFMDATA[64];
 static int SFEXINDEX;
 
-#define RLSB     FCEUSTATE_RLSB  //0x80000000
+#define RLSB     FCEUSTATE_RLSB  /*0x80000000*/
 
 #define FCEU_VERSION_NUMERIC 21040
 
@@ -298,7 +298,7 @@ static int ReadStateChunks(FILE *st, int32 totalsize)
 			case 2:if(!ReadStateChunk(st,SFCPUC,size)) ret=0;
 				       else
 				       {
-					       X.mooPI=X.P;  // Quick and dirty hack.
+					       X.mooPI=X.P;  /* Quick and dirty hack.*/
 				       }
 				       break;
 			case 3:if(!ReadStateChunk(st,FCEUPPU_STATEINFO,size)) ret=0;break;
@@ -339,7 +339,7 @@ static int ReadStateChunks_Mem(memstream_t *st, int32 totalsize)
             if (!ReadStateChunk_Mem(st, SFCPUC, size))
                ret = 0;
             else
-               X.mooPI = X.P;  // Quick and dirty hack.
+               X.mooPI = X.P;  /* Quick and dirty hack.*/
             break;
          case 3:
             if (!ReadStateChunk_Mem(st, FCEUPPU_STATEINFO, size))
@@ -374,36 +374,37 @@ extern int geniestage;
 #ifdef __LIBSNES__
 void FCEUSS_Load(void)
 {
-   memstream_t *mem = memstream_open(false);
+	int x, stateversion;
+	uint8 header[16];
+	memstream_t *mem;
 
-   uint8 header[16];
-   int stateversion;
+	mem = memstream_open(false);
 
-   memstream_read(mem, header, 16);
+	memstream_read(mem, header, 16);
 
-   if (memcmp(header,"FCS",3) != 0)
-      return;
+	if (memcmp(header,"FCS",3) != 0)
+		return;
 
-   if (header[3] == 0xFF)
-      stateversion = FCEU_de32lsb(header + 8);
-   else
-      stateversion = header[3] * 100;
+	if (header[3] == 0xFF)
+		stateversion = FCEU_de32lsb(header + 8);
+	else
+		stateversion = header[3] * 100;
 
-   int x = ReadStateChunks_Mem(mem, *(uint32*)(header + 4));
+	x = ReadStateChunks_Mem(mem, *(uint32*)(header + 4));
 
-   if (stateversion < 9500)
-      X.IRQlow=0;
+	if (stateversion < 9500)
+		X.IRQlow=0;
 
-   if (GameStateRestore)
-      GameStateRestore(stateversion);
+	if (GameStateRestore)
+		GameStateRestore(stateversion);
 
-   if (x)
-   {
-      FCEUPPU_LoadState(stateversion);
-      FCEUSND_LoadState(stateversion);
-   }
+	if (x)
+	{
+		FCEUPPU_LoadState(stateversion);
+		FCEUSND_LoadState(stateversion);
+	}
 
-   memstream_close(mem);
+	memstream_close(mem);
 }
 
 void FCEUSS_Save(void)
@@ -472,7 +473,7 @@ void FCEUSS_Save(const char *fname)
 	FILE * st = fopen(fname, "wb");
 
 	if(st == NULL || geniestage == 1)
-		return;	//State save error
+		return;	/*State save error*/
 
 	FCEUSS_SaveFP(st);
 
@@ -515,7 +516,7 @@ int FCEUSS_Load(const char *fname)
 	FILE * st= fopen(fname, "rb");
 
 	if(st == NULL || geniestage == 1)
-		return(0);	// State load error
+		return(0);	/* State load error*/
 
 	int ret = FCEUSS_LoadFP(st);
 	fclose(st);
@@ -529,6 +530,7 @@ int FCEUSS_Load(const char *fname)
 void ResetExState(void (*PreSave)(void), void (*PostSave)(void))
 {
 	int x;
+
 	for(x=0;x<SFEXINDEX;x++)
 	{
 		if(SFMDATA[x].desc)
@@ -553,5 +555,5 @@ void AddExState(void *v, uint32 s, int type, const char *desc)
 	SFMDATA[SFEXINDEX].s=s;
 	if(type) SFMDATA[SFEXINDEX].s|=RLSB;
 	if(SFEXINDEX<63) SFEXINDEX++;
-	SFMDATA[SFEXINDEX].v=0;    // End marker.
+	SFMDATA[SFEXINDEX].v=0;    /* End marker.*/
 }

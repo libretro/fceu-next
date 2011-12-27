@@ -113,7 +113,7 @@ $(FCEU_API_DIR)/x6502.c
 PPU_SRCS += $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.c))
 
 PPU_TARGET		=	fceu-ps3.ppu.elf
-DEFINES			+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -DPSS_STYLE=1 -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
+DEFINES			+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -DPSS_STYLE=1 -DINLINE=inline -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
 PPU_CXXFLAGS		+=	$(DEFINES)
 PPU_CFLAGS		+=	$(DEFINES)
 

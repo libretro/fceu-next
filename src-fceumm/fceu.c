@@ -256,7 +256,7 @@ FCEUGI *FCEUI_LoadGame(const char *name)
 
 	if(!fp)
 	{
-		return 0;	//Error opening ROM
+		return 0;	/*Error opening ROM*/
 	}
 
 	if(iNESLoad(name,fp))
@@ -266,7 +266,7 @@ FCEUGI *FCEUI_LoadGame(const char *name)
 	if(FDSLoad(name,fp))
 		goto endlseq;
 
-	FCEU_fclose(fp);	//An error occcurred while loading the file
+	FCEU_fclose(fp);	/*An error occcurred while loading the file*/
 	return 0;
 
 endlseq:
@@ -279,7 +279,7 @@ endlseq:
 	PowerNES();
 
 	FCEU_LoadGamePalette();
-	//FCEU_LoadGameCheats(0);
+	/*FCEU_LoadGameCheats(0);*/
 
 	FCEU_ResetPalette();
 
@@ -309,7 +309,7 @@ FCEUGI *FCEUI_CopyFamiStart(void)
 #endif
 
 	if(!CopyFamiLoad())
-		return 0;	//An error occurred while starting CopyFamicom
+		return 0;	/*An error occurred while starting CopyFamicom*/
 
 	FCEU_ResetVidSys();
 	if(FSettings.GameGenie)
@@ -456,6 +456,7 @@ FCEUS FSettings;
 
 void FCEU_printf(char *format, ...)
 {
+	FILE *ofile;
 	char temp[2048];
 
 	va_list ap;
@@ -464,7 +465,6 @@ void FCEU_printf(char *format, ...)
 	vsprintf(temp,format,ap);
 	FCEUD_Message(temp);
 
-	FILE *ofile;
 	ofile=fopen("stdout.txt","ab");
 	fwrite(temp,1,strlen(temp),ofile);
 	fclose(ofile);

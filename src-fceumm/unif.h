@@ -41,7 +41,7 @@ void SOROM_Init(CartInfo *info);
 void NROM_Init(CartInfo *info);
 void MHROM_Init(CartInfo *info);
 void UNROM_Init(CartInfo *info);
-void SUNSOFT_UNROM_Init(CartInfo *info); // "Shanghi" original version mapper
+void SUNSOFT_UNROM_Init(CartInfo *info); /* "Shanghi" original version mapper*/
 void MALEE_Init(CartInfo *info);
 void CNROM_Init(CartInfo *info);
 void CPROM_Init(CartInfo *info);
@@ -137,7 +137,7 @@ void UNLEDU2000_Init(CartInfo *info);
 void UNL6035052_Init(CartInfo *info);
 void UNLN625092_Init(CartInfo *info);
 void UNLSMB2J_Init(CartInfo *info);
-//void UNL09034A_Init(CartInfo *info);
+/*void UNL09034A_Init(CartInfo *info);*/
 void BMC411120C_Init(CartInfo *info);
 void BMC830118C_Init(CartInfo *info);
 void BMCT2271_Init(CartInfo *info);
@@ -152,5 +152,5 @@ void MapperCopyFamiMMC3_Init(CartInfo *info);
 void MapperCopyFami_Init(CartInfo *info);
 #endif
 
-extern uint8 *UNIFchrrama;  // Meh.  So I can stop CHR RAM
-         // bank switcherooing with certain boards...
+/* So I can stop CHR RAM* bank switcherooing with certain boards...*/
+extern uint8 *UNIFchrrama;

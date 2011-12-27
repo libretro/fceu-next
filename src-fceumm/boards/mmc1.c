@@ -39,13 +39,13 @@ static int is155, is171;
 static DECLFW(MBWRAM)
 {
   if(!(DRegs[3]&0x10)||is155)
-    Page[A>>11][A]=V;     // WRAM is enabled.
+    Page[A>>11][A]=V;     /* WRAM is enabled.*/
 }
 
 static DECLFR(MAWRAM)
 {
   if((DRegs[3]&0x10)&&!is155)
-    return X.DB;          // WRAM is disabled
+    return X.DB;          /* WRAM is disabled*/
   return(Page[A>>11][A]);
 }
 
@@ -139,9 +139,9 @@ static uint64 lreset;
 static DECLFW(MMC1_write)
 {
   int n=(A>>13)-4;
-  //FCEU_DispMessage("%016x",timestampbase+timestamp);
-//  FCEU_printf("$%04x:$%02x, $%04x\n",A,V,X.PC);
-  //DumpMem("out",0xe000,0xffff);
+  /*FCEU_DispMessage("%016x",timestampbase+timestamp);*/
+/*  FCEU_printf("$%04x:$%02x, $%04x\n",A,V,X.PC);*/
+  /*DumpMem("out",0xe000,0xffff);*/
 
   /* The MMC1 is busy so ignore the write. */
   /* As of version FCE Ultra 0.81, the timestamp is only
@@ -151,7 +151,7 @@ static DECLFW(MMC1_write)
 	*/
   if((timestampbase+timestamp)<(lreset+2))
     return;
-//  FCEU_printf("Write %04x:%02x\n",A,V);
+/*  FCEU_printf("Write %04x:%02x\n",A,V);*/
   if(V&0x80)
   {
     DRegs[0]|=0xC;
@@ -165,7 +165,7 @@ static DECLFW(MMC1_write)
 
   if(BufferShift==5)
   {
-//    FCEU_printf("REG[%d]=%02x\n",n,Buffer);
+/*    FCEU_printf("REG[%d]=%02x\n",n,Buffer);*/
     DRegs[n] = Buffer;
     BufferShift = Buffer = 0;
     switch(n)
@@ -196,7 +196,7 @@ static void MMC1CMReset(void)
   DRegs[0]=0x1F;
 
   DRegs[1]=0;
-  DRegs[2]=0;                  // Should this be something other than 0?
+  DRegs[2]=0;                  /* Should this be something other than 0?*/
   DRegs[3]=0;
 
   MMC1MIRROR();
@@ -206,20 +206,20 @@ static void MMC1CMReset(void)
 
 static int DetectMMC1WRAMSize(uint32 crc32)
 {
-  switch(crc32)
-  {
-    case 0xc6182024:       /* Romance of the 3 Kingdoms */
-    case 0x2225c20f:       /* Genghis Khan */
-    case 0x4642dda6:       /* Nobunaga's Ambition */
-    case 0x29449ba9:       /* ""        "" (J) */
-    case 0x2b11e0b0:       /* ""        "" (J) */
-    case 0xb8747abf:       /* Best Play Pro Yakyuu Special (J) */
-    case 0xc9556b36:       /* Final Fantasy I & II (J) [!] */
-         FCEU_printf(" >8KB external WRAM present.  Use UNIF if you hack the ROM image.\n");
-         return(16);
-         break;
-    default:return(8);
-  }
+	switch(crc32)
+	{
+		case 0xc6182024:       /* Romance of the 3 Kingdoms */
+		case 0x2225c20f:       /* Genghis Khan */
+		case 0x4642dda6:       /* Nobunaga's Ambition */
+		case 0x29449ba9:       /* ""        "" (J) */
+		case 0x2b11e0b0:       /* ""        "" (J) */
+		case 0xb8747abf:       /* Best Play Pro Yakyuu Special (J) */
+		case 0xc9556b36:       /* Final Fantasy I & II (J) [!] */
+			FCEU_printf(" >8KB external WRAM present.  Use UNIF if you hack the ROM image.\n");
+			return(16);
+			break;
+		default:return(8);
+	}
 }
 
 static uint32 NWCIRQCount;
@@ -228,30 +228,30 @@ static uint8 NWCRec;
 
 static void NWCIRQHook(int a)
 {
-  if(!(NWCRec&0x10))
-  {
-    NWCIRQCount+=a;
-    if((NWCIRQCount|(NWCDIP<<25))>=0x3e000000)
-    {
-      NWCIRQCount=0;
-      X6502_IRQBegin(FCEU_IQEXT);
-    }
-  }
+	if(!(NWCRec&0x10))
+	{
+		NWCIRQCount+=a;
+		if((NWCIRQCount|(NWCDIP<<25))>=0x3e000000)
+		{
+			NWCIRQCount=0;
+			X6502_IRQBegin(FCEU_IQEXT);
+		}
+	}
 }
 
 static void NWCCHRHook(uint32 A, uint8 V)
 {
-  if((V&0x10)) // && !(NWCRec&0x10))
-  {
-    NWCIRQCount=0;
-    X6502_IRQEnd(FCEU_IQEXT);
-  }
+	if((V&0x10)) /* && !(NWCRec&0x10))*/
+	{
+		NWCIRQCount=0;
+		X6502_IRQEnd(FCEU_IQEXT);
+	}
 
-  NWCRec=V;
-  if(V&0x08)
-    MMC1PRG();
-  else
-    setprg32(0x8000,(V>>1)&3);
+	NWCRec=V;
+	if(V&0x08)
+		MMC1PRG();
+	else
+		setprg32(0x8000,(V>>1)&3);
 }
 
 static void NWCPRGHook(uint32 A, uint8 V)

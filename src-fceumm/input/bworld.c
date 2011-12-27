@@ -50,7 +50,7 @@ static uint8 Read(int w, uint8 ret)
 
 static void Write(uint8 V)
 {
- //printf("%02x\n",V);
+ /*printf("%02x\n",V);*/
 }
 
 static void Update(void *data, int arg)

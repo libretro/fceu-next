@@ -57,11 +57,11 @@ static DECLFW(M43Write)
 
 static void M43Power(void)
 {
-  reg=0;
-  Sync();
-//  SetReadHandler(0x5000,0x5fff,CartBR);
-  SetReadHandler(0x5000,0xffff,CartBR);
-  SetWriteHandler(0x4020,0xffff,M43Write);
+	reg=0;
+	Sync();
+	/*  SetReadHandler(0x5000,0x5fff,CartBR);*/
+	SetReadHandler(0x5000,0xffff,CartBR);
+	SetWriteHandler(0x4020,0xffff,M43Write);
 }
 
 static void M43Reset(void)

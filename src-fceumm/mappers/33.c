@@ -24,7 +24,7 @@ static int is48;
 
 static DECLFW(Mapper33_write)
 {
-        //printf("%04x:%02x, %d\n",A,V,scanline);
+        /*printf("%04x:%02x, %d\n",A,V,scanline);*/
 
         A&=0xF003;
         if(A>=0xA000 && A<=0xA003)

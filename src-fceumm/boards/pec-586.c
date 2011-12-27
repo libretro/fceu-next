@@ -98,15 +98,15 @@ static void StateRestore(int version)
 
 void UNLPEC586Init(CartInfo *info)
 {
-  info->Power=UNLPEC586Power;
-  info->Close=UNLPEC586Close;
-//  GameHBIRQHook=UNLPEC586IRQ;
-  GameStateRestore=StateRestore;
+	info->Power=UNLPEC586Power;
+	info->Close=UNLPEC586Close;
+	/*  GameHBIRQHook=UNLPEC586IRQ;*/
+	GameStateRestore=StateRestore;
 
-  WRAMSIZE=8192;
-  WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
-  SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
-  AddExState(WRAM, WRAMSIZE, 0, "WRAM");
+	WRAMSIZE=8192;
+	WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
+	SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
+	AddExState(WRAM, WRAMSIZE, 0, "WRAM");
 
-  AddExState(&StateRegs, ~0, 0, 0);
+	AddExState(&StateRegs, ~0, 0, 0);
 }

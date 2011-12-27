@@ -27,7 +27,7 @@ static readfunc defread;
 
 static DECLFW(LatchWrite)
 {
-//  FCEU_printf("%04x:%02x\n",A,V);
+/*  FCEU_printf("%04x:%02x\n",A,V);*/
   latche=A;
   WSync();
 }
@@ -67,7 +67,7 @@ static void Latch_Init(CartInfo *info, void (*proc)(void), readfunc func, uint16
   AddExState(&latche, 2, 0, "LATC");
 }
 
-//------------------ UNLCC21 ---------------------------
+/*------------------ UNLCC21 ---------------------------*/
 
 static void UNLCC21Sync(void)
 {
@@ -81,7 +81,7 @@ void UNLCC21_Init(CartInfo *info)
   Latch_Init(info, UNLCC21Sync, 0, 0, 0x8000, 0xFFFF);
 }
 
-//------------------ BMCD1038 ---------------------------
+/*------------------ BMCD1038 ---------------------------*/
 
 static uint8 dipswitch;
 static void BMCD1038Sync(void)
@@ -119,8 +119,8 @@ void BMCD1038_Init(CartInfo *info)
 }
 
 
-//------------------ UNL43272 ---------------------------
-// mapper much complex, including 16K bankswitching 
+/*------------------ UNL43272 ---------------------------*/
+/* mapper much complex, including 16K bankswitching */
 static void UNL43272Sync(void)
 {
   if((latche&0x81) == 0x81)
@@ -154,7 +154,7 @@ void UNL43272_Init(CartInfo *info)
   AddExState(&dipswitch, 1, 0, "DIPSW");
 }
 
-//------------------ Map 058 ---------------------------
+/*------------------ Map 058 ---------------------------*/
 
 static void BMCGK192Sync(void)
 {
@@ -174,11 +174,11 @@ void BMCGK192_Init(CartInfo *info)
   Latch_Init(info, BMCGK192Sync, 0, 0, 0x8000, 0xFFFF);
 }
 
-//------------------ Map 200 ---------------------------
+/*------------------ Map 200 ---------------------------*/
 
 static void M200Sync(void)
 {
-//  FCEU_printf("A\n");
+/*  FCEU_printf("A\n");*/
   setprg16(0x8000,latche&7);
   setprg16(0xC000,latche&7);
   setchr8(latche&7);
@@ -190,7 +190,7 @@ void Mapper200_Init(CartInfo *info)
   Latch_Init(info, M200Sync, 0, 0xff, 0x8000, 0xFFFF);
 }
 
-//------------------ 190in1 ---------------------------
+/*------------------ 190in1 ---------------------------*/
 
 static void BMC190in1Sync(void)
 {
@@ -205,7 +205,7 @@ void BMC190in1_Init(CartInfo *info)
   Latch_Init(info, BMC190in1Sync, 0, 0, 0x8000, 0xFFFF);
 }
 
-//-------------- BMC810544-C-A1 ------------------------
+/*-------------- BMC810544-C-A1 ------------------------*/
 
 static void BMC810544CA1Sync(void)
 {
@@ -226,14 +226,14 @@ void BMC810544CA1_Init(CartInfo *info)
   Latch_Init(info, BMC810544CA1Sync, 0, 0, 0x8000, 0xFFFF);
 }
 
-//-------------- BMCNTD-03 ------------------------
+/*-------------- BMCNTD-03 ------------------------*/
 
 static void BMCNTD03Sync(void)
 {
-  // 1PPP Pmcc spxx xccc
-  // 1000 0000 0000 0000 v
-  // 1001 1100 0000 0100 h
-  // 1011 1010 1100 0100
+  /* 1PPP Pmcc spxx xccc*/
+  /* 1000 0000 0000 0000 v*/
+  /* 1001 1100 0000 0100 h*/
+  /* 1011 1010 1100 0100*/
   uint32 prg = ((latche>>10)&0x1e);
   uint32 chr = ((latche&0x0300)>>5)|(latche&7);
   if(latche&0x80)

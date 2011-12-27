@@ -158,7 +158,7 @@ static void SetInput(void)
    {0x8a12a7d9,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB}, /* Totsugeki Fuuun Takeshi Jou */
    {0xea90f3e2,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB}, /* Running Stadium */
    {0x370ceb65,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB}, /* Meiro Dai Sakusen */
-   // Bad dump? {0x69ffb014,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB}, /* Fuun Takeshi Jou 2 */
+   /* Bad dump? {0x69ffb014,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB}, Fuun Takeshi Jou 2 */
    {0x6cca1c1f,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB}, /* Dai Undoukai */
    {0x29de87af,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB},  /* Aerobics Studio */
    {0xbba58be5,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB},  /* Family Trainer: Manhattan Police */
@@ -253,19 +253,19 @@ static struct BADINF BadROMImages[]=
 
 void CheckBad(uint64 md5partial)
 {
- int x;
+	int x;
 
- x=0;
- //printf("0x%llx\n",md5partial);
- while(BadROMImages[x].name)
- {
-  if(BadROMImages[x].md5partial == md5partial)
-  {
-   FCEU_PrintError("The copy game you have loaded, \"%s\", is bad, and will not work properly on FCE Ultra.", BadROMImages[x].name);
-   return;
-  }
-  x++;
- }
+	x=0;
+
+	while(BadROMImages[x].name)
+	{
+		if(BadROMImages[x].md5partial == md5partial)
+		{
+			FCEU_PrintError("The copy game you have loaded, \"%s\", is bad, and will not work properly on FCE Ultra.", BadROMImages[x].name);
+			return;
+		}
+		x++;
+	}
 
 }
 
@@ -349,8 +349,8 @@ static void CheckHInfo(void)
 	for(x=0;x<8;x++)
 	{
 		partialmd5 |= (uint64)iNESCart.MD5[15-x] << (x*8);
-		//printf("%16llx\n",partialmd5);
 	}
+
 	CheckBad(partialmd5);
 
 	x=0;
@@ -485,19 +485,19 @@ int iNESLoad(const char *name, FCEUFILE *fp)
 			memset((char *)(&head)+0xA,0,0x6);
 	}
 
-	//  int ROM_size=0;
+	/*  int ROM_size=0;*/
 	if(!head.ROM_size)
 	{
-		//   FCEU_PrintError("No PRG ROM!");
-		//   return(0);
+		/*   FCEU_PrintError("No PRG ROM!");*/
+		/*   return(0);*/
 		ROM_size=256;
-		//   head.ROM_size=255;
-		//head.ROM_size++;
+		/*   head.ROM_size=255;*/
+		/*head.ROM_size++;*/
 	}
 	else
 		ROM_size=head.ROM_size;
 
-	//    ROM_size = head.ROM_size;
+	/*    ROM_size = head.ROM_size;*/
 	VROM_size = head.VROM_size;
 
 	ROM_size=uppow2(ROM_size);
@@ -533,7 +533,7 @@ int iNESLoad(const char *name, FCEUFILE *fp)
 	ResetExState(0,0);
 
 	SetupCartPRGMapping(0,ROM,ROM_size*0x4000,0);
-	//SetupCartPRGMapping(1,WRAM,8192,1);
+	/*SetupCartPRGMapping(1,WRAM,8192,1);*/
 
 	if(head.ROM_size)
 		FCEU_fread(ROM,0x4000,head.ROM_size,fp);
@@ -599,12 +599,12 @@ int iNESLoad(const char *name, FCEUFILE *fp)
 	iNESCart.battery=(head.ROM_type&2)?1:0;
 	iNESCart.mirror=Mirroring;
 
-	//if(MapperNo != 18) {
-	//  if(ROM) free(ROM);
-	//  if(VROM) free(VROM);
-	//  ROM=VROM=0;
-	//  return(0);
-	// }
+	/*if(MapperNo != 18) {*/
+	/*  if(ROM) free(ROM);*/
+	/*  if(VROM) free(VROM);*/
+	/*  ROM=VROM=0;*/
+	/*  return(0);*/
+	/* }*/
 
 	if(NewiNES_Init(MapperNo))
 	{
@@ -625,9 +625,9 @@ int iNESLoad(const char *name, FCEUFILE *fp)
 #ifdef FCEU_LOG
 	FCEU_printf("\n");
 #endif
-	// since apparently the iNES format doesn't store this information,
-	// guess if the settings should be PAL or NTSC from the ROM name
-	// TODO: MD5 check against a list of all known PAL games instead?
+	/* since apparently the iNES format doesn't store this information,*/
+	/* guess if the settings should be PAL or NTSC from the ROM name*/
+	/* TODO: MD5 check against a list of all known PAL games instead?*/
 	if(strstr(name,"(E)") || strstr(name,"(e)")
 			|| strstr(name,"(F)") || strstr(name,"(f)")
 			|| strstr(name,"(G)") || strstr(name,"(g)")
@@ -761,28 +761,28 @@ void (*MapInitTab[256])(void)=
 {
     0,
     0,
-    0, //Mapper2_init,
-    0, //Mapper3_init,
+    0, /*Mapper2_init,*/
+    0, /*Mapper3_init,*/
     0,
     0,
     Mapper6_init,
-    0,//Mapper7_init,
+    0,/*Mapper7_init,*/
     Mapper8_init,
     Mapper9_init,
     Mapper10_init,
-    0, //Mapper11_init,
+    0, /*Mapper11_init,*/
     0, 
-    0, //Mapper13_init,
+    0, /*Mapper13_init,*/
     0,
-    0, //Mapper15_init,
-    0, //Mapper16_init,
+    0, /*Mapper15_init,*/
+    0, /*Mapper16_init,*/
     Mapper17_init,
     Mapper18_init,
     0,
     0,
     Mapper21_init,
     Mapper22_init,
-    0, //Mapper23_init,
+    0, /*Mapper23_init,*/
     Mapper24_init,
     Mapper25_init,
     Mapper26_init,
@@ -802,7 +802,7 @@ void (*MapInitTab[256])(void)=
     Mapper40_init,
     Mapper41_init,
     Mapper42_init,
-    0, //Mapper43_init,
+    0, /*Mapper43_init,*/
     0,
     0,
     Mapper46_init,
@@ -816,20 +816,20 @@ void (*MapInitTab[256])(void)=
     0,
     0,
     0,
-    0,//    Mapper57_init,
-    0,//    Mapper58_init,
+    0,/*    Mapper57_init,*/
+    0,/*    Mapper58_init,*/
     Mapper59_init,
-    0,// Mapper60_init,
+    0,/* Mapper60_init,*/
     Mapper61_init,
     Mapper62_init,
     0,
     Mapper64_init,
     Mapper65_init,
-    0,//Mapper66_init,
+    0,/*Mapper66_init,*/
     Mapper67_init,
-    0,//Mapper68_init,
+    0,/*Mapper68_init,*/
     Mapper69_init,
-    0,//Mapper70_init,
+    0,/*Mapper70_init,*/
     Mapper71_init,
     Mapper72_init,
     Mapper73_init,
@@ -837,7 +837,7 @@ void (*MapInitTab[256])(void)=
     Mapper75_init,
     Mapper76_init,
     Mapper77_init,
-    0, //Mapper78_init,
+    0, /*Mapper78_init,*/
     Mapper79_init,
     Mapper80_init,
     0,
@@ -846,14 +846,14 @@ void (*MapInitTab[256])(void)=
     0,
     Mapper85_init,
     Mapper86_init,
-    0, //Mapper87_init,
-    0, //Mapper88_init,
+    0, /*Mapper87_init,*/
+    0, /*Mapper88_init,*/
     Mapper89_init,
     0,
     Mapper91_init,
     Mapper92_init,
-    0, //Mapper93_init,
-    0, //Mapper94_init,
+    0, /*Mapper93_init,*/
+    0, /*Mapper94_init,*/
     0,
     Mapper96_init,
     Mapper97_init,
@@ -866,23 +866,17 @@ void (*MapInitTab[256])(void)=
     0,
     0,
     0,
-    0, //Mapper107_init,
+    0, /*Mapper107_init,*/
     0,
     0,
     0,
     0,
     0,
-    0, // Mapper113_init,
+    0, /* Mapper113_init,*/
     0,
     0,
-    0, //Mapper116_init,
-    0, //Mapper117_init,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    0, /*Mapper116_init,*/
+    0, /*Mapper117_init,*/
     0,
     0,
     0,
@@ -899,11 +893,17 @@ void (*MapInitTab[256])(void)=
     0,
     0,
     0,
-    0, //Mapper140_init,
     0,
     0,
     0,
-    0, //Mapper144_init,
+    0,
+    0,
+    0,
+    0, /*Mapper140_init,*/
+    0,
+    0,
+    0,
+    0, /*Mapper144_init,*/
     0,
     0,
     0,
@@ -911,13 +911,13 @@ void (*MapInitTab[256])(void)=
     0,
     0,
     Mapper151_init,
-    0, //Mapper152_init,
-    0, //Mapper153_init,
-    0, //Mapper154_init,
+    0, /*Mapper152_init,*/
+    0, /*Mapper153_init,*/
+    0, /*Mapper154_init,*/
     0,
-    0, //Mapper156_init,
+    0, /*Mapper156_init,*/
     Mapper157_init,
-    0, //Mapper158_init, removed
+    0, /*Mapper158_init, removed*/
     0,
     0,
     0,
@@ -939,27 +939,27 @@ void (*MapInitTab[256])(void)=
     0,
     0,
     0,
-    0, //Mapper180_init,
+    0, /*Mapper180_init,*/
     0,
     0,
     0,
-    0, //Mapper184_init,
-    0, //Mapper185_init,
+    0, /*Mapper184_init,*/
+    0, /*Mapper185_init,*/
     0,
     0,
     0,
-    0, //Mapper189_init,
+    0, /*Mapper189_init,*/
     0,
-    0, //Mapper191_init,
+    0, /*Mapper191_init,*/
     0,
-    0, //Mapper193_init,
-    0,
-    0,
+    0, /*Mapper193_init,*/
     0,
     0,
     0,
     0,
-    0, //Mapper200_init,
+    0,
+    0,
+    0, /*Mapper200_init,*/
     Mapper201_init,
     Mapper202_init,
     Mapper203_init,
@@ -970,7 +970,7 @@ void (*MapInitTab[256])(void)=
     0,
     0,
     0,
-    0, //Mapper211_init,
+    0, /*Mapper211_init,*/
     Mapper212_init,
     Mapper213_init,
     Mapper214_init,
@@ -984,8 +984,8 @@ void (*MapInitTab[256])(void)=
     0,
     0,
     0,
-    0, //Mapper225_init,
-    0, //Mapper226_init,
+    0, /*Mapper225_init,*/
+    0, /*Mapper226_init,*/
     Mapper227_init,
     Mapper228_init,
     Mapper229_init,
@@ -994,12 +994,12 @@ void (*MapInitTab[256])(void)=
     Mapper232_init,
     0,
     Mapper234_init,
-    0, //Mapper235_init,
+    0, /*Mapper235_init,*/
     0,
     0,
     0,
     0,
-    0, //Mapper240_init,
+    0, /*Mapper240_init,*/
     Mapper241_init,
     Mapper242_init,
     0,
@@ -1139,10 +1139,10 @@ static BMAPPING bmap[] = {
     {16,  Mapper16_Init},
     {19,  Mapper19_Init},
     {23,  Mapper23_Init},
-    {35,  UNLSC127_Init}, // Wario Land 2
-    {36,  Mapper36_Init}, // TXC Policeman
+    {35,  UNLSC127_Init}, /* Wario Land 2*/
+    {36,  Mapper36_Init}, /* TXC Policeman*/
     {37,  Mapper37_Init},
-    {38,  Mapper38_Init}, // Bit Corp. Crime Busters
+    {38,  Mapper38_Init}, /* Bit Corp. Crime Busters*/
     {43,  Mapper43_Init},
     {44,  Mapper44_Init},
     {45,  Mapper45_Init},
@@ -1219,7 +1219,7 @@ static BMAPPING bmap[] = {
     {178, Mapper178_Init},
     {180, Mapper180_Init},
     {181, Mapper181_Init},
-//    {182, Mapper114_Init},
+/*    {182, Mapper114_Init},*/
     {183, Mapper183_Init},
     {184, Mapper184_Init},
     {185, Mapper185_Init},
@@ -1245,25 +1245,25 @@ static BMAPPING bmap[] = {
     {211, Mapper211_Init},
     {215, UNL8237_Init},
     {216, Mapper216_Init},
-//    {217, UNL8237A_Init},
+/*    {217, UNL8237A_Init},*/
     {219, UNLA9746_Init},
-//    {220, UNL8237_Init},
-//    {220, UNL3DBlock_Init},
+/*    {220, UNL8237_Init},*/
+/*    {220, UNL3DBlock_Init},*/
     {220, BMCFK23CA_Init},
-//    {220, UNLTF1201_Init},
-//    {220, UNLSL1632_Init},
-//    {220, BMCT2271_Init},
-//    {220, UNLPEC586Init},
-//    {220, Mapper114_Init},
-//    {220, UNLD2000_Init},
-//    {220, UNLKOF97_Init},
-//    {220, BMC810544CA1_Init},
-//    {220, UNLKS7013B_Init},
-//    {220, BMCNTD03_Init},
-//    {220, UNLOneBus_Init},
-//    {220, UNLDANCE_Init},
-//    {220, UNL43272_Init},
-//    {220, UNLKS7057_Init},
+/*    {220, UNLTF1201_Init},*/
+/*    {220, UNLSL1632_Init},*/
+/*    {220, BMCT2271_Init},*/
+/*    {220, UNLPEC586Init},*/
+/*    {220, Mapper114_Init},*/
+/*    {220, UNLD2000_Init},*/
+/*    {220, UNLKOF97_Init},*/
+/*    {220, BMC810544CA1_Init},*/
+/*    {220, UNLKS7013B_Init},*/
+/*    {220, BMCNTD03_Init},*/
+/*    {220, UNLOneBus_Init},*/
+/*    {220, UNLDANCE_Init},*/
+/*    {220, UNL43272_Init},*/
+/*    {220, UNLKS7057_Init},*/
            
     {221, UNLN625092_Init},
     {222, Mapper222_Init},
@@ -1292,7 +1292,7 @@ static int NewiNES_Init(int num)
 	{
 		if(num==tmp->number)
 		{
-			UNIFchrrama=0; // need here for compatibility with UNIF mapper code
+			UNIFchrrama=0; /* need here for compatibility with UNIF mapper code*/
 			if(!VROM_size)
 			{
 				int CHRRAMSize;

@@ -60,20 +60,20 @@
 #define SNES_MEMORY_OAM     103
 #define SNES_MEMORY_CGRAM   104
 
-// SSNES extension. Not required to be implemented for a working implementation.
-#define SNES_ENVIRONMENT_GET_FULLPATH 0   // const char **
-#define SNES_ENVIRONMENT_SET_GEOMETRY 1   // const struct snes_geometry *
-#define SNES_ENVIRONMENT_SET_PITCH 2      // const unsigned *
-#define SNES_ENVIRONMENT_GET_OVERSCAN 3	  // bool * -- Boolean value whether or not the implementation should use overscan.
-#define SNES_ENVIRONMENT_SET_TIMING 4	  // const struct snes_system_timing * -- Set exact timings of the system.
-					  // Used primarily for video recording
+/* SSNES extension. Not required to be implemented for a working implementation.*/
+#define SNES_ENVIRONMENT_GET_FULLPATH 0   /* const char ***/
+#define SNES_ENVIRONMENT_SET_GEOMETRY 1   /* const struct snes_geometry **/
+#define SNES_ENVIRONMENT_SET_PITCH 2      /* const unsigned **/
+#define SNES_ENVIRONMENT_GET_OVERSCAN 3	  /* bool * -- Boolean value whether or not the implementation should use overscan.*/
+#define SNES_ENVIRONMENT_SET_TIMING 4	  /* const struct snes_system_timing * -- Set exact timings of the system.*/
+					  /* Used primarily for video recording*/
 
 struct snes_geometry
 {
-   unsigned base_width;    // Nominal video width of system.
-   unsigned base_height;   // Nominal video height of system.
-   unsigned max_width;     // Maximum possible width of system.
-   unsigned max_height;    // Maximum possible height of system.
+   unsigned base_width;    /* Nominal video width of system.*/
+   unsigned base_height;   /* Nominal video height of system.*/
+   unsigned max_width;     /* Maximum possible width of system.*/
+   unsigned max_height;    /* Maximum possible height of system.*/
 };
 
 struct snes_system_timing
@@ -84,9 +84,8 @@ struct snes_system_timing
 
 typedef bool (*snes_environment_t)(unsigned cmd, void *data);
 
-// Must be called before calling snes_init().
+/* Must be called before calling snes_init().*/
 void snes_set_environment(snes_environment_t);
-////
 
 typedef void (*snes_video_refresh_t)(const uint16_t *data, unsigned width, unsigned height);
 typedef void (*snes_audio_sample_t)(uint16_t left, uint16_t right);

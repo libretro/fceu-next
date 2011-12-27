@@ -38,7 +38,7 @@ static void ZapperFrapper(int w, uint8 *bg, uint8 *spr, uint32 linets, int final
  int xs,xe;
  int zx,zy;
 
- if(!bg) // New line, so reset stuff.
+ if(!bg) /* New line, so reset stuff.*/
  {
   ZD[w].zappo=0;
   return;
@@ -139,7 +139,7 @@ static void UpdateZapper(int w, void *data, int arg)
 {
 	uint32 *ptr=(uint32 *)data;
 
-	//FCEU_DispMessage("%3d:%3d",ZD[w].mzx,ZD[w].mzy);
+	/*FCEU_DispMessage("%3d:%3d",ZD[w].mzx,ZD[w].mzy);*/
 	if(ZD[w].bogo)
 		ZD[w].bogo--;
 	if(ptr[2]&3 && (!(ZD[w].mzb&3)))

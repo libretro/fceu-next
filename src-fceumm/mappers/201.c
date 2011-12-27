@@ -22,7 +22,7 @@
 
 static DECLFW(Mapper201_write)
 {
-//  FCEU_printf("%04x, %02x\n",A,V);
+/*  FCEU_printf("%04x, %02x\n",A,V);*/
   if(A&0x08)
   {
      ROM_BANK32(A&0x03);

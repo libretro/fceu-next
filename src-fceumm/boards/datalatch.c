@@ -28,7 +28,7 @@ static void(*WSync)(void);
 
 static DECLFW(LatchWrite)
 {
-//  FCEU_printf("bs %04x %02x\n",A,V);
+/*  FCEU_printf("bs %04x %02x\n",A,V);*/
   if(bus_conflict)
     latche=V&CartBR(A);
   else
@@ -82,7 +82,7 @@ static void Latch_Init(CartInfo *info, void (*proc)(void), uint8 init, uint16 ad
   AddExState(&latche, 1, 0, "LATC");
 }
 
-//------------------ CPROM ---------------------------
+/*------------------ CPROM ---------------------------*/
 
 static void CPROMSync(void)
 {
@@ -96,7 +96,7 @@ void CPROM_Init(CartInfo *info)
   Latch_Init(info, CPROMSync, 0, 0x8000, 0xFFFF, 0, 0);
 }
 
-//------------------ Map 184 ---------------------------
+/*------------------ Map 184 ---------------------------*/
 
 static void M184Sync(void)
 {
@@ -110,13 +110,13 @@ void Mapper184_Init(CartInfo *info)
   Latch_Init(info, M184Sync, 0, 0x6000, 0x7FFF, 0, 0);
 }
 
-//------------------ CNROM ---------------------------
+/*------------------ CNROM ---------------------------*/
 
 static void CNROMSync(void)
 {
   setchr8(latche);
   setprg32(0x8000,0);
-  setprg8r(0x10,0x6000,0); // Hayauchy IGO uses 2Kb or RAM
+  setprg8r(0x10,0x6000,0); /* Hayauchy IGO uses 2Kb or RAM*/
 }
 
 void CNROM_Init(CartInfo *info)
@@ -124,7 +124,7 @@ void CNROM_Init(CartInfo *info)
   Latch_Init(info, CNROMSync, 0, 0x8000, 0xFFFF, 1, 0);
 }
 
-//------------------ ANROM ---------------------------
+/*------------------ ANROM ---------------------------*/
 
 static void ANROMSync()
 {
@@ -138,7 +138,7 @@ void ANROM_Init(CartInfo *info)
   Latch_Init(info, ANROMSync, 0, 0x8000, 0xFFFF, 0, 0);
 }
 
-//------------------ Map 70 ---------------------------
+/*------------------ Map 70 ---------------------------*/
 
 static void M70Sync()
 {
@@ -152,7 +152,7 @@ void Mapper70_Init(CartInfo *info)
   Latch_Init(info, M70Sync, 0, 0x8000, 0xFFFF, 0, 0);
 }
 
-//------------------ Map 152 ---------------------------
+/*------------------ Map 152 ---------------------------*/
 
 static void M152Sync()
 {
@@ -167,7 +167,7 @@ void Mapper152_Init(CartInfo *info)
   Latch_Init(info, M152Sync, 0, 0x8000, 0xFFFF, 0, 0);
 }
 
-//------------------ Map 78 ---------------------------
+/*------------------ Map 78 ---------------------------*/
 /* Should be two separate emulation functions for this "mapper".  Sigh.  URGE TO KILL RISING. */
 static void M78Sync()
 {
@@ -182,7 +182,7 @@ void Mapper78_Init(CartInfo *info)
   Latch_Init(info, M78Sync, 0, 0x8000, 0xFFFF, 0, 0);
 }
 
-//------------------ MHROM ---------------------------
+/*------------------ MHROM ---------------------------*/
 
 static void MHROMSync(void)
 {
@@ -203,10 +203,10 @@ void Mapper140_Init(CartInfo *info)
 void Mapper240_Init(CartInfo *info)
 {
   Latch_Init(info, MHROMSync, 0, 0x4020, 0x5FFF, 0, 0);
-  // need SRAM.
+  /* need SRAM.*/
 }
 
-//------------------ Map 87 ---------------------------
+/*------------------ Map 87 ---------------------------*/
 
 static void M87Sync(void)
 {
@@ -219,7 +219,7 @@ void Mapper87_Init(CartInfo *info)
   Latch_Init(info, M87Sync, ~0, 0x6000, 0xFFFF, 0, 0);
 }
 
-//------------------ Map 101 ---------------------------
+/*------------------ Map 101 ---------------------------*/
 
 static void M101Sync(void)
 {
@@ -232,7 +232,7 @@ void Mapper101_Init(CartInfo *info)
   Latch_Init(info, M101Sync, ~0, 0x6000, 0x7FFF, 0, 0);
 }
 
-//------------------ Map 11 ---------------------------
+/*------------------ Map 11 ---------------------------*/
 
 static void M11Sync(void)
 {
@@ -250,7 +250,7 @@ void Mapper144_Init(CartInfo *info)
   Latch_Init(info, M11Sync, 0, 0x8001, 0xFFFF, 0, 0);
 }
 
-//------------------ Map 38 ---------------------------
+/*------------------ Map 38 ---------------------------*/
 
 static void M38Sync(void)
 {
@@ -263,7 +263,7 @@ void Mapper38_Init(CartInfo *info)
   Latch_Init(info, M38Sync, 0, 0x7000, 0x7FFF, 0, 0);
 }
 
-//------------------ Map 36 ---------------------------
+/*------------------ Map 36 ---------------------------*/
 
 static void M36Sync(void)
 {
@@ -275,7 +275,7 @@ void Mapper36_Init(CartInfo *info)
 {
   Latch_Init(info, M36Sync, 0, 0x8400, 0xfffe, 0, 0);
 }
-//------------------ UNROM ---------------------------
+/*------------------ UNROM ---------------------------*/
 
 static void UNROMSync(void)
 {
@@ -289,7 +289,7 @@ void UNROM_Init(CartInfo *info)
   Latch_Init(info, UNROMSync, 0, 0x8000, 0xFFFF, 0, 1);
 }
 
-//------------------ Map 93 ---------------------------
+/*------------------ Map 93 ---------------------------*/
 
 static void SSUNROMSync(void)
 {
@@ -303,7 +303,7 @@ void SUNSOFT_UNROM_Init(CartInfo *info)
   Latch_Init(info, SSUNROMSync, 0, 0x8000, 0xFFFF, 0, 0);
 }
 
-//------------------ Map 94 ---------------------------
+/*------------------ Map 94 ---------------------------*/
 
 static void M94Sync(void)
 {
@@ -317,7 +317,7 @@ void Mapper94_Init(CartInfo *info)
   Latch_Init(info, M94Sync, 0, 0x8000, 0xFFFF, 0, 0);
 }
 
-//------------------ Map 180 ---------------------------
+/*------------------ Map 180 ---------------------------*/
 
 static void M180Sync(void)
 {
@@ -331,7 +331,7 @@ void Mapper180_Init(CartInfo *info)
   Latch_Init(info, M180Sync, 0, 0x8000, 0xFFFF, 0, 0);
 }
 
-//------------------ Map 107 ---------------------------
+/*------------------ Map 107 ---------------------------*/
 
 static void M107Sync(void)
 {
@@ -344,13 +344,13 @@ void Mapper107_Init(CartInfo *info)
   Latch_Init(info, M107Sync, ~0, 0x8000, 0xFFFF, 0, 0);
 }
 
-//------------------ Map 113 ---------------------------
+/*------------------ Map 113 ---------------------------*/
 
 static void M113Sync(void)
 {
   setprg32(0x8000,(latche>>3)&7);
   setchr8(((latche>>3)&8)|(latche&7));
-//  setmirror(latche>>7); // only for HES 6in1
+/*  setmirror(latche>>7); // only for HES 6in1*/
 }
 
 void Mapper113_Init(CartInfo *info)
@@ -358,12 +358,12 @@ void Mapper113_Init(CartInfo *info)
   Latch_Init(info, M113Sync, 0, 0x4100, 0x7FFF, 0, 0);
 }
 
-//------------------ A65AS ---------------------------
+/*------------------ A65AS ---------------------------*/
 
-// actually, there is two cart in one... First have extra mirroring
-// mode (one screen) and 32K bankswitching, second one have only
-// 16 bankswitching mode and normal mirroring... But there is no any
-// correlations between modes and they can be used in one mapper code.
+/* actually, there is two cart in one... First have extra mirroring*/
+/* mode (one screen) and 32K bankswitching, second one have only*/
+/* 16 bankswitching mode and normal mirroring... But there is no any*/
+/* correlations between modes and they can be used in one mapper code.*/
 
 static void BMCA65ASSync(void)
 {
@@ -386,7 +386,7 @@ void BMCA65AS_Init(CartInfo *info)
   Latch_Init(info, BMCA65ASSync, 0, 0x8000, 0xFFFF, 0, 0);
 }
 
-//------------------ NROM ---------------------------
+/*------------------ NROM ---------------------------*/
 
 #ifdef DEBUG_MAPPER
 static DECLFW(WriteHandler)
@@ -398,7 +398,7 @@ static DECLFW(WriteHandler)
 
 static void NROMPower(void)
 {
-  setprg8r(0x10,0x6000,0); // Famili BASIC (v3.0) need it (uses only 4KB), FP-BASIC uses 8KB
+  setprg8r(0x10,0x6000,0); /* Famili BASIC (v3.0) need it (uses only 4KB), FP-BASIC uses 8KB*/
   setprg16(0x8000,0);
   setprg16(0xC000,~0);
   setchr8(0);

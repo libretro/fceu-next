@@ -43,7 +43,7 @@ static uint32 JSReturn = 0;
 void *InputDPR;
 static uint32 current_palette = 0;
 
-// extern forward decls.
+/* extern forward decls.*/
 extern FCEUGI *FCEUGameInfo;
 extern uint8 *XBuf;
 extern CartInfo iNESCart;
@@ -68,7 +68,7 @@ void FCEUD_VideoChanged() {}
 
 #define MAX_PAH 1024
 
-//palette for FCEU
+/*palette for FCEU*/
 #define MAXPAL 13
 
 struct st_palettes {
@@ -356,16 +356,18 @@ static char g_basename[1024];
 
 void snes_set_cartridge_basename(const char * path_)
 {
-	char path[1024];
+	char path[1024], *split;
 	strncpy(path, path_, sizeof(path));
 
-	char *split = strrchr(path_, '/');
+	split = strrchr(path_, '/');
 	if (!split) split = strrchr(path_, '\\');
 	if (split)
 	{
+		int len_filename, len_split;
+
 		strncpy(g_basename, split + 1, sizeof(g_basename));
-		int len_filename = strlen(path_);
-		int len_split = strlen(split);
+		len_filename = strlen(path_);
+		len_split = strlen(split);
 	}
 	else
 	{
@@ -375,7 +377,7 @@ void snes_set_cartridge_basename(const char * path_)
 	fprintf(stderr, "BASENAME: %s\n", g_basename);
 }
 
-// SSNES extension.
+/* SSNES extension.*/
 static snes_environment_t environ_cb;
 void snes_set_environment(snes_environment_t cb) { environ_cb = cb; }
 
@@ -399,11 +401,11 @@ static void emulator_set_custom_palette (void)
 {
 	if (current_palette == 0 )
 	{
-		FCEU_ResetPalette();	// Do palette reset
+		FCEU_ResetPalette();	/* Do palette reset*/
 	}
 	else
 	{
-		// Now setup this palette
+		/* Now setup this palette*/
 		uint8 i,r,g,b;
 
 		for ( i = 0; i < 64; i++ )
@@ -459,30 +461,40 @@ static const keymap bindmap[] = {
 
 static void update_input(void)
 {
+	unsigned i;
+	unsigned char pad[2];
+
+	pad[0] = 0;
+	pad[1] = 0;
+
 	poll_cb();
-	unsigned char pad[2] = {0, 0};
-	for (unsigned i = 0; i < 8; i++)
+
+	for ( i = 0; i < 8; i++)
 		pad[0] |= input_cb(SNES_PORT_1, SNES_DEVICE_JOYPAD, 0, bindmap[i].snes) ? bindmap[i].nes : 0;
-	for (unsigned i = 0; i < 8; i++)
+	for ( i = 0; i < 8; i++)
 		pad[1] |= input_cb(SNES_PORT_2, SNES_DEVICE_JOYPAD, 0, bindmap[i].snes) ? bindmap[i].nes : 0;
 	JSReturn = pad[0] | pad[1] << 8;
 }
 
 void snes_run(void)
 {
-	int32 ssize = 0;
+	unsigned i, y, x;
+	uint8_t *gfx;
+	static uint16_t video_out[1024 * 240];
+	int32 ssize;
+
+	ssize = 0;
 	FCEUI_Emulate(&gfx, &sound, &ssize);
 
-	static uint16_t video_out[1024 * 240];
-	const uint8_t *gfx = XBuf;
-	for (unsigned y = 0; y < 240; y++)
-		for (unsigned x = 0; x < 256; x++, gfx++)
+	gfx = XBuf;
+	for ( y = 0; y < 240; y++)
+		for ( x = 0; x < 256; x++, gfx++)
 			video_out[y * 1024 + x] = palette[*gfx];
 
 	video_cb(video_out, 256, 240);
 	update_input();
 
-	for (unsigned i = 0; i < ssize; i++)
+	for ( i = 0; i < ssize; i++)
 		audio_cb(sound[i] & 0xffff, sound[i] & 0xffff);
 }
 
@@ -492,7 +504,7 @@ unsigned snes_serialize_size(void)
 {
    if (serialize_size == 0)
    {
-      // Something arbitrarily big.
+      /* Something arbitrarily big.*/
       uint8_t *buffer = (uint8_t*)malloc(1000000);
       memstream_set_buffer(buffer, 1000000);
 
@@ -535,7 +547,7 @@ bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, unsigned
    FCEUI_SetSoundVolume(256);
    FCEUI_Sound(32050);
 
-   // Append basename to detect certain ROM types from filename (Hack).
+   /* Append basename to detect certain ROM types from filename (Hack).*/
    char actual_path[512];
    snprintf(actual_path, sizeof(actual_path), "FCEU_tmp_%s", g_basename);
 
@@ -547,7 +559,7 @@ bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, unsigned
 
    fwrite(rom_data, 1, rom_size, file);
    fclose(file);
-   //FIXME: we need a real filename with real file extension here
+   /*FIXME: we need a real filename with real file extension here*/
    FCEUGameInfo = FCEUI_LoadGame(actual_path);
    #if !defined(__CELLOS_LV2__)
    #if !defined(__LIBXENON__)

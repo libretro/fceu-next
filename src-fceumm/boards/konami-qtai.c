@@ -34,7 +34,7 @@ static uint8 IRQa, K4IRQ;
 static uint32 IRQLatch, IRQCount;
 
 static uint8 regs[16];
-//static uint8 test[8];
+/*static uint8 test[8];*/
 static SFORMAT StateRegs[]=
 {
   {&IRQCount, 1, "IRQC"},
@@ -54,8 +54,8 @@ static void chrSync(void)
 static void Sync(void)
 {
     chrSync();
-//  if(regs[0xA]&0x10)
-//  {
+/*  if(regs[0xA]&0x10)*/
+/*  {*/
 /*    setchr1r(0x10,0x0000,(((regs[5]&1))<<2)+0);
     setchr1r(0x10,0x0400,(((regs[5]&1))<<2)+1);
     setchr1r(0x10,0x0800,(((regs[5]&1))<<2)+2);
@@ -73,9 +73,9 @@ static void Sync(void)
     setchr1r(0x10,0x1800,(((regs[5]&1)^1)<<2)+6);
     setchr1r(0x10,0x1c00,(((regs[5]&1)^1)<<2)+7);
 */
-//  }
-//  else
-//  {
+/*  }*/
+/*  else*/
+/*  {*/
 /*
     setchr1r(0x10,0x0000,(((regs[5]&1)^1)<<2)+0);
     setchr1r(0x10,0x0400,(((regs[5]&1)^1)<<2)+1);
@@ -85,8 +85,7 @@ static void Sync(void)
     setchr1r(0x10,0x1400,(((regs[5]&1))<<2)+5);
     setchr1r(0x10,0x1800,(((regs[5]&1))<<2)+6);
     setchr1r(0x10,0x1c00,(((regs[5]&1))<<2)+7);
-//  }
-//*/
+}*/
 /*    setchr1r(1,0x0000,test[0]);
     setchr1r(1,0x0400,test[1]);
     setchr1r(1,0x0800,test[2]);
@@ -122,7 +121,7 @@ static void Sync(void)
 
 static DECLFW(M190Write)
 {
-// FCEU_printf("write %04x:%04x %d, %d\n",A,V,scanline,timestamp);
+/* FCEU_printf("write %04x:%04x %d, %d\n",A,V,scanline,timestamp);*/
   regs[(A&0x0F00)>>8]=V;
   switch(A)
   {  
@@ -136,7 +135,7 @@ static DECLFW(M190Write)
 
 static DECLFR(M190Read)
 {
-//  FCEU_printf("read  %04x:%04x %d, %d\n",A,regs[(A&0x0F00)>>8],scanline,timestamp);
+/*  FCEU_printf("read  %04x:%04x %d, %d\n",A,regs[(A&0x0F00)>>8],scanline,timestamp);*/
   return regs[(A&0x0F00)>>8]+regs[0x0B];
 }
 static void VRC5IRQ(int a)
@@ -152,13 +151,13 @@ static void VRC5IRQ(int a)
   }
 }
 
-//static void Mapper190_PPU(uint32 A)
-//{
-//  if(A<0x2000)
-//     setchr4r(0x10,0x1000,QTAINTRAM[A&0x1FFF]&1);
-//  else
-//     chrSync();
-//}
+/*static void Mapper190_PPU(uint32 A)*/
+/*{*/
+/*  if(A<0x2000)*/
+/*     setchr4r(0x10,0x1000,QTAINTRAM[A&0x1FFF]&1);*/
+/*  else*/
+/*     chrSync();*/
+/*}*/
 
 static DECLFW(M1902007Wrap)
 {
@@ -189,7 +188,7 @@ static void M190Power(void)
   SetWriteHandler(0x2007,0x2007,M1902007Wrap);
 
   SetReadHandler(0x6000,0xFFFF,CartBR);
-//  SetWriteHandler(0x5000,0x5007,TestWrite);
+/*  SetWriteHandler(0x5000,0x5007,TestWrite);*/
   SetWriteHandler(0x6000,0x7FFF,CartBW);
   SetWriteHandler(0x8000,0xFFFF,M190Write);
   SetReadHandler(0xDC00,0xDC00,M190Read);
@@ -219,7 +218,7 @@ void Mapper190_Init(CartInfo *info)
   GameStateRestore=StateRestore;
 
   MapIRQHook=VRC5IRQ;
-//  PPU_hook=Mapper190_PPU;
+/*  PPU_hook=Mapper190_PPU;*/
 
   CHRRAM=(uint8*)FCEU_gmalloc(CHRSIZE);
   SetupCartCHRMapping(0x10,CHRRAM,CHRSIZE,1);

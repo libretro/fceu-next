@@ -13,14 +13,15 @@ pal rp2c05004[64] = {
  #include "rp2c05004.h"
 };
 
-pal unvpalette[7] = {
-{ 0x00<<2,0x00<<2,0x00<<2}, // Black
-{ 0x3F<<2,0x3F<<2,0x34<<2}, // White
-{ 0x00<<2,0x00<<2,0x00<<2}, // Black
-{ 0x1d<<2,0x1d<<2,0x24<<2}, // Greyish
-{ 190,0,0    }, // Redish
-{ 51,255,51}, // Bright green
-{ 49,14,200}, 
+pal unvpalette[7] =
+{
+	{ 0x00<<2,0x00<<2,0x00<<2}, /* Black*/
+	{ 0x3F<<2,0x3F<<2,0x34<<2}, /* White*/
+	{ 0x00<<2,0x00<<2,0x00<<2}, /* Black*/
+	{ 0x1d<<2,0x1d<<2,0x24<<2}, /* Greyish*/
+	{ 190,0,0    }, /* Redish*/
+	{ 51,255,51}, /* Bright green*/
+	{ 49,14,200}, 
 };
 
 

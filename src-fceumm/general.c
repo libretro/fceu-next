@@ -45,11 +45,11 @@ static char FileBaseDirectory[2048];
 
 void FCEUI_SetBaseDirectory(char *dir)
 {
- strncpy(BaseDirectory,dir,2047);
- BaseDirectory[2047]=0;
+	strncpy(BaseDirectory,dir,2047);
+	BaseDirectory[2047]=0;
 }
 
-static char *odirs[FCEUIOD__COUNT]={0,0,0,0,0,0};     // odirs, odors. ^_^
+static char *odirs[FCEUIOD__COUNT]={0,0,0,0,0,0};     /* odirs, odors. ^_^*/
 
 void FCEUI_SetDirOverride(int which, const char *n)
 {
@@ -59,15 +59,15 @@ void FCEUI_SetDirOverride(int which, const char *n)
 #ifndef HAVE_ASPRINTF
 static int asprintf(char **strp, const char *fmt, ...)
 {
- va_list ap;
- int ret;
+	va_list ap;
+	int ret;
 
- va_start(ap,fmt);
- if(!(*strp=malloc(2048)))
-  return(0);
- ret=vsnprintf(*strp,2048,fmt,ap);
- va_end(ap);
- return(ret);
+	va_start(ap,fmt);
+	if(!(*strp=malloc(2048)))
+		return(0);
+	ret=vsnprintf(*strp,2048,fmt,ap);
+	va_end(ap);
+	return(ret);
 }
 #endif
 
@@ -140,55 +140,55 @@ const char * FCEU_MakeFName(int type, int id1, const char *cd1)
 
 void GetFileBase(const char *f)
 {
-  const char *tp1,*tp3;
+	const char *tp1,*tp3;
 
- #if PSS_STYLE==4
-     tp1=((char *)strrchr(f,':'));
- #elif PSS_STYLE==1
-     tp1=((char *)strrchr(f,'/'));
- #else
-     tp1=((char *)strrchr(f,'\\'));
-  #if PSS_STYLE!=3
-     tp3=((char *)strrchr(f,'/'));
-     if(tp1<tp3) tp1=tp3;
-  #endif
- #endif
-     if(!tp1)
-     {
-      tp1=f;
-      strcpy(FileBaseDirectory,".");
-     }
-     else
-     {
-      memcpy(FileBaseDirectory,f,tp1-f);
-      FileBaseDirectory[tp1-f]=0;
-      tp1++;
-     }
+#if PSS_STYLE==4
+	tp1=((char *)strrchr(f,':'));
+#elif PSS_STYLE==1
+	tp1=((char *)strrchr(f,'/'));
+#else
+	tp1=((char *)strrchr(f,'\\'));
+#if PSS_STYLE!=3
+	tp3=((char *)strrchr(f,'/'));
+	if(tp1<tp3) tp1=tp3;
+#endif
+#endif
+	if(!tp1)
+	{
+		tp1=f;
+		strcpy(FileBaseDirectory,".");
+	}
+	else
+	{
+		memcpy(FileBaseDirectory,f,tp1-f);
+		FileBaseDirectory[tp1-f]=0;
+		tp1++;
+	}
 
-     if(((tp3=strrchr(f,'.'))!=NULL) && (tp3>tp1))
-     {
-      memcpy(FileBase,tp1,tp3-tp1);
-      FileBase[tp3-tp1]=0;
-      strcpy(FileExt,tp3);
-     }
-     else
-     {
-      strcpy(FileBase,tp1);
-      FileExt[0]=0;
-     }
+	if(((tp3=strrchr(f,'.'))!=NULL) && (tp3>tp1))
+	{
+		memcpy(FileBase,tp1,tp3-tp1);
+		FileBase[tp3-tp1]=0;
+		strcpy(FileExt,tp3);
+	}
+	else
+	{
+		strcpy(FileBase,tp1);
+		FileExt[0]=0;
+	}
 }
 
 uint32 uppow2(uint32 n)
 {
- int x;
+	int x;
 
- for(x=31;x>=0;x--)
-  if(n&(1<<x))
-  {
-   if((1<<x)!=n)
-    return(1<<(x+1));
-   break;
-  }
- return n;
+	for(x=31;x>=0;x--)
+		if(n&(1<<x))
+		{
+			if((1<<x)!=n)
+				return(1<<(x+1));
+			break;
+		}
+	return n;
 }
 

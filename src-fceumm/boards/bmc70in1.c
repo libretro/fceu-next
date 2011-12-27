@@ -58,13 +58,13 @@ static void Sync(void)
 
 static DECLFR(BMC70in1Read)
 {
-  if(bank_mode==0x10)
-//    if(is_large_banks)
-      return CartBR((A&0xFFF0)|hw_switch);
-//    else
-//      return CartBR((A&0xFFF0)|hw_switch);
-  else
-    return CartBR(A);
+	if(bank_mode==0x10)
+		/*    if(is_large_banks)*/
+		return CartBR((A&0xFFF0)|hw_switch);
+	/*    else*/
+	/*      return CartBR((A&0xFFF0)|hw_switch);*/
+	else
+		return CartBR(A);
 }
 
 static DECLFW(BMC70in1Write)

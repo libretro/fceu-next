@@ -36,20 +36,20 @@ static uint8 FT_Read(int w, uint8 ret)
 
 static void FT_Write(uint8 V)
 {
- FTValR=0;
+	FTValR=0;
 
- //printf("%08x\n",FTVal);
- if(!(V&0x1))
-  FTValR=(FTVal>>8);
- else if(!(V&0x2))
-  FTValR=(FTVal>>4);
- else if(!(V&0x4))
-  FTValR=FTVal;
+	/*printf("%08x\n",FTVal);*/
+	if(!(V&0x1))
+		FTValR=(FTVal>>8);
+	else if(!(V&0x2))
+		FTValR=(FTVal>>4);
+	else if(!(V&0x4))
+		FTValR=FTVal;
 
- FTValR=(~FTValR)&0xF;
- if(side=='B')
-  FTValR=((FTValR&0x8)>>3) | ((FTValR&0x4)>>1) | ((FTValR&0x2)<<1) | ((FTValR&0x1)<<3);
- FTValR<<=1;
+	FTValR=(~FTValR)&0xF;
+	if(side=='B')
+		FTValR=((FTValR&0x8)>>3) | ((FTValR&0x4)>>1) | ((FTValR&0x2)<<1) | ((FTValR&0x1)<<3);
+	FTValR<<=1;
 }
 
 static void FT_Update(void *data, int arg)

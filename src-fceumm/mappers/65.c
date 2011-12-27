@@ -37,14 +37,14 @@ void IREMIRQHook(int a)
 
 static DECLFW(Mapper65_write)
 {
- //if(A>=0x9000 && A<=0x9006)
- // printf("$%04x:$%02x, %d\n",A,V,scanline);
+ /*if(A>=0x9000 && A<=0x9006)*/
+ /* printf("$%04x:$%02x, %d\n",A,V,scanline);*/
  switch(A)
  {
-  //default: printf("$%04x:$%02x\n",A,V);
-  //        break;
+  /*default: printf("$%04x:$%02x\n",A,V);*/
+  /*        break;*/
   case 0x8000:ROM_BANK8(0x8000,V);break;
- // case 0x9000:printf("$%04x:$%02x\n",A,V);MIRROR_SET2((V>>6)&1);break;
+ /* case 0x9000:printf("$%04x:$%02x\n",A,V);MIRROR_SET2((V>>6)&1);break;*/
   case 0x9001:MIRROR_SET(V>>7);break;
   case 0x9003:IRQa=V&0x80;X6502_IRQEnd(FCEU_IQEXT);break;
   case 0x9004:IRQCount=IRQLatch;break;
@@ -64,7 +64,7 @@ static DECLFW(Mapper65_write)
   case 0xa000:ROM_BANK8(0xA000,V);break;
   case 0xC000:ROM_BANK8(0xC000,V);break;
  }
- //MIRROR_SET2(1);
+ /*MIRROR_SET2(1);*/
 }
 
 void Mapper65_init(void)

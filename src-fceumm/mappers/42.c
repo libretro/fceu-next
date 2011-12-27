@@ -26,7 +26,7 @@
 
 static DECLFW(Mapper42_write)
 {
-// FCEU_printf("%04x:%04x\n",A,V);
+/* FCEU_printf("%04x:%04x\n",A,V);*/
  switch(A&0xe003)
  {
   case 0x8000:VROM_BANK8(V);break;

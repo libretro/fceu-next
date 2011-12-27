@@ -110,7 +110,7 @@ static DECLFW(Mapper69_write)
                        sungah=V;
                        if(V&0x40)
                         {
-                         if(V&0x80) // Select WRAM
+                         if(V&0x80) /* Select WRAM*/
                           setprg8r(0x10,0x6000,0);
                         }
                         else
@@ -232,7 +232,7 @@ void Mapper69_StateRestore(int version)
 {
    if(mapbyte1[1]&0x40)
    {
-    if(mapbyte1[1]&0x80) // Select WRAM
+    if(mapbyte1[1]&0x80) /* Select WRAM*/
      setprg8r(0x10,0x6000,0);
    }
    else

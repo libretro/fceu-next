@@ -368,9 +368,9 @@ void X6502_Run(int32 cycles)
 #define _PC pbackus
 
 	if(PAL)
-		cycles*=15;    // 15*4=60
+		cycles*=15;    /* 15*4=60*/
 	else
-		cycles*=16;    // 16*4=64
+		cycles*=16;    /* 16*4=64*/
 
 	_count+=cycles;
 
@@ -379,7 +379,7 @@ void X6502_Run(int32 cycles)
 		int32 temp;
 		uint8 b1;
 
-		//   XI.PC=pbackus;
+		/*   XI.PC=pbackus;*/
 		if(_IRQlow)
 		{
 			if(_IRQlow&FCEU_IQRESET)
@@ -441,7 +441,7 @@ void X6502_Run(int32 cycles)
 		_tcount=0;
 		if(MapIRQHook) MapIRQHook(temp);
 		FCEU_SoundCPUHook(temp);
-		//printf("%04x\n",X.PC);
+		/*printf("%04x\n",X.PC);*/
 		X.PC=pbackus;
 		_PC++;
 		switch(b1)

@@ -2,10 +2,10 @@
 
 static DECLFW(M241wr)
 {
-//  FCEU_printf("Wr: $%04x:$%02x, $%04x\n",A,V,X.PC);
+/*  FCEU_printf("Wr: $%04x:$%02x, $%04x\n",A,V,X.PC);*/
  if(A<0x8000)
  {
-// printf("$%04x:$%02x, $%04x\n",A,V,X.PC);
+/* printf("$%04x:$%02x, $%04x\n",A,V,X.PC);*/
  }
  else
   ROM_BANK32(V);
@@ -13,8 +13,8 @@ static DECLFW(M241wr)
 
 static DECLFR(M241rd)
 {
- //DumpMem("out",0x8000,0xffff);
- //printf("Rd: $%04x, $%04x\n",A,X.PC);
+ /*DumpMem("out",0x8000,0xffff);*/
+ /*printf("Rd: $%04x, $%04x\n",A,X.PC);*/
  return(0x50);
 }
 

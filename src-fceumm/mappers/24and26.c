@@ -37,7 +37,7 @@ static int acount=0;
 static void KonamiIRQHook(int a)
 {
   #define LCYCS 341
-//  #define LCYCS ((227*2)+1)
+/*  #define LCYCS ((227*2)+1)*/
   if(IRQa)
   {
    acount+=a*3;
@@ -85,7 +85,7 @@ static DECLFW(Mapper24_write)
          return;
         }
         A&=0xF003;
-//        if(A>=0xF000) printf("%d, %d, $%04x:$%02x\n",scanline,timestamp,A,V);
+/*        if(A>=0xF000) printf("%d, %d, $%04x:$%02x\n",scanline,timestamp,A,V);*/
         switch(A&0xF003)
         {
          case 0x8000:ROM_BANK16(0x8000,V);break;
@@ -108,7 +108,7 @@ static DECLFW(Mapper24_write)
          case 0xE002:VROM_BANK1(0x1800,V);break;
          case 0xE003:VROM_BANK1(0x1c00,V);break;
          case 0xF000:IRQLatch=V;
-                        //acount=0;
+                        /*acount=0;*/
                         break;
          case 0xF001:IRQa=V&2;
                      vrctemp=V&1;

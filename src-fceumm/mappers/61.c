@@ -23,7 +23,7 @@
 
 static DECLFW(Mapper61_write)
 {
-// printf("$%04x:$%02x\n",A,V);
+/* printf("$%04x:$%02x\n",A,V);*/
  switch(A&0x30)
  {
   case 0x00:

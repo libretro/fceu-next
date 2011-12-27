@@ -44,8 +44,8 @@ static DECLFW(MNNNWrite)
 
 static void MNNNPower(void)
 {
-//  SetReadHandler(0x6000,0x7fff,CartBR);
-// SetWriteHandler(0x6000,0x7fff,CartBW);
+/*  SetReadHandler(0x6000,0x7fff,CartBR);*/
+/* SetWriteHandler(0x6000,0x7fff,CartBW);*/
   SetReadHandler(0x8000,0xFFFF,CartBR);
   SetWriteHandler(0x8000,0xFFFF,MNNNWrite);
 }
@@ -77,27 +77,27 @@ static void StateRestore(int version)
 
 void MapperNNN_Init(CartInfo *info)
 {
-  info->Reset=MNNNReset;
-  info->Power=MNNNPower;
-//  info->Close=MNNNClose;
-  GameHBIRQHook=MNNNIRQHook;
-  GameStateRestore=StateRestore;
-/*
-  CHRRAMSIZE=8192;
-  CHRRAM=(uint8*)FCEU_gmalloc(CHRRAMSIZE);
-  SetupCartCHRMapping(0x10,CHRRAM,CHRRAMSIZE,1);
-  AddExState(CHRRAM, CHRRAMSIZE, 0, "CRAM");
-*/
-/*
-  WRAMSIZE=8192;
-  WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
-  SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
-  AddExState(WRAM, WRAMSIZE, 0, "WRAM");
-  if(info->battery)
-  {
-    info->SaveGame[0]=WRAM;
-    info->SaveGameLen[0]=WRAMSIZE;
-  }
-*/
-  AddExState(&StateRegs, ~0, 0, 0);
+	info->Reset=MNNNReset;
+	info->Power=MNNNPower;
+	/*  info->Close=MNNNClose;*/
+	GameHBIRQHook=MNNNIRQHook;
+	GameStateRestore=StateRestore;
+	/*
+	   CHRRAMSIZE=8192;
+	   CHRRAM=(uint8*)FCEU_gmalloc(CHRRAMSIZE);
+	   SetupCartCHRMapping(0x10,CHRRAM,CHRRAMSIZE,1);
+	   AddExState(CHRRAM, CHRRAMSIZE, 0, "CRAM");
+	 */
+	/*
+	   WRAMSIZE=8192;
+	   WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
+	   SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
+	   AddExState(WRAM, WRAMSIZE, 0, "WRAM");
+	   if(info->battery)
+	   {
+	   info->SaveGame[0]=WRAM;
+	   info->SaveGameLen[0]=WRAMSIZE;
+	   }
+	 */
+	AddExState(&StateRegs, ~0, 0, 0);
 }

@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// T-227-1, 820632, MMC3 based, multimenu, 60000in1 (0010) dip switches
+/* T-227-1, 820632, MMC3 based, multimenu, 60000in1 (0010) dip switches*/
 
 #include "mapinc.h"
 #include "mmc3.h"
@@ -27,18 +27,20 @@ static uint8 reset_flag = 0x07;
 
 static void BMCT2271CW(uint32 A, uint8 V)
 {
-    uint32 va = V; 
-    if(EXPREGS[0]&0x20)
-    {
-      va|=0x200;
-      va|=(EXPREGS[0]&0x10)<<4;
-    }
-    else
-    {
-      va&=0x7F;
-      va|=(EXPREGS[0]&0x18)<<4;
-    }
-    setchr1(A,va);
+	uint32 va;
+
+	va = V; 
+	if(EXPREGS[0]&0x20)
+	{
+		va|=0x200;
+		va|=(EXPREGS[0]&0x10)<<4;
+	}
+	else
+	{
+		va&=0x7F;
+		va|=(EXPREGS[0]&0x18)<<4;
+	}
+	setchr1(A,va);
 }
 
 static void BMCT2271PW(uint32 A, uint8 V)

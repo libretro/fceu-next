@@ -64,7 +64,7 @@ static DECLFR(S74LS374NRead)
 {
   uint8 ret;
   if((A&0x4100)==0x4100)
-//    ret=(X.DB&0xC0)|((~cmd)&0x3F);
+/*    ret=(X.DB&0xC0)|((~cmd)&0x3F);*/
     ret=((~cmd)&0x3F)^dip;
   else
     ret=X.DB;
@@ -153,7 +153,7 @@ static void S8259Synco(void)
   int x;
   setprg32(0x8000,latch[5]&7);
 
-  if(!UNIFchrrama)        // No CHR RAM?  Then BS'ing is ok.
+  if(!UNIFchrrama)        /* No CHR RAM?  Then BS'ing is ok.*/
   {
     for(x=0;x<4;x++)
     {
@@ -216,7 +216,7 @@ static void S8259Restore(int version)
   S8259Synco();
 }
 
-void S8259A_Init(CartInfo *info) // Kevin's Horton 141 mapper
+void S8259A_Init(CartInfo *info) /* Kevin's Horton 141 mapper*/
 {
   info->Power=S8259Reset;
   GameStateRestore=S8259Restore;
@@ -225,7 +225,7 @@ void S8259A_Init(CartInfo *info) // Kevin's Horton 141 mapper
   type=0;
 }
 
-void S8259B_Init(CartInfo *info) // Kevin's Horton 138 mapper
+void S8259B_Init(CartInfo *info) /* Kevin's Horton 138 mapper*/
 {
   info->Power=S8259Reset;
   GameStateRestore=S8259Restore;
@@ -234,7 +234,7 @@ void S8259B_Init(CartInfo *info) // Kevin's Horton 138 mapper
   type=1;
 }
 
-void S8259C_Init(CartInfo *info) // Kevin's Horton 139 mapper
+void S8259C_Init(CartInfo *info) /* Kevin's Horton 139 mapper*/
 {
   info->Power=S8259Reset;
   GameStateRestore=S8259Restore;
@@ -243,7 +243,7 @@ void S8259C_Init(CartInfo *info) // Kevin's Horton 139 mapper
   type=2;
 }
 
-void S8259D_Init(CartInfo *info) // Kevin's Horton 137 mapper
+void S8259D_Init(CartInfo *info) /* Kevin's Horton 137 mapper*/
 {
   info->Power=S8259Reset;
   GameStateRestore=S8259Restore;
@@ -362,7 +362,7 @@ void SA0037_Init(CartInfo *info)
   AddExState(&latch[0], 1, 0, "LATC");
 }
 
-// -----------------------------------------------
+/* -----------------------------------------------*/
 
 static void TCU01Synco()
 {
@@ -399,7 +399,7 @@ void TCU01_Init(CartInfo *info)
   AddExState(&latch[0], 1, 0, "LATC");
 }
 
-//-----------------------------------------------
+/*-----------------------------------------------*/
 
 static void TCU02Synco()
 {
@@ -442,7 +442,7 @@ void TCU02_Init(CartInfo *info)
   AddExState(&latch[0], 1, 0, "LATC");
 }
 
-// ---------------------------------------------
+/* ---------------------------------------------*/
 
 static DECLFR(TCA01Read)
 {

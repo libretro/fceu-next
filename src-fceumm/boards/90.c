@@ -20,21 +20,21 @@
  */
 
 #include "mapinc.h"
-//#define DEBUG90
+/*#define DEBUG90*/
 
-// Mapper 090 is simpliest mapper hardware and have not extended nametable control and latched chr banks in 4k mode
-// Mapper 209 much compicated hardware with decribed above features disabled by default and switchable by command
-// Mapper 211 the same mapper 209 but with forced nametable control
+/* Mapper 090 is simpliest mapper hardware and have not extended nametable control and latched chr banks in 4k mode*/
+/* Mapper 209 much compicated hardware with decribed above features disabled by default and switchable by command*/
+/* Mapper 211 the same mapper 209 but with forced nametable control*/
 
 static int is209; 
 static int is211;
 
-static uint8 IRQMode;        // from $c001
-static uint8 IRQPre;         // from $c004
-static uint8 IRQPreSize;     // from $c007
-static uint8 IRQCount;       // from $c005
-static uint8 IRQXOR;         // Loaded from $C006
-static uint8 IRQa;           // $c002, $c003, and $c000
+static uint8 IRQMode;        /* from $c001*/
+static uint8 IRQPre;         /* from $c004*/
+static uint8 IRQPreSize;     /* from $c007*/
+static uint8 IRQCount;       /* from $c005*/
+static uint8 IRQXOR;         /* Loaded from $C006*/
+static uint8 IRQa;           /* $c002, $c003, and $c000*/
 
 static uint8 mul[2];
 static uint8 regie;
@@ -76,16 +76,16 @@ static void mira(void)
   if((tkcom[0]&0x20&&is209)||is211)
   {
     int x;
-    if(tkcom[0]&0x40)        // Name tables are ROM-only
+    if(tkcom[0]&0x40)        /* Name tables are ROM-only*/
     {
       for(x=0;x<4;x++)
          setntamem(CHRptr[0]+(((names[x])&CHRmask1[0])<<10),0,x);
     }
-    else                        // Name tables can be RAM or ROM.
+    else                        /* Name tables can be RAM or ROM.*/
     {
       for(x=0;x<4;x++)
       {
-        if((tkcom[1]&0x80)==(names[x]&0x80))        // RAM selected.
+        if((tkcom[1]&0x80)==(names[x]&0x80))        /* RAM selected.*/
           setntamem(NTARAM+((names[x]&0x1)<<10),1,x);
         else
           setntamem(CHRptr[0]+(((names[x])&CHRmask1[0])<<10),0,x);
@@ -104,7 +104,7 @@ static void mira(void)
   }
 }
 
-static void tekprom(void) // TODO: verify for single, small multi and large multi
+static void tekprom(void) /* TODO: verify for single, small multi and large multi*/
 {
   uint32 bankmode=((tkcom[3]&6)<<5);
   switch(tkcom[0]&7)
@@ -118,16 +118,16 @@ static void tekprom(void) // TODO: verify for single, small multi and large mult
              setprg16(0x8000,(prgb[1]&0x0F)|((tkcom[3]&7)<<4));
              setprg16(0xC000,0x0F|((tkcom[3]&7)<<4));
              break;
-    case 03: // bit reversion
+    case 03: /* bit reversion*/
     case 02: 
              if(tkcom[0]&0x80)
-               setprg8(0x6000,(prgb[3]&0x1F)|((tkcom[3]&7)<<5)); // 45in1 multy has different bits, seems board was hacked to support big data banks
+               setprg8(0x6000,(prgb[3]&0x1F)|((tkcom[3]&7)<<5)); /* 45in1 multy has different bits, seems board was hacked to support big data banks*/
              setprg8(0x8000,(prgb[0]&0x1F)|((tkcom[3]&7)<<5));
              setprg8(0xa000,(prgb[1]&0x1F)|((tkcom[3]&7)<<5));
              setprg8(0xc000,(prgb[2]&0x1F)|((tkcom[3]&7)<<5));
              setprg8(0xe000,0x1F|((tkcom[3]&7)<<5));
-//             setprg8(0xe000,(prgb[3]&0x0F)|((tkcom[3]&6)<<3));
-//             setprg32(0x8000,((prgb[0]&0x0F)>>2)|((tkcom[3]&6)<<3));
+/*             setprg8(0xe000,(prgb[3]&0x0F)|((tkcom[3]&6)<<3));*/
+/*             setprg32(0x8000,((prgb[0]&0x0F)>>2)|((tkcom[3]&6)<<3));*/
              break;
     case 04: if(tkcom[0]&0x80)
                setprg8(0x6000,(((prgb[3]<<2)+3)&0x3F)|bankmode);
@@ -138,7 +138,7 @@ static void tekprom(void) // TODO: verify for single, small multi and large mult
              setprg16(0x8000,(prgb[1]&0x1F)|((tkcom[3]&6)<<4));
              setprg16(0xC000,(prgb[3]&0x1F)|((tkcom[3]&6)<<4));
              break;
-    case 07: // bit reversion
+    case 07: /* bit reversion*/
     case 06: if(tkcom[0]&0x80)
                setprg8(0x6000,(prgb[3]&0x3F)|bankmode);
              setprg8(0x8000,(prgb[0]&0x3F)|bankmode);
@@ -165,20 +165,20 @@ static void tekvrom(void)
   }
   switch(tkcom[0]&0x18)
   {
-    case 0x00:      // 8KB
+    case 0x00:      /* 8KB*/
          setchr8(((chrlow[0]|(chrhigh[0]<<8))&mask)|bank);
          break;
-    case 0x08:      // 4KB
-//         for(x=0;x<8;x+=4)
-//            setchr4(x<<10,((chrlow[x]|(chrhigh[x]<<8))&mask)|bank);
+    case 0x08:      /* 4KB*/
+/*         for(x=0;x<8;x+=4)*/
+/*            setchr4(x<<10,((chrlow[x]|(chrhigh[x]<<8))&mask)|bank);*/
          setchr4(0x0000,((chrlow[chr[0]]|(chrhigh[chr[0]]<<8))&mask)|bank);
          setchr4(0x1000,((chrlow[chr[1]]|(chrhigh[chr[1]]<<8))&mask)|bank);
          break;
-    case 0x10:      // 2KB
+    case 0x10:      /* 2KB*/
          for(x=0;x<8;x+=2)
             setchr2(x<<10,((chrlow[x]|(chrhigh[x]<<8))&mask)|bank);
          break;
-    case 0x18:      // 1KB
+    case 0x18:      /* 1KB*/
          for(x=0;x<8;x++)
             setchr1(x<<10,((chrlow[x]|(chrhigh[x]<<8))&mask)|bank);
          break;
@@ -209,28 +209,28 @@ static DECLFR(M90TekRead)
 
 static DECLFW(M90PRGWrite)
 {
-//  FCEU_printf("bs %04x %02x\n",A,V);
+/*  FCEU_printf("bs %04x %02x\n",A,V);*/
   prgb[A&3]=V;
   tekprom();
 }
 
 static DECLFW(M90CHRlowWrite)
 {
-//  FCEU_printf("bs %04x %02x\n",A,V);
+/*  FCEU_printf("bs %04x %02x\n",A,V);*/
   chrlow[A&7]=V;
   tekvrom();
 }
 
 static DECLFW(M90CHRhiWrite)
 {
-//  FCEU_printf("bs %04x %02x\n",A,V);
+/*  FCEU_printf("bs %04x %02x\n",A,V);*/
   chrhigh[A&7]=V;
   tekvrom();
 }
 
 static DECLFW(M90NTWrite)
 {
-//  FCEU_printf("bs %04x %02x\n",A,V);
+/*  FCEU_printf("bs %04x %02x\n",A,V);*/
   if(A&4)
   {
     names[A&3]&=0x00FF;
@@ -246,14 +246,14 @@ static DECLFW(M90NTWrite)
 
 static DECLFW(M90IRQWrite)
 {
-//  FCEU_printf("bs %04x %02x\n",A,V);
+/*  FCEU_printf("bs %04x %02x\n",A,V);*/
   switch(A&7)
   {
-    case 00: //FCEU_printf("%s IRQ (C000)\n",V&1?"Enable":"Disable");
+    case 00: /*FCEU_printf("%s IRQ (C000)\n",V&1?"Enable":"Disable");*/
              IRQa=V&1;if(!(V&1)) X6502_IRQEnd(FCEU_IQEXT);break;
-    case 02: //FCEU_printf("Disable IRQ (C002) scanline=%d\n", scanline);
+    case 02: /*FCEU_printf("Disable IRQ (C002) scanline=%d\n", scanline);*/
              IRQa=0;X6502_IRQEnd(FCEU_IQEXT);break;
-    case 03: //FCEU_printf("Enable IRQ (C003) scanline=%d\n", scanline);
+    case 03: /*FCEU_printf("Enable IRQ (C003) scanline=%d\n", scanline);*/
              IRQa=1;break;
     case 01: IRQMode=V;
                /*FCEU_printf("IRQ Count method: ");
@@ -270,22 +270,22 @@ static DECLFW(M90IRQWrite)
                 else if((IRQMode>>6)==1) FCEU_printf("Counter Up\n");
                 else FCEU_printf("Counter Stopped\n");*/
               break;
-    case 04: //FCEU_printf("Pre Counter Loaded and Xored wiht C006: %d\n",V^IRQXOR);
+    case 04: /*FCEU_printf("Pre Counter Loaded and Xored wiht C006: %d\n",V^IRQXOR);*/
              IRQPre=V^IRQXOR;break;
-    case 05: //FCEU_printf("Main Counter Loaded and Xored wiht C006: %d\n",V^IRQXOR);
+    case 05: /*FCEU_printf("Main Counter Loaded and Xored wiht C006: %d\n",V^IRQXOR);*/
              IRQCount=V^IRQXOR;break;
-    case 06: //FCEU_printf("Xor Value: %d\n",V);
+    case 06: /*FCEU_printf("Xor Value: %d\n",V);*/
              IRQXOR=V;break;
-    case 07: //if(!(IRQMode&8)) FCEU_printf("C001 is clear, no effect applied\n");
-             //     else if(V==0xFF) FCEU_printf("Prescaler is changed for 12bits\n");
-             //     else FCEU_printf("Counter Stopped\n");
+    case 07: /*if(!(IRQMode&8)) FCEU_printf("C001 is clear, no effect applied\n");*/
+             /*     else if(V==0xFF) FCEU_printf("Prescaler is changed for 12bits\n");*/
+             /*     else FCEU_printf("Counter Stopped\n");*/
              IRQPreSize=V;break;
   }
 }
 
 static DECLFW(M90ModeWrite)
 {
-//    FCEU_printf("bs %04x %02x\n",A,V);
+/*    FCEU_printf("bs %04x %02x\n",A,V);*/
     tkcom[A&3]=V;
     tekprom();
     tekvrom();
@@ -326,12 +326,12 @@ static DECLFW(M90ModeWrite)
 
 static DECLFW(M90DummyWrite)
 {
-//    FCEU_printf("bs %04x %02x\n",A,V);
+/*    FCEU_printf("bs %04x %02x\n",A,V);*/
 }
 
 static void CCL(void)
 {
-  if((IRQMode>>6) == 1) // Count Up
+  if((IRQMode>>6) == 1) /* Count Up*/
   {
     IRQCount++;
     if((IRQCount == 0) && IRQa)
@@ -339,7 +339,7 @@ static void CCL(void)
       X6502_IRQBegin(FCEU_IQEXT);
     }
   }
-  else if((IRQMode>>6) == 2) // Count down
+  else if((IRQMode>>6) == 2) /* Count down*/
   {
     IRQCount--;
     if((IRQCount == 0xFF) && IRQa)
@@ -351,22 +351,22 @@ static void CCL(void)
 
 static void ClockCounter(void)
 {
-  uint8 premask;
+	uint8 premask;
 
-  if(IRQMode & 0x4)
-    premask = 0x7;
-  else
-    premask = 0xFF;
-  if((IRQMode>>6) == 1) // Count up
-  {
-    IRQPre++;
-    if((IRQPre & premask) == 0) CCL();
-  }
-  else if((IRQMode>>6) == 2) // Count down
-  {
-    IRQPre--;
-    if((IRQPre & premask) == premask) CCL();
-  }
+	if(IRQMode & 0x4)
+		premask = 0x7;
+	else
+		premask = 0xFF;
+	if((IRQMode>>6) == 1) /* Count up*/
+	{
+		IRQPre++;
+		if((IRQPre & premask) == 0) CCL();
+	}
+	else if((IRQMode>>6) == 2) /* Count down*/
+	{
+		IRQPre--;
+		if((IRQPre & premask) == premask) CCL();
+	}
 }
 
 void CPUWrap(int a)

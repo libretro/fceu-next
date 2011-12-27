@@ -22,17 +22,18 @@
 
 DECLFW(Mapper86_write)
 {
- if(A>=0x6000 && A<=0x6fFF)
- {
-  VROM_BANK8((V&3)|((V>>4)&4));
-  ROM_BANK32((V>>4)&3);
- }
- //else
- //if(A!=0x6000)
- // printf("$%04x:$%02x\n",A,V);
+	if(A>=0x6000 && A<=0x6fFF)
+	{
+		VROM_BANK8((V&3)|((V>>4)&4));
+		ROM_BANK32((V>>4)&3);
+	}
+	/*else*/
+	/*if(A!=0x6000)*/
+	/* printf("$%04x:$%02x\n",A,V);*/
 }
+
 void Mapper86_init(void)
 {
- SetWriteHandler(0x6000,0x6fff,Mapper86_write);
- SetWriteHandler(0x4020,0xffff,Mapper86_write);
+	SetWriteHandler(0x6000,0x6fff,Mapper86_write);
+	SetWriteHandler(0x4020,0xffff,Mapper86_write);
 }

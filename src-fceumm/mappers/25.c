@@ -31,9 +31,9 @@ static DECLFW(Mapper25_write)
 {
         if(A==0xC007)
 		{
-			weirdo=8; // Ganbare Goemon Gaiden does strange things!!! at the end credits
-		              // quick dirty hack, seems there is no other games with such PCB, so
-		              // we never know if it will not work for something else lol
+			weirdo=8; /* Ganbare Goemon Gaiden does strange things!!! at the end credits*/
+		              /* quick dirty hack, seems there is no other games with such PCB, so*/
+		              /* we never know if it will not work for something else lol*/
 			VROM_BANK1(0x0000,0xFC);
 			VROM_BANK1(0x0400,0xFD);
 			VROM_BANK1(0x0800,0xFF);
@@ -89,22 +89,22 @@ static DECLFW(Mapper25_write)
 
 static void KonamiIRQHook(int a)
 {
-//  #define LCYCS ((227*2))
-  #define LCYCS 341
-  if(IRQa)
-  {
-   acount+=a*3;
-  // acount+=a*4;
-   if(acount>=LCYCS)
-   {
-    doagainbub:acount-=LCYCS;IRQCount++;
-    if(IRQCount&0x100)
-    {//acount=0;
-     X6502_IRQBegin(FCEU_IQEXT);IRQCount=IRQLatch;
-        }
-    if(acount>=LCYCS) goto doagainbub;
-   }
- }
+	/*  #define LCYCS ((227*2))*/
+#define LCYCS 341
+	if(IRQa)
+	{
+		acount+=a*3;
+		/* acount+=a*4;*/
+		if(acount>=LCYCS)
+		{
+doagainbub:acount-=LCYCS;IRQCount++;
+	   if(IRQCount&0x100)
+	   {/*acount=0;*/
+		   X6502_IRQBegin(FCEU_IQEXT);IRQCount=IRQLatch;
+	   }
+	   if(acount>=LCYCS) goto doagainbub;
+		}
+	}
 }
 
 void Mapper25_init(void)

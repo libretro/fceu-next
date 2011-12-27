@@ -24,7 +24,7 @@
 
 void Mapper230_Reset(void)
 {
-        rom_sw ^= 1; //1 - rom_sw;
+        rom_sw ^= 1; /*1 - rom_sw;*/
 
         if( rom_sw ) {
                 ROM_BANK16(0x8000,0);

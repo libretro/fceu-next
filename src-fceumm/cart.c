@@ -147,9 +147,9 @@ DECLFR(CartBR)
 
 DECLFW(CartBW)
 {
- //printf("Ok: %04x:%02x, %d\n",A,V,PRGIsRAM[A>>11]);
- if(PRGIsRAM[A>>11] && Page[A>>11])
-  Page[A>>11][A]=V;
+	/*printf("Ok: %04x:%02x, %d\n",A,V,PRGIsRAM[A>>11]);*/
+	if(PRGIsRAM[A>>11] && Page[A>>11])
+		Page[A>>11][A]=V;
 }
 
 DECLFR(CartBROB)
@@ -514,38 +514,38 @@ static DECLFR(GenieRead)
 
 static DECLFR(GenieFix3)
 {
- uint8 r=GenieBackup[2](A);
+	uint8 r=GenieBackup[2](A);
 
- if((modcon>>3)&1)        // No check
-  return genieval[2];
- else if(r==geniech[2])
-  return genieval[2];
+	if((modcon>>3)&1)        /* No check*/
+		return genieval[2];
+	else if(r==geniech[2])
+		return genieval[2];
 
- return r;
+	return r;
 }
 
 static DECLFR(GenieFix2)
 {
- uint8 r=GenieBackup[1](A);
+	uint8 r=GenieBackup[1](A);
 
- if((modcon>>2)&1)        // No check
-  return genieval[1];
- else if(r==geniech[1])
-  return genieval[1];
+	if((modcon>>2)&1)        /* No check*/
+		return genieval[1];
+	else if(r==geniech[1])
+		return genieval[1];
 
- return r;
+	return r;
 }
 
 static DECLFR(GenieFix1)
 {
- uint8 r=GenieBackup[0](A);
+	uint8 r=GenieBackup[0](A);
 
- if((modcon>>1)&1)    // No check
-  return genieval[0];
- else if(r==geniech[0])
-  return genieval[0];
+	if((modcon>>1)&1)    /* No check*/
+		return genieval[0];
+	else if(r==geniech[0])
+		return genieval[0];
 
- return r;
+	return r;
 }
 
 static void FixGenieMap(void)
@@ -570,67 +570,62 @@ static void FixGenieMap(void)
 
 static DECLFW(GenieWrite)
 {
- switch(A)
- {
-  case 0x800c:
-  case 0x8008:
-  case 0x8004:genieval[((A-4)&0xF)>>2]=V;break;
+	switch(A)
+	{
+		case 0x800c:
+		case 0x8008:
+		case 0x8004:genieval[((A-4)&0xF)>>2]=V;break;
 
-  case 0x800b:
-  case 0x8007:
-  case 0x8003:geniech[((A-3)&0xF)>>2]=V;break;
+		case 0x800b:
+		case 0x8007:
+		case 0x8003:geniech[((A-3)&0xF)>>2]=V;break;
 
-  case 0x800a:
-  case 0x8006:
-  case 0x8002:genieaddr[((A-2)&0xF)>>2]&=0xFF00;genieaddr[((A-2)&0xF)>>2]|=V;break;
+		case 0x800a:
+		case 0x8006:
+		case 0x8002:genieaddr[((A-2)&0xF)>>2]&=0xFF00;genieaddr[((A-2)&0xF)>>2]|=V;break;
 
-  case 0x8009:
-  case 0x8005:
-  case 0x8001:genieaddr[((A-1)&0xF)>>2]&=0xFF;genieaddr[((A-1)&0xF)>>2]|=(V|0x80)<<8;break;
+		case 0x8009:
+		case 0x8005:
+		case 0x8001:genieaddr[((A-1)&0xF)>>2]&=0xFF;genieaddr[((A-1)&0xF)>>2]|=(V|0x80)<<8;break;
 
-  case 0x8000:if(!V)
-         FixGenieMap();
-        else
-        {
-         modcon=V^0xFF;
-         if(V==0x71)
-    modcon=0;
-        }
-        break;
- }
+		case 0x8000:if(!V)
+				    FixGenieMap();
+			    else
+			    {
+				    modcon=V^0xFF;
+				    if(V==0x71)
+					    modcon=0;
+			    }
+			    break;
+	}
 }
-
-
-
-
-
 
 void GeniePower(void)
 {
- uint32 x;
+	uint32 x;
 
- if(!geniestage)
-  return;
+	if(!geniestage)
+		return;
 
- geniestage=1;
- for(x=0;x<3;x++)
- {
-  genieval[x]=0xFF;
-  geniech[x]=0xFF;
-  genieaddr[x]=0xFFFF;
- }
- modcon=0;
+	geniestage=1;
+	for(x=0;x<3;x++)
+	{
+		genieval[x]=0xFF;
+		geniech[x]=0xFF;
+		genieaddr[x]=0xFFFF;
+	}
+	modcon=0;
 
- SetWriteHandler(0x8000,0xFFFF,GenieWrite);
- SetReadHandler(0x8000,0xFFFF,GenieRead);
+	SetWriteHandler(0x8000,0xFFFF,GenieWrite);
+	SetReadHandler(0x8000,0xFFFF,GenieRead);
 
- for(x=0;x<8;x++)
-  VPage[x]=GENIEROM+4096-0x400*x;
+	for(x=0;x<8;x++)
+		VPage[x]=GENIEROM+4096-0x400*x;
 
- if(AllocGenieRW())
-  VPageR=VPageG;
- else
-  geniestage=2;
+	if(AllocGenieRW())
+		VPageR=VPageG;
+	else
+		geniestage=2;
 }
 
 

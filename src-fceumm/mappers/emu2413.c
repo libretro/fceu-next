@@ -120,7 +120,7 @@ static const unsigned char default_inst[15][8] = {
 
 /* AM speed(Hz) and depth(dB) */
 #define AM_SPEED 3.7
-//#define AM_DEPTH 4.8
+/*#define AM_DEPTH 4.8*/
 #define AM_DEPTH 2.4
 
 /* Cut the lower b bit(s) off. */
@@ -679,7 +679,7 @@ maketables (e_uint32 c, e_uint32 r)
     makeTllTable ();
     makeRksTable ();
     makeSinTable ();
-    //makeDefaultPatch ();
+    /*makeDefaultPatch ();*/
   }
 
   if(r != rate)
@@ -736,7 +736,7 @@ OPLL_reset (OPLL * opll)
   for (i = 0; i < 6; i++)
   {
     opll->key_status[i] = 0;
-    //setPatch (opll, i, 0);
+    /*setPatch (opll, i, 0);*/
   }
 
   for (i = 0; i < 0x40; i++)

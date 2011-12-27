@@ -35,22 +35,22 @@ static SFORMAT StateRegs[]=
   {reg, 16, "REGS"},
   {&IRQa, 1, "IRQA"},
   {&IRQCount, 2, "IRQC"},
-  {&IRQLatch, 2, "IRQL"}, // need for Famicom Jump II - Saikyou no 7 Nin (J) [!]
+  {&IRQLatch, 2, "IRQL"}, /* need for Famicom Jump II - Saikyou no 7 Nin (J) [!]*/
   {0}
 };
 
 static void BandaiIRQHook(int a)
 {
-  if(IRQa)
-  {
-    IRQCount-=a;
-    if(IRQCount<0)
-    {
-      X6502_IRQBegin(FCEU_IQEXT);
-      IRQa=0;
-      IRQCount=0xFFFF;
-    }
-  }
+	if(IRQa)
+	{
+		IRQCount-=a;
+		if(IRQCount<0)
+		{
+			X6502_IRQBegin(FCEU_IQEXT);
+			IRQa=0;
+			IRQCount=0xFFFF;
+		}
+	}
 }
 
 static void BandaiSync(void)
@@ -86,20 +86,20 @@ static void BandaiSync(void)
 
 static DECLFW(BandaiWrite)
 {
-  A&=0x0F;  
-  if(A<0x0A)
-  {
-    reg[A&0x0F]=V;
-    BandaiSync();
-  }
-  else
-    switch(A)
-    {
-      case 0x0A: X6502_IRQEnd(FCEU_IQEXT); IRQa=V&1; IRQCount=IRQLatch; break;
-      case 0x0B: IRQLatch&=0xFF00; IRQLatch|=V; break;
-      case 0x0C: IRQLatch&=0xFF; IRQLatch|=V<<8; break;
-      case 0x0D: break;// Serial EEPROM control port 
-    }
+	A&=0x0F;  
+	if(A<0x0A)
+	{
+		reg[A&0x0F]=V;
+		BandaiSync();
+	}
+	else
+		switch(A)
+		{
+			case 0x0A: X6502_IRQEnd(FCEU_IQEXT); IRQa=V&1; IRQCount=IRQLatch; break;
+			case 0x0B: IRQLatch&=0xFF00; IRQLatch|=V; break;
+			case 0x0C: IRQLatch&=0xFF; IRQLatch|=V<<8; break;
+			case 0x0D: break;/* Serial EEPROM control port */
+		}
 }
 
 static void BandaiPower(void)
@@ -141,31 +141,31 @@ void Mapper16_Init(CartInfo *info)
   AddExState(&StateRegs, ~0, 0, 0);
 }
 
-// Famicom jump 2:
-// 0-7: Lower bit of data selects which 256KB PRG block is in use.
-// This seems to be a hack on the developers' part, so I'll make emulation
-// of it a hack(I think the current PRG block would depend on whatever the
-// lowest bit of the CHR bank switching register that corresponds to the
-// last CHR address read).
+/* Famicom jump 2:*/
+/* 0-7: Lower bit of data selects which 256KB PRG block is in use.*/
+/* This seems to be a hack on the developers' part, so I'll make emulation*/
+/* of it a hack(I think the current PRG block would depend on whatever the*/
+/* lowest bit of the CHR bank switching register that corresponds to the*/
+/* last CHR address read).*/
 
 void Mapper153_Init(CartInfo *info)
 {
-  is153=1;
-  info->Power=M153Power;
-  info->Close=M153Close;
-  MapIRQHook=BandaiIRQHook;
+	is153=1;
+	info->Power=M153Power;
+	info->Close=M153Close;
+	MapIRQHook=BandaiIRQHook;
 
-  WRAMSIZE=8192;
-  WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
-  SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
-  AddExState(WRAM, WRAMSIZE, 0, "WRAM");
+	WRAMSIZE=8192;
+	WRAM=(uint8*)FCEU_gmalloc(WRAMSIZE);
+	SetupCartPRGMapping(0x10,WRAM,WRAMSIZE,1);
+	AddExState(WRAM, WRAMSIZE, 0, "WRAM");
 
-  if(info->battery)
-  {
-    info->SaveGame[0]=WRAM;
-    info->SaveGameLen[0]=WRAMSIZE;
-  }
+	if(info->battery)
+	{
+		info->SaveGame[0]=WRAM;
+		info->SaveGameLen[0]=WRAMSIZE;
+	}
 
-  GameStateRestore=StateRestore;
-  AddExState(&StateRegs, ~0, 0, 0);
+	GameStateRestore=StateRestore;
+	AddExState(&StateRegs, ~0, 0, 0);
 }

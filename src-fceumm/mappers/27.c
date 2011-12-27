@@ -25,10 +25,10 @@ static DECLFW(Mapper27_write)
                   case 3:setmirror(MI_1);break;
                }
   case 0x9002: regchr[8]=V; break;
-  case 0xF000: //X6502_IRQEnd(FCEU_IQEXT);
+  case 0xF000: /*X6502_IRQEnd(FCEU_IQEXT);*/
                IRQLatch=(IRQLatch&0xF0)|(V&0x0F);
                            break;
-  case 0xF001: //X6502_IRQEnd(FCEU_IQEXT);
+  case 0xF001: /*X6502_IRQEnd(FCEU_IQEXT);*/
                IRQLatch=(IRQLatch&0x0F)|((V&0xF)<<4);
                            break;
   case 0xF003: IRQa=((IRQa&0x1)<<1)|(IRQa&0x1);
@@ -36,15 +36,15 @@ static DECLFW(Mapper27_write)
                break;
   case 0xF002: IRQa=V&3;
                            if(IRQa&0x02) IRQCount=IRQLatch-1;
-//                           X6502_IRQEnd(FCEU_IQEXT);
+/*                           X6502_IRQEnd(FCEU_IQEXT);*/
                            break;
  }
-// if((A&0xF000)==0xF000) FCEU_printf("$%04x:$%02x, %d\n",A,V, scanline);
+/* if((A&0xF000)==0xF000) FCEU_printf("$%04x:$%02x, %d\n",A,V, scanline);*/
 }
 
 static void Mapper27_hb(void)
 {
-//   FCEU_printf("%02x-%d,%d,%d\n",scanline,IRQa,IRQCount,IRQLatch);
+/*   FCEU_printf("%02x-%d,%d,%d\n",scanline,IRQa,IRQCount,IRQLatch);*/
         if(IRQa&0x2){
            if(IRQCount==0xFF){
              X6502_IRQBegin(FCEU_IQEXT);

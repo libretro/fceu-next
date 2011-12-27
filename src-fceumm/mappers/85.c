@@ -74,7 +74,7 @@ DECLFW(Mapper85_write)
 
         if(A>=0xa000 && A<=0xDFFF)
         {
-        // printf("$%04x, $%04x\n",X.PC,A);
+        /* printf("$%04x, $%04x\n",X.PC,A);*/
          A&=0xF010;
          {
           int x=((A>>4)&1)|((A-0xA000)>>11);
@@ -117,7 +117,7 @@ DECLFW(Mapper85_write)
 static void KonamiIRQHook(int a)
 {
   #define ACBOO 341
-//  #define ACBOO ((227*2)+1)
+/*  #define ACBOO ((227*2)+1)*/
   if(IRQa)
    {
     acount+=a*3;
@@ -150,7 +150,7 @@ void Mapper85_StateRestore(int version)
  for(x=0;x<3;x++)
   setprg8(0x8000+x*8192,mapbyte2[x]);
  DaMirror(mapbyte2[3]);
- //LoadOPL();
+ /*LoadOPL();*/
 }
 
 static void M85SC(void)
@@ -190,7 +190,7 @@ void Mapper85_init(void)
   GameStateRestore=Mapper85_StateRestore;
   if(!VROM_size)
    SetupCartCHRMapping(0, CHRRAM, 8192, 1);
-  //AddExState(VRC7Instrument, 16, 0, "VC7I");
-  //AddExState(VRC7Chan, sizeof(VRC7Chan), 0, "V7CH");
+  /*AddExState(VRC7Instrument, 16, 0, "VC7I");*/
+  /*AddExState(VRC7Chan, sizeof(VRC7Chan), 0, "V7CH");*/
   VRC7SI();
 }

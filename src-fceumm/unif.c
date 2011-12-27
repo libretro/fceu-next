@@ -75,54 +75,64 @@ static uint32 mallocedsizes[32];
 
 static int FixRomSize(uint32 size, uint32 minimum)
 {
-  int x=1;
+	int x=1;
 
-  if(size<minimum)
-    return minimum;
-  while(x<size)
-   x<<=1;
-  return x;
+	if(size<minimum)
+		return minimum;
+	while(x<size)
+		x<<=1;
+	return x;
 }
 
 static void FreeUNIF(void)
 {
- int x;
- if(UNIFchrrama)
-   {free(UNIFchrrama);UNIFchrrama=0;}
- if(boardname)
-   {free(boardname);boardname=0;}
- for(x=0;x<32;x++)
- {
-  if(malloced[x])
-    {free(malloced[x]);malloced[x]=0;}
- }
+	int x;
+
+	if(UNIFchrrama)
+	{
+		free(UNIFchrrama);
+		UNIFchrrama=0;
+	}
+
+	if(boardname)
+	{
+		free(boardname);
+		boardname=0;
+	}
+
+	for(x=0;x<32;x++)
+	{
+		if(malloced[x])
+		{free(malloced[x]);malloced[x]=0;}
+	}
 }
 
 static void ResetUNIF(void)
 {
- int x;
- for(x=0;x<32;x++)
-    malloced[x]=0;
- vramo=0;
- boardname=0;
- mirrortodo=0;
- memset(&UNIFCart,0,sizeof(UNIFCart));
- UNIFchrrama=0;
+	int x;
+
+	for(x=0;x<32;x++)
+		malloced[x]=0;
+	vramo=0;
+	boardname=0;
+	mirrortodo=0;
+	memset(&UNIFCart,0,sizeof(UNIFCart));
+	UNIFchrrama=0;
 }
 
 static uint8 exntar[2048];
 
 static void MooMirroring(void)
 {
- if(mirrortodo<0x4)
-   SetupCartMirroring(mirrortodo,1,0);
- else if(mirrortodo==0x4)
- {
-  SetupCartMirroring(4,1,exntar);
-  AddExState(exntar, 2048, 0,"EXNR");
- }
- else
-  SetupCartMirroring(0,0,0);
+	if(mirrortodo<0x4)
+		SetupCartMirroring(mirrortodo,1,0);
+	else if(mirrortodo==0x4)
+	{
+		SetupCartMirroring(4,1,exntar);
+		AddExState(exntar, 2048, 0,"EXNR");
+	}
+	else
+		SetupCartMirroring(0,0,0);
 }
 
 static int DoMirroring(FCEUFILE *fp)
@@ -200,21 +210,21 @@ static int DINF(FCEUFILE *fp)
 
 static int CTRL(FCEUFILE *fp)
 {
- int t;
+	int t;
 
- if((t=FCEU_fgetc(fp))==EOF)
-  return(0);
- /* The information stored in this byte isn't very helpful, but it's
-    better than nothing...maybe.
- */
+	if((t=FCEU_fgetc(fp))==EOF)
+		return(0);
 
- if(t&1) FCEUGameInfo->input[0]=FCEUGameInfo->input[1]=SI_GAMEPAD;
- else FCEUGameInfo->input[0]=FCEUGameInfo->input[1]=SI_NONE;
+	/* The information stored in this byte isn't very helpful, but it's
+	   better than nothing...maybe. */
 
- if(t&2) FCEUGameInfo->input[1]=SI_ZAPPER;
- //else if(t&0x10) FCEUGameInfo->input[1]=SI_POWERPAD;
+	if(t&1) FCEUGameInfo->input[0]=FCEUGameInfo->input[1]=SI_GAMEPAD;
+	else FCEUGameInfo->input[0]=FCEUGameInfo->input[1]=SI_NONE;
 
- return(1);
+	if(t&2) FCEUGameInfo->input[1]=SI_ZAPPER;
+	/*else if(t&0x10) FCEUGameInfo->input[1]=SI_POWERPAD;*/
+
+	return(1);
 }
 
 static int TVCI(FCEUFILE *fp)
@@ -342,7 +352,7 @@ static BMAPPING bmap[] = {
  { "Sachen-8259C", S8259C_Init,0},
  { "Sachen-8259D", S8259D_Init,0},
  { "Sachen-74LS374N", S74LS374N_Init,0},
- { "Sachen-74LS374NA", S74LS374NA_Init,0}, //seems to be custom mapper
+ { "Sachen-74LS374NA", S74LS374NA_Init,0}, /*seems to be custom mapper*/
  { "SA-002", TCU02_Init, 0},
  { "SA-016-1M", SA0161M_Init,0},
  { "SA-72007", SA72007_Init,0},
@@ -352,11 +362,11 @@ static BMAPPING bmap[] = {
  { "SA-0037", SA0037_Init,0},
  { "SA-NROM", TCA01_Init,0},
 
-// /* AVE carts. */
-// { "MB-91", MB91_Init,0},  // DeathBots
-// { "NINA-06", NINA06_Init,0},  // F-15 City War
-// { "NINA-03", NINA03_Init,0},  // Tiles of Fate
-// { "NINA-001", NINA001_Init,0}, // Impossible Mission 2
+/* AVE carts. */
+/* { "MB-91", MB91_Init,0},  // DeathBots*/
+/* { "NINA-06", NINA06_Init,0},  // F-15 City War*/
+/* { "NINA-03", NINA03_Init,0},  // Tiles of Fate*/
+/* { "NINA-001", NINA001_Init,0}, // Impossible Mission 2*/
 
  { "ANROM", ANROM_Init,0},
 
@@ -397,11 +407,11 @@ static BMAPPING bmap[] = {
 
  { "CPROM", CPROM_Init,BMCFLAG_16KCHRR},
  { "CNROM", CNROM_Init,0},
- { "NROM", NROM_Init,0 }, //NROM256_Init,0 },
- { "NROM-128", NROM_Init,0 }, //NROM128_Init,0 },
- { "NROM-256", NROM_Init,0 }, //NROM256_Init,0 },
- { "RROM", NROM_Init,0 }, //NROM128_Init,0 },
- { "RROM-128", NROM_Init,0 }, //NROM128_Init,0 },
+ { "NROM", NROM_Init,0 }, /*NROM256_Init,0 },*/
+ { "NROM-128", NROM_Init,0 }, /*NROM128_Init,0 },*/
+ { "NROM-256", NROM_Init,0 }, /*NROM256_Init,0 },*/
+ { "RROM", NROM_Init,0 }, /*NROM128_Init,0 },*/
+ { "RROM-128", NROM_Init,0 }, /*NROM128_Init,0 },*/
  { "MHROM", MHROM_Init,0},
  { "UNROM", UNROM_Init,0},
  { "UOROM", UNROM_Init,0},
@@ -515,7 +525,7 @@ int LoadUNIFChunks(FCEUFILE *fp)
      return 0;
     t=0;
     x=0;
-    //printf("Funky: %s\n",((uint8 *)&uchead));
+    /*printf("Funky: %s\n",((uint8 *)&uchead));*/
     while(bfunc[x].name)
     {
      if(!memcmp(&uchead,bfunc[x].name,strlen(bfunc[x].name)))

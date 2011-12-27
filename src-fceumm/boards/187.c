@@ -27,32 +27,32 @@
 
 static void M187CW(uint32 A, uint8 V)
 {
-  if((A&0x1000)==((MMC3_cmd&0x80)<<5))
-    setchr1(A,V|0x100);
-  else
-  setchr1(A,V);
+	if((A&0x1000)==((MMC3_cmd&0x80)<<5))
+		setchr1(A,V|0x100);
+	else
+		setchr1(A,V);
 }
 
 static void M187PW(uint32 A, uint8 V)
 {
-  if(EXPREGS[0]&0x80)
-  {
-    uint8 bank=EXPREGS[0]&0x1F;
-    if(EXPREGS[0]&0x20)
-    {
-      if(EXPREGS[0]&0x40)
-        setprg32(0x8000,bank>>2);
-      else
-        setprg32(0x8000,bank>>1); // hacky hacky! two mappers in one! need real hw carts to test
-    }
-    else
-    {
-      setprg16(0x8000,bank);
-      setprg16(0xC000,bank);
-    }
-  }
-  else
-    setprg8(A,V&0x3F);
+	if(EXPREGS[0]&0x80)
+	{
+		uint8 bank=EXPREGS[0]&0x1F;
+		if(EXPREGS[0]&0x20)
+		{
+			if(EXPREGS[0]&0x40)
+				setprg32(0x8000,bank>>2);
+			else
+				setprg32(0x8000,bank>>1); /* hacky hacky! two mappers in one! need real hw carts to test*/
+		}
+		else
+		{
+			setprg16(0x8000,bank);
+			setprg16(0xC000,bank);
+		}
+	}
+	else
+		setprg8(A,V&0x3F);
 }
 
 static DECLFW(M187Write8000)

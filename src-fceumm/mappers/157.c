@@ -29,7 +29,7 @@ static void BandaiIRQHook(int a)
    if(IRQCount<0)
    {
     X6502_IRQBegin(FCEU_IQEXT);
-//    FCEU_printf("IRQ: %d, %d\n",scanline,timestamp);
+/*    FCEU_printf("IRQ: %d, %d\n",scanline,timestamp);*/
     IRQa=0;
     IRQCount=0xFFFF;
    }
@@ -60,7 +60,7 @@ static DECLFW(Mapper16_write)
                   break;
          case 0xC:IRQLatch&=0xFF; IRQLatch|=V<<8;
                   break;
-         case 0xD: break;// Serial EEPROM control port 
+         case 0xD: break;/* Serial EEPROM control port */
  }
 }
 
@@ -145,7 +145,7 @@ int FCEUI_DatachSet(const uint8 *rcode)
          csum=0;
          for(i=0;i<12;i++) csum+=code[i]*((i&1)?3:1);
          csum=(10-(csum%10))%10;
-         //printf("%d\n",csum);
+         /*printf("%d\n",csum);*/
          for(j=0;j<7;j++)
          {
           BS(data_right[csum][j]);

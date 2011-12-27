@@ -70,7 +70,7 @@ static void Sync(void)
 
 static DECLFW(MYOKOWrite)
 {
-//  FCEU_printf("bs %04x %02x\n",A,V);
+/*  FCEU_printf("bs %04x %02x\n",A,V);*/
   switch(A & 0x8C17)
   {
     case 0x8000: bank=V; break;
@@ -90,19 +90,19 @@ static DECLFW(MYOKOWrite)
 
 static DECLFR(MYOKOReadDip)
 {
-//  FCEU_printf("read %04x\n",A);
+/*  FCEU_printf("read %04x\n",A);*/
   return (X.DB&0xFC)|dip;
 }
 
 static DECLFR(MYOKOReadLow)
 {
-//  FCEU_printf("read %04x\n",A);
+/*  FCEU_printf("read %04x\n",A);*/
   return low[A & 3];
 }
 
 static DECLFW(MYOKOWriteLow)
 {
-//  FCEU_printf("bs %04x\n",A);
+/*  FCEU_printf("bs %04x\n",A);*/
   low[A & 3] = V;
 }
 

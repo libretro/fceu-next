@@ -28,8 +28,8 @@ static DECLFW(Mapper255_write)
  uint32 cbank=A&0x3F;
  uint32 rbank=(A>>14)&1;
 
-// printf("$%04x:$%02x\n",A,V);
-// printf("%2x:%2x:%2x,%2x\n",pbank,cbank,rbank,(A&0x40)>>6);
+/* printf("$%04x:$%02x\n",A,V);*/
+/* printf("%2x:%2x:%2x,%2x\n",pbank,cbank,rbank,(A&0x40)>>6);*/
 
  if(A&0x1000)
  {
@@ -46,14 +46,14 @@ static DECLFW(Mapper255_write)
 
 static DECLFW(Mapper255_wl)
 {
-// printf("Wr: $%04x:$%02x\n",A,V);
+/* printf("Wr: $%04x:$%02x\n",A,V);*/
  mapbyte1[A&3]=V&0xF;
 }
 
 static DECLFR(Mapper255_read)
 {
- //printf("Rd: $%04x\n",A);
- return(mapbyte1[A&3]); //|(X.DB&0xF0));
+ /*printf("Rd: $%04x\n",A);*/
+ return(mapbyte1[A&3]); /*|(X.DB&0xF0));*/
 }
 
 void Mapper255_init(void)

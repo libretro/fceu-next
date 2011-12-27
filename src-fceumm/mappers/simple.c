@@ -58,7 +58,7 @@ static DECLFW(Mapper96_write)
 static void M96Hook(uint32 A)
 {
  if((A&0x3000)!=0x2000) return;
- //if((A&0x3ff)>=0x3c0) return;
+ /*if((A&0x3ff)>=0x3c0) return;*/
  M96LA=(A>>8)&3;
  setchr4r(0x10,0x0000,(latche&4)|M96LA);
 }

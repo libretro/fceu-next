@@ -362,7 +362,6 @@ extern unzFile ZEXPORT unzOpen(path)
     return NULL;
 
   fin=fopen(path,"rb");
-  //fin=fopen(path,"rb");
   if(fin==NULL)
     return NULL;
 

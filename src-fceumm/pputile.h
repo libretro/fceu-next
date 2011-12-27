@@ -19,7 +19,7 @@
    pixdata=ppulut1[(pshift[0]>>(8-XOffset))&0xFF]|ppulut2[(pshift[1]>>(8-XOffset))&0xFF];
 
    pixdata|=ppulut3[XOffset|(atlatch<<3)];
-   //printf("%02x ",ppulut3[XOffset|(atlatch<<3)]);
+   /*printf("%02x ",ppulut3[XOffset|(atlatch<<3)]);*/
 
    P[0]=S[pixdata&0xF];
    pixdata>>=4;

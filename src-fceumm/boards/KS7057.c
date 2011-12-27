@@ -32,33 +32,33 @@ static SFORMAT StateRegs[]=
 
 static void Sync(void)
 {
-  setprg2(0x6000,reg[4]); // A.0, 9.1, 9.2
-  setprg2(0x6800,reg[5]); // 8.0, 9.3
-  setprg2(0x7000,reg[6]); // 8.1
-  setprg2(0x7800,reg[7]); // 8.2
-  setprg2(0x8000,reg[0]); // 8.3
-  setprg2(0x8800,reg[1]); // 9.0
-  setprg2(0x9000,reg[2]); // C.2, 3.2, 7.3
-  setprg2(0x9800,reg[3]); // C.3
-  setprg2(0xA000,0x34); // D.0
-  setprg2(0xA800,0x35); // D.1
-  setprg2(0xB000,0x36); // D.2
-  setprg2(0xB800,0x37); // D.3
-  setprg2(0xC000,0x28); // WTF?
-  setprg2(0xC800,0x29); // A.1
-  setprg2(0xD000,0x2A); // A.2
-  setprg2(0xD800,0x2B); // A.3
-  setprg2(0xE000,0x2C); // B.0
-  setprg2(0xE800,0x2D); // B.1
-  setprg2(0xF000,0x2E); // B.2
-  setprg2(0xF800,0x2F); // B.3
+  setprg2(0x6000,reg[4]); /* A.0, 9.1, 9.2*/
+  setprg2(0x6800,reg[5]); /* 8.0, 9.3*/
+  setprg2(0x7000,reg[6]); /* 8.1*/
+  setprg2(0x7800,reg[7]); /* 8.2*/
+  setprg2(0x8000,reg[0]); /* 8.3*/
+  setprg2(0x8800,reg[1]); /* 9.0*/
+  setprg2(0x9000,reg[2]); /* C.2, 3.2, 7.3*/
+  setprg2(0x9800,reg[3]); /* C.3*/
+  setprg2(0xA000,0x34); /* D.0*/
+  setprg2(0xA800,0x35); /* D.1*/
+  setprg2(0xB000,0x36); /* D.2*/
+  setprg2(0xB800,0x37); /* D.3*/
+  setprg2(0xC000,0x28); /* WTF?*/
+  setprg2(0xC800,0x29); /* A.1*/
+  setprg2(0xD000,0x2A); /* A.2*/
+  setprg2(0xD800,0x2B); /* A.3*/
+  setprg2(0xE000,0x2C); /* B.0*/
+  setprg2(0xE800,0x2D); /* B.1*/
+  setprg2(0xF000,0x2E); /* B.2*/
+  setprg2(0xF800,0x2F); /* B.3*/
   setchr8(0);
   setmirror(MI_V);
 }
 
 static DECLFW(UNLKS7057Write)
 {
-//  FCEU_printf("%04X:%02X\n",A,V);
+/*  FCEU_printf("%04X:%02X\n",A,V);*/
   switch(A) {
    case 0x9000: reg[16] = V; Sync(); break;
    case 0xB000: reg[0] = (reg[0] & 0xF0) | (V & 0x0F); Sync(); break;

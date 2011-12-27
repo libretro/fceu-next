@@ -38,7 +38,7 @@ static void OK_Write(uint8 V)
 	{
 		int32 vx,vy;
 
-		//puts("Redo");
+		/*puts("Redo");*/
 		OKValR=OKData=0;
 
 		if(OKB) OKData|=1;
@@ -72,7 +72,7 @@ static void OK_Write(uint8 V)
 
 static void OK_Update(void *data, int arg)
 {
-	//puts("Sync");
+	/*puts("Sync");*/
 	OKX=((uint32*)data)[0];
 	OKY=((uint32*)data)[1];
 	OKB=((uint32*)data)[2];

@@ -45,7 +45,7 @@ void FlipByteOrder(uint8 *src, uint32 count)
 	}
 }
 
-///writes a little endian 16bit value to the specified file
+/*/writes a little endian 16bit value to the specified file*/
 int write16le(uint16 b, FILE *fp)
 {
 	uint8 s[2];
@@ -54,7 +54,7 @@ int write16le(uint16 b, FILE *fp)
 	return((fwrite(s,1,2,fp)<2)?0:2);
 }
 
-///writes a little endian 32bit value to the specified file
+/*/writes a little endian 32bit value to the specified file*/
 int write32le(uint32 b, FILE *fp)
 {
 	uint8 s[4];
@@ -124,7 +124,7 @@ void FCEU_en32lsb(uint8 *buf, uint32 morp)
 	buf[3]=morp>>24;
 }
 
-///unpacks a 32bit little endian value from the provided byte array into host byte order
+/*/unpacks a 32bit little endian value from the provided byte array into host byte order*/
 uint32 FCEU_de32lsb(uint8 *morp)
 {
 	return(morp[0]|(morp[1]<<8)|(morp[2]<<16)|(morp[3]<<24));

@@ -81,8 +81,8 @@ typedef struct __cartdata {
 } cartdata;
 
 
-// ETROM seems to have 16KB of WRAM, ELROM seems to have 8KB
-// EWROM seems to have 32KB of WRAM
+/* ETROM seems to have 16KB of WRAM, ELROM seems to have 8KB*/
+/* EWROM seems to have 32KB of WRAM*/
 
 cartdata MMC5CartList[]=
 {
@@ -203,7 +203,7 @@ static void MMC5CHRB(void)
 
 static void MMC5WRAM(uint32 A, uint32 V)
 {
-  //printf("%02x\n",V);
+  /*printf("%02x\n",V);*/
   V=MMC5WRAMIndex[V&7];
   if(V!=255)
   {
@@ -387,10 +387,10 @@ static DECLFW(MMC5_ExRAMWr)
 static DECLFR(MMC5_ExRAMRd)
 {
  /* Not sure if this is correct, so I'll comment it out for now. */
- //if(MMC5HackCHRMode>=2)
+ /*if(MMC5HackCHRMode>=2)*/
   return ExRAM[A&0x3ff];
- //else
- // return(X.DB);
+ /*else*/
+ /* return(X.DB);*/
 }
 
 static DECLFR(MMC5_read)
@@ -532,7 +532,7 @@ static DECLFW(Mapper5_SW)
     case 0x11:if(psfun) psfun();MMC5Sound.raw=V;break;
 
     case 0x0:
-    case 0x4://printf("%04x:$%02x\n",A,V&0x30);
+    case 0x4:/*printf("%04x:$%02x\n",A,V&0x30);*/
               if(sfun) sfun(A>>2);
               MMC5Sound.env[A>>2]=V;
               break;
@@ -542,7 +542,7 @@ static DECLFW(Mapper5_SW)
               MMC5Sound.wl[A>>2]|=V&0xFF;
               break;
     case 0x3:
-    case 0x7://printf("%04x:$%02x\n",A,V>>3);
+    case 0x7:/*printf("%04x:$%02x\n",A,V>>3);*/
            MMC5Sound.wl[A>>2]&=~0x0700;
            MMC5Sound.wl[A>>2]|=(V&0x07)<<8;
            MMC5Sound.running|=1<<(A>>2);
@@ -554,7 +554,7 @@ static DECLFW(Mapper5_SW)
             }
             MMC5Sound.running&=V;
             MMC5Sound.enable=V;
-                //printf("%02x\n",V);
+                /*printf("%02x\n",V);*/
             break;
  }
 }
@@ -727,7 +727,7 @@ static void GenMMC5Reset(void)
  SetWriteHandler(0x5205,0x5206,Mapper5_write);
  SetReadHandler(0x5205,0x5206,MMC5_read);
 
- //GameHBIRQHook=MMC5_hb;
+ /*GameHBIRQHook=MMC5_hb;*/
  FCEU_CheatAddRAM(8,0x6000,WRAM);
  FCEU_CheatAddRAM(1,0x5c00,ExRAM);
 }
@@ -803,12 +803,12 @@ void Mapper5_Init(CartInfo *info)
  GenMMC5_Init(info, DetectMMC5WRAMSize(info->CRC32), info->battery);
 }
 
-// ELROM seems to have 0KB of WRAM
-// EKROM seems to have 8KB of WRAM
-// ETROM seems to have 16KB of WRAM
-// EWROM seems to have 32KB of WRAM
+/* ELROM seems to have 0KB of WRAM*/
+/* EKROM seems to have 8KB of WRAM*/
+/* ETROM seems to have 16KB of WRAM*/
+/* EWROM seems to have 32KB of WRAM*/
 
-// ETROM and EWROM are battery-backed, EKROM isn't.
+/* ETROM and EWROM are battery-backed, EKROM isn't.*/
 
 void ETROM_Init(CartInfo *info)
 {

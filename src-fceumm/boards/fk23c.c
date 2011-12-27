@@ -109,8 +109,8 @@ static DECLFW(BMCFK23CHiWrite)
 		}
 		else
 			if(A<0xC000) {
-				if(UNIFchrrama) { // hacky... strange behaviour, must be bit scramble due to pcb layot restrictions
-					// check if it not interfer with other dumps
+				if(UNIFchrrama) { /* hacky... strange behaviour, must be bit scramble due to pcb layot restrictions*/
+					/* check if it not interfer with other dumps*/
 					if((A==0x8000)&&(V==0x46))
 						V=0x47;
 					else if((A==0x8000)&&(V==0x47))
@@ -126,23 +126,23 @@ static DECLFW(BMCFK23CHiWrite)
 
 static DECLFW(BMCFK23CWrite)
 {
-//  FCEU_printf("lo %04x:%02x\n",A,V);
-  if(dipswitch) // нулевой дип берет любые записи по дефолту, дальше идет выбор
-  {
-    if(A&(1<<(dipswitch+3))) {
-      EXPREGS[A&3]=V;
-//      FCEU_printf(" reg %d set!\n",A&3);
-      FixMMC3PRG(MMC3_cmd);
-      FixMMC3CHR(MMC3_cmd);
-    }
-  }
-  else
-  {
-    EXPREGS[A&3]=V;
-//    FCEU_printf(" reg %d set!\n",A&3);
-    FixMMC3PRG(MMC3_cmd);
-    FixMMC3CHR(MMC3_cmd);
-  }
+	/*  FCEU_printf("lo %04x:%02x\n",A,V);*/
+	if(dipswitch) /* нулевой дип берет любые записи по дефолту, дальше идет выбор*/
+	{
+		if(A&(1<<(dipswitch+3))) {
+			EXPREGS[A&3]=V;
+			/*      FCEU_printf(" reg %d set!\n",A&3);*/
+			FixMMC3PRG(MMC3_cmd);
+			FixMMC3CHR(MMC3_cmd);
+		}
+	}
+	else
+	{
+		EXPREGS[A&3]=V;
+		/*    FCEU_printf(" reg %d set!\n",A&3);*/
+		FixMMC3PRG(MMC3_cmd);
+		FixMMC3CHR(MMC3_cmd);
+	}
 }
 
 static void BMCFK23CReset(void)

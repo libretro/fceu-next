@@ -123,55 +123,57 @@ static writefunc OldWritePPU[2];
 
 static DECLFR(A2002_Gumshoe)
 {
- return( (OldReadPPU(A)&~0x3F) | 0x1C);
+	return( (OldReadPPU(A)&~0x3F) | 0x1C);
 }
 
 static DECLFR(A2002_Topgun)
 {
- return( (OldReadPPU(A)&~0x3F) | 0x1B);
+	return( (OldReadPPU(A)&~0x3F) | 0x1B);
 }
 
-static DECLFR(A2002_MBJ)  // Mighty Bomb Jack
+static DECLFR(A2002_MBJ)  /* Mighty Bomb Jack*/
 {
- return( (OldReadPPU(A)&~0x3F) | 0x3D);
+	return( (OldReadPPU(A)&~0x3F) | 0x3D);
 }
 
 static DECLFW(B2000_2001_2C05)
 {
- OldWritePPU[(A&1)^1](A ^ 1, V);
+	OldWritePPU[(A&1)^1](A ^ 1, V);
 }
+
 static uint8 xevselect = 0;
+
 static DECLFR(XevRead)
 {
- //printf("%04x\n",A);
- if(A == 0x54FF)
- {
-  return(0x5);
- }
- else if(A == 0x5678)
- {
-  return(xevselect?0:1);
- }
- else if(A == 0x578F)
- {
-  return(xevselect?0xd1:0x89);
- }
- else if(A == 0x5567)
- {
-  xevselect ^=1;
-  return(xevselect?0x37:0x3E);
- }
- return(X.DB);
+	/*printf("%04x\n",A);*/
+	if(A == 0x54FF)
+	{
+		return(0x5);
+	}
+	else if(A == 0x5678)
+	{
+		return(xevselect?0:1);
+	}
+	else if(A == 0x578F)
+	{
+		return(xevselect?0xd1:0x89);
+	}
+	else if(A == 0x5567)
+	{
+		xevselect ^=1;
+		return(xevselect?0x37:0x3E);
+	}
+	return(X.DB);
 }
 
 void FCEU_VSUniSwap(uint8 *j0, uint8 *j1)
 {
- if(curvs->ioption & IOPTION_SWAPDIRAB)
- {
-  uint16 t=*j0;
-  *j0=(*j0&0xC)|(*j1&0xF3);
-  *j1=(*j1&0xC)|(t&0xF3);
- }
+	if(curvs->ioption & IOPTION_SWAPDIRAB)
+	{
+		uint16 t=*j0;
+		*j0=(*j0&0xC)|(*j1&0xF3);
+		*j1=(*j1&0xC)|(t&0xF3);
+	}
 }
 
 void FCEU_VSUniPower(void)
@@ -328,52 +330,52 @@ extern uint8 pale;
 
 void FCEU_VSUniCheck(uint64 md5partial, int *MapperNo, uint8 *Mirroring)
 {
- VSUNIENTRY *vs = VSUniGames;
+	VSUNIENTRY *vs = VSUniGames;
 
- while(vs->name)
- {
-  if(md5partial == vs->md5partial)
-  {
+	while(vs->name)
+	{
+		if(md5partial == vs->md5partial)
+		{
 
-   if(vs->ppu < RCP2C03B) pale = vs->ppu;
-   //puts(vs->name);
-   *MapperNo = vs->mapper;
-   *Mirroring = vs->mirroring;
-   FCEUGameInfo->type = GIT_VSUNI;
-   FCEUGameInfo->cspecial = SIS_VSUNISYSTEM;
-   FCEUGameInfo->inputfc = SIFC_NONE;
-   curppu = vs->ppu;
-   curmd5 = md5partial;
+			if(vs->ppu < RCP2C03B) pale = vs->ppu;
+			/*puts(vs->name);*/
+			*MapperNo = vs->mapper;
+			*Mirroring = vs->mirroring;
+			FCEUGameInfo->type = GIT_VSUNI;
+			FCEUGameInfo->cspecial = SIS_VSUNISYSTEM;
+			FCEUGameInfo->inputfc = SIFC_NONE;
+			curppu = vs->ppu;
+			curmd5 = md5partial;
 
-   secptr = 0;
+			secptr = 0;
 
-   {
-    static int64 tko=0x6e1ee06171d8ce3aULL, rbi=0x6a02d345812938afULL;
-    if(md5partial == tko)
-     secptr=secdata[0];
-    if(md5partial == rbi)
-     secptr = secdata[1];
-   }
+			{
+				static int64 tko=0x6e1ee06171d8ce3aULL, rbi=0x6a02d345812938afULL;
+				if(md5partial == tko)
+					secptr=secdata[0];
+				if(md5partial == rbi)
+					secptr = secdata[1];
+			}
 
-   vsdip = 0x0;
-   if(vs->ioption & IOPTION_PREDIP)
-   {
-    vsdip= vs->predip;
-   }
-   if(vs->ioption & IOPTION_GUN)
-   {
-    FCEUGameInfo->input[0] = SI_ZAPPER;
-    FCEUGameInfo->input[1] = SI_NONE;
-   }
-   else
-   {
-    FCEUGameInfo->input[0] = FCEUGameInfo->input[1] = SI_GAMEPAD;
-   }
-   curvs = vs;
-   return;
-  }
-  vs++;
- }
+			vsdip = 0x0;
+			if(vs->ioption & IOPTION_PREDIP)
+			{
+				vsdip= vs->predip;
+			}
+			if(vs->ioption & IOPTION_GUN)
+			{
+				FCEUGameInfo->input[0] = SI_ZAPPER;
+				FCEUGameInfo->input[1] = SI_NONE;
+			}
+			else
+			{
+				FCEUGameInfo->input[0] = FCEUGameInfo->input[1] = SI_GAMEPAD;
+			}
+			curvs = vs;
+			return;
+		}
+		vs++;
+	}
 }
 
 void FCEU_VSUniDraw(uint8 *XBuf)

@@ -78,14 +78,14 @@ static void Sync(void)
 
 static DECLFW(M23Write)
 {
-//  FCEU_printf("%04x:%04x\n",A,V);
-  A|=((A>>2)&0x3)|((A>>4)&0x3)|((A>>6)&0x3); // actually there is many-in-one mapper source, some pirate or
-                                             // licensed games use various address bits for registers
+/*  FCEU_printf("%04x:%04x\n",A,V);*/
+  A|=((A>>2)&0x3)|((A>>4)&0x3)|((A>>6)&0x3); /* actually there is many-in-one mapper source, some pirate or*/
+                                             /* licensed games use various address bits for registers*/
   A&=0xF003;
   if((A>=0xB000)&&(A<=0xE003))
   {
     if(UNIFchrrama)
-      big_bank=(V&8)<<2;                    // my personally many-in-one feature ;) just for support pirate cart 2-in-1
+      big_bank=(V&8)<<2;                    /* my personally many-in-one feature ;) just for support pirate cart 2-in-1*/
     else
     {    
       uint16 i=((A>>1)&1)|((A-0xB000)>>11);
@@ -131,7 +131,7 @@ static void M23Power(void)
 {
   big_bank=0x20;  
   Sync();
-  setprg8r(0x10,0x6000,0);              // another many-in-one code, WRAM actually contain only WaiWaiWorld game
+  setprg8r(0x10,0x6000,0);              /* another many-in-one code, WRAM actually contain only WaiWaiWorld game*/
   SetReadHandler(0x6000,0x7FFF,CartBR);
   SetWriteHandler(0x6000,0x7FFF,CartBW);
   SetReadHandler(0x8000,0xFFFF,CartBR);

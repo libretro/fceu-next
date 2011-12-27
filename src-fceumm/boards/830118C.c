@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// M-022 MMC3 based 830118C T-106 4M + 4M
+/* M-022 MMC3 based 830118C T-106 4M + 4M*/
 
 #include "mapinc.h"
 #include "mmc3.h"

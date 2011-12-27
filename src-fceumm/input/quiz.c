@@ -28,17 +28,17 @@ static uint8 QZ_Read(int w, uint8 ret)
 {
  if(w) 
  {
-  //if(X.PC==0xdc7d) return(0xFF);
-  //printf("Blah: %04x\n",X.PC);
-  //FCEUI_DumpMem("dmp2",0xc000,0xffff);
+  /*if(X.PC==0xdc7d) return(0xFF);*/
+  /*printf("Blah: %04x\n",X.PC);*/
+  /*FCEUI_DumpMem("dmp2",0xc000,0xffff);*/
 
   ret|=(QZValR&0x7)<<2;
   QZValR=QZValR>>3;
 
   if(FunkyMode)
   {
-   //ret=0x14;
-   //puts("Funky");
+   /*ret=0x14;*/
+   /*puts("Funky");*/
    QZValR|=0x28;
   }
   else
@@ -52,12 +52,12 @@ static uint8 QZ_Read(int w, uint8 ret)
 static void QZ_Strobe(void)
 {
  QZValR=QZVal;
- //puts("Strobe");
+ /*puts("Strobe");*/
 }
 
 static void QZ_Write(uint8 V)
 {
- //printf("Wr: %02x\n",V);
+ /*printf("Wr: %02x\n",V);*/
  FunkyMode=V&4;
 }
 

@@ -39,9 +39,9 @@ static int ntsctint=46+10;
 static int ntschue=72;
 
 /* These are dynamically filled/generated palettes: */
-pal palettei[64];       // Custom palette for an individual game.
-pal palettec[64];       // Custom "global" palette.
-pal paletten[64];       // Mathematically generated palette.
+pal palettei[64];       /* Custom palette for an individual game.*/
+pal palettec[64];       /* Custom "global" palette.*/
+pal paletten[64];       /* Mathematically generated palette.*/
 
 uint8 pale=0;
 
@@ -58,94 +58,95 @@ static pal *palpoint[8]=
 
 void FCEUI_SetPaletteArray(uint8 *pal)
 {
- if(!pal)
-  palpoint[0]=palette;
- else
- {
-  int x;
-  palpoint[0]=palettec;
-  for(x=0;x<64;x++)
-  {
-   palpoint[0][x].r=*((uint8 *)pal+x+x+x);
-   palpoint[0][x].g=*((uint8 *)pal+x+x+x+1);
-   palpoint[0][x].b=*((uint8 *)pal+x+x+x+2);
-  }
- }
- FCEU_ResetPalette();
+	if(!pal)
+		palpoint[0]=palette;
+	else
+	{
+		int x;
+
+		palpoint[0]=palettec;
+		for(x=0;x<64;x++)
+		{
+			palpoint[0][x].r=*((uint8 *)pal+x+x+x);
+			palpoint[0][x].g=*((uint8 *)pal+x+x+x+1);
+			palpoint[0][x].b=*((uint8 *)pal+x+x+x+2);
+		}
+	}
+	FCEU_ResetPalette();
 }
 
 
 void FCEUI_SetNTSCTH(int n, int tint, int hue)
 {
- ntsctint=tint;
- ntschue=hue;
- ntsccol=n;
- FCEU_ResetPalette();
+	ntsctint=tint;
+	ntschue=hue;
+	ntsccol=n;
+	FCEU_ResetPalette();
 }
 
 
 static uint8 lastd=0;
 void SetNESDeemph(uint8 d, int force)
 {
- static uint16 rtmul[7]={32768*1.239,32768*.794,32768*1.019,32768*.905,32768*1.023,32768*.741,32768*.75};
- static uint16 gtmul[7]={32768*.915,32768*1.086,32768*.98,32768*1.026,32768*.908,32768*.987,32768*.75};
- static uint16 btmul[7]={32768*.743,32768*.882,32768*.653,32768*1.277,32768*.979,32768*.101,32768*.75};
- uint32 r,g,b;
- int x;
+	static uint16 rtmul[7]={32768*1.239,32768*.794,32768*1.019,32768*.905,32768*1.023,32768*.741,32768*.75};
+	static uint16 gtmul[7]={32768*.915,32768*1.086,32768*.98,32768*1.026,32768*.908,32768*.987,32768*.75};
+	static uint16 btmul[7]={32768*.743,32768*.882,32768*.653,32768*1.277,32768*.979,32768*.101,32768*.75};
+	uint32 r,g,b;
+	int x;
 
- /* If it's not forced(only forced when the palette changes),
-    don't waste cpu time if the same deemphasis bits are set as the last call.
- */
- if(!force)
- {
-  if(d==lastd)
-   return;
- }
- else   /* Only set this when palette has changed. */
- {
-  r=rtmul[6];
-  g=rtmul[6];
-  b=rtmul[6];
+	/* If it's not forced(only forced when the palette changes),
+	   don't waste cpu time if the same deemphasis bits are set as the last call.
+	 */
+	if(!force)
+	{
+		if(d==lastd)
+			return;
+	}
+	else   /* Only set this when palette has changed. */
+	{
+		r=rtmul[6];
+		g=rtmul[6];
+		b=rtmul[6];
 
-  for(x=0;x<0x40;x++)
-  {
-   uint32 m,n,o;
-   m=palo[x].r;
-   n=palo[x].g;
-   o=palo[x].b;
-   m=(m*r)>>15;
-   n=(n*g)>>15;
-   o=(o*b)>>15;
-   if(m>0xff) m=0xff;
-   if(n>0xff) n=0xff;
-   if(o>0xff) o=0xff;
-   FCEUD_SetPalette(x|0xC0,m,n,o);
-  }
- }
- if(!d) return; /* No deemphasis, so return. */
+		for(x=0;x<0x40;x++)
+		{
+			uint32 m,n,o;
+			m=palo[x].r;
+			n=palo[x].g;
+			o=palo[x].b;
+			m=(m*r)>>15;
+			n=(n*g)>>15;
+			o=(o*b)>>15;
+			if(m>0xff) m=0xff;
+			if(n>0xff) n=0xff;
+			if(o>0xff) o=0xff;
+			FCEUD_SetPalette(x|0xC0,m,n,o);
+		}
+	}
+	if(!d) return; /* No deemphasis, so return. */
 
- r=rtmul[d-1];
- g=gtmul[d-1];
- b=btmul[d-1];
+	r=rtmul[d-1];
+	g=gtmul[d-1];
+	b=btmul[d-1];
 
- for(x=0;x<0x40;x++)
- {
-  uint32 m,n,o;
+	for(x=0;x<0x40;x++)
+	{
+		uint32 m,n,o;
 
-  m=palo[x].r;
-  n=palo[x].g;
-  o=palo[x].b;
-  m=(m*r)>>15;
-  n=(n*g)>>15;
-  o=(o*b)>>15;
-  if(m>0xff) m=0xff;
-  if(n>0xff) n=0xff;
-  if(o>0xff) o=0xff;
+		m=palo[x].r;
+		n=palo[x].g;
+		o=palo[x].b;
+		m=(m*r)>>15;
+		n=(n*g)>>15;
+		o=(o*b)>>15;
+		if(m>0xff) m=0xff;
+		if(n>0xff) n=0xff;
+		if(o>0xff) o=0xff;
 
-  FCEUD_SetPalette(x|0x40,m,n,o);
- }
+		FCEUD_SetPalette(x|0x40,m,n,o);
+	}
 
- lastd=d;
+	lastd=d;
 }
 
 void WritePalette(void)
@@ -163,46 +164,46 @@ void WritePalette(void)
 /* Converted from Kevin Horton's qbasic palette generator. */
 static void CalculatePalette(void)
 {
- int x,z;
- int r,g,b;
- double s,luma,theta;
- static uint8 cols[16]={0,24,21,18,15,12,9,6,3,0,33,30,27,0,0,0};
- static uint8 br1[4]={6,9,12,12};
- static double br2[4]={.29,.45,.73,.9};
- static double br3[4]={0,.24,.47,.77};
+	int x,z;
+	int r,g,b;
+	double s,luma,theta;
+	static uint8 cols[16]={0,24,21,18,15,12,9,6,3,0,33,30,27,0,0,0};
+	static uint8 br1[4]={6,9,12,12};
+	static double br2[4]={.29,.45,.73,.9};
+	static double br3[4]={0,.24,.47,.77};
 
- for(x=0;x<=3;x++)
-  for(z=0;z<16;z++)
-  {
-   s=(double)ntsctint/128;
-   luma=br2[x];
-   if(z==0)  {s=0;luma=((double)br1[x])/12;}
+	for(x=0;x<=3;x++)
+		for(z=0;z<16;z++)
+		{
+			s=(double)ntsctint/128;
+			luma=br2[x];
+			if(z==0)  {s=0;luma=((double)br1[x])/12;}
 
-   if(z>=13)
-   {
-    s=luma=0;
-    if(z==13)
-     luma=br3[x];
-   }
+			if(z>=13)
+			{
+				s=luma=0;
+				if(z==13)
+					luma=br3[x];
+			}
 
-   theta=(double)M_PI*(double)(((double)cols[z]*10+ (((double)ntschue/2)+300) )/(double)180);
-   r=(int)((luma+s*sin(theta))*256);
-   g=(int)((luma-(double)27/53*s*sin(theta)+(double)10/53*s*cos(theta))*256);
-   b=(int)((luma-s*cos(theta))*256);
+			theta=(double)M_PI*(double)(((double)cols[z]*10+ (((double)ntschue/2)+300) )/(double)180);
+			r=(int)((luma+s*sin(theta))*256);
+			g=(int)((luma-(double)27/53*s*sin(theta)+(double)10/53*s*cos(theta))*256);
+			b=(int)((luma-s*cos(theta))*256);
 
 
-   if(r>255) r=255;
-   if(g>255) g=255;
-   if(b>255) b=255;
-   if(r<0) r=0;
-   if(g<0) g=0;
-   if(b<0) b=0;
+			if(r>255) r=255;
+			if(g>255) g=255;
+			if(b>255) b=255;
+			if(r<0) r=0;
+			if(g<0) g=0;
+			if(b<0) b=0;
 
-   paletten[(x<<4)+z].r=r;
-   paletten[(x<<4)+z].g=g;
-   paletten[(x<<4)+z].b=b;
-  }
- WritePalette();
+			paletten[(x<<4)+z].r=r;
+			paletten[(x<<4)+z].g=g;
+			paletten[(x<<4)+z].b=b;
+		}
+	WritePalette();
 }
 
 static int ipalette=0;
@@ -211,10 +212,11 @@ void FCEU_LoadGamePalette(void)
 {
 	uint8 ptmp[192];
 	FILE *fp;
+	char * fn;
 
 	ipalette=0;
 
-	const char * fn=FCEU_MakeFName(FCEUMKF_PALETTE,0,0);
+	fn=FCEU_MakeFName(FCEUMKF_PALETTE,0,0);
 
 	if((fp=fopen(fn,"rb")))
 	{
@@ -254,13 +256,10 @@ void FCEU_ResetPalette(void)
 	}
 }
 
-
-
-
 void FCEUI_GetNTSCTH(int *tint, int *hue)
 {
- *tint=ntsctint;
- *hue=ntschue;
+	*tint=ntsctint;
+	*hue=ntschue;
 }
 
 static int controlselect=0;

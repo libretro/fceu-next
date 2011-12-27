@@ -85,10 +85,10 @@ DECLFW(Mapper21_write)
 static void KonamiIRQHook(int a)
 {
   #define LCYCS ((227*2)+1)
-  //#define LCYCS 341
+  /*#define LCYCS 341*/
   if(IRQa)
   {
-//    acount+=a*3;
+/*    acount+=a*3;*/
     acount+=a*4;
     if(acount>=LCYCS)
     {

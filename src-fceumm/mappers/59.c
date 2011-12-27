@@ -23,11 +23,11 @@
 static int ay;
 static DECLFW(Mapper59_write)
 {
- //printf("$%04x:$%02x\n",A,V);
+ /*printf("$%04x:$%02x\n",A,V);*/
  setprg32(0x8000,(A&0x70)>>4);
  setchr8(A&0x7);
- //if(A&0x100)
- // setprg32r(0x10,0x8000,0);
+ /*if(A&0x100)*/
+ /* setprg32r(0x10,0x8000,0);*/
  ay=A;
  MIRROR_SET2((A&0x8)>>3);
 }

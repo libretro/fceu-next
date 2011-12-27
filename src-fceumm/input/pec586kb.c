@@ -1,8 +1,8 @@
 #include <string.h>
 #include "share.h"
-//#include "Pec586kb.h"
-//#define AK2(x,y)        ( (FKB_##x) | (FKB_##y <<8) )
-//#define AK(x)                 FKB_##x
+/*#include "Pec586kb.h"*/
+/*#define AK2(x,y)        ( (FKB_##x) | (FKB_##y <<8) )*/
+/*#define AK(x)                 FKB_##x*/
 /*
 static uint8 bufit[0x61];
 static uint8 ksmode;

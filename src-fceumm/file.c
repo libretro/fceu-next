@@ -81,13 +81,13 @@ void ApplyIPS(FILE *ips, MEMWRAP *dest)
 			size=fgetc(ips)<<8;
 			size|=fgetc(ips);
 
-			//FCEU_printf("  Offset: %8d  Size: %5d RLE\n",offset,size);
+			/*FCEU_printf("  Offset: %8d  Size: %5d RLE\n",offset,size);*/
 
 			if((offset+size)>dest->size)
 			{
 				uint8 *tmp;
 
-				// Probably a little slow.
+				/* Probably a little slow.*/
 				tmp=(uint8 *)realloc(dest->data,offset+size);
 				if(!tmp)
 				{
@@ -111,12 +111,12 @@ void ApplyIPS(FILE *ips, MEMWRAP *dest)
 		}
 		else    /* Normal patch */
 		{
-			//FCEU_printf("  Offset: %8d  Size: %5d\n",offset,size);
+			/*FCEU_printf("  Offset: %8d  Size: %5d\n",offset,size);*/
 			if((offset+size)>dest->size)
 			{
 				uint8 *tmp;
 
-				// Probably a little slow.
+				/* Probably a little slow.*/
 				tmp=(uint8 *)realloc(dest->data,offset+size);
 				if(!tmp)
 				{
@@ -224,16 +224,16 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
 
 	{
 		unzFile tz;
-		if((tz=unzOpen(path)))  // If it's not a zip file, use regular file handlers.
-			// Assuming file type by extension usually works,
-			// but I don't like it. :)
+		if((tz=unzOpen(path)))  /* If it's not a zip file, use regular file handlers.*/
+			/* Assuming file type by extension usually works,*/
+			/* but I don't like it. :)*/
 		{
 			if(unzGoToFirstFile(tz)==UNZ_OK)
 			{
 				for(;;)
 				{
-					char tempu[512];  // Longer filenames might be possible, but I don't
-					// think people would name files that long in zip files...
+					char tempu[512];  /* Longer filenames might be possible, but I don't*/
+					/* think people would name files that long in zip files...*/
 					unzGetCurrentFileInfo(tz,0,tempu,512,0,0,0,0);
 					tempu[511]=0;
 					if(strlen(tempu)>=4)

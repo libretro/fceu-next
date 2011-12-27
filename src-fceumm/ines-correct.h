@@ -4,8 +4,8 @@
     {0xbfc7a2e9,16,8},
     {0x33b899c9,16,-1},  /* Dragon Ball - Dai Maou Fukkatsu (J) [!] */
     {0x3f15d20d,153,8},  /* Famicom Jump 2 */
-//    {0xb049a8c4,153,-1},    /* SD Gundam Gaiden - Knight Gundam Monogatari 2 - Hikari no Kishi (J) [!] */
-//    NOT 16, since uses WRAM but 8000-FFFF address range for bankswitching, 
+/*    {0xb049a8c4,153,-1},    SD Gundam Gaiden - Knight Gundam Monogatari 2 - Hikari no Kishi (J) [!] */
+/*    NOT 16, since uses WRAM but 8000-FFFF address range for bankswitching, */
 
     {0x983d8175,157,8},  /* Datach Battle Rush */
     {0x894efdbc,157,8},  /* Datach Crayon Shin Chan */
@@ -42,7 +42,7 @@
     /* Some entries to sort out the minor 33/48 mess. */
     {0xaebd6549,48,8},   /* Bakushou!! Jinsei Gekijou 3 */
     {0x6cdc0cd9,48,8},   /* Bubble Bobble 2 */
-    //{0x10e24006,48,8}, /* Flintstones 2 - bad dump? */
+    /*{0x10e24006,48,8}, Flintstones 2 - bad dump? */
     {0x40c0ad47,48,8},   /* Flintstones 2 */
     {0xa7b0536c,48,8},   /* Don Doko Don 2 */
     {0x99c395f9,48,8},   /* Captain Saver */
@@ -97,9 +97,9 @@
 {0xbb7c5f7a,89,8},  /* Mito Koumon or something similar */
 
 /* Probably a Namco MMC3-workalike */
-//{0xa5e6baf9,4,1|4},  /* Dragon Slayer 4 */
-//{0xe40b4973,4,1|4},  /* Metro Cross */
-//{0xd97c31b0,4,1|4},  /* Rasaaru Ishii no Childs Quest */
+/*{0xa5e6baf9,4,1|4},  Dragon Slayer 4 */
+/*{0xe40b4973,4,1|4},  Metro Cross */
+/*{0xd97c31b0,4,1|4},  Rasaaru Ishii no Childs Quest */
 
 {0x84382231,9,0},  /* Punch Out (J) */
 
@@ -122,7 +122,7 @@
 {0x6e0eb43e,2,1},  /* Puss n Boots */
 {0x266ce198,2,1},  /* City Adventure Touch */
 
-//{0x48349b0b,1,8},      /* Dragon Quest 2 */
+/*{0x48349b0b,1,8},      Dragon Quest 2 */
 {0xd09b74dc,1,8},  /* Great Tank (J) */
 {0xe8baa782,1,8},  /* Gun Hed (J) */
 {0x970bd9c2,1,8},      /* Hanjuku Hero */
@@ -248,7 +248,7 @@
    {0x0d98db53,114,-1}, /* Pocahontas */
    {0x4e7729ff,114,-1}, /* Super Donkey Kong */
    
-   {0x404dc792,220,-1}, // debug
+   {0x404dc792,220,-1}, /* debug*/
    
    {0x02c41438,176,-1}, /* Xing He Zhan Shi (C) */
    {0xfb2b6b10,241,-1}, /* Fan Kong Jing Ying (Ch) */
@@ -258,7 +258,7 @@
    {0x0da5e32e,101,-1}, /* new Uruusey Yatsura */
    {0x4f2f1846,-1,1}, /* Famista '89 - Kaimaku Han!! (J) */
    {0x6c71feae,45,-1}, /* Kunio 8-in-1 */
-//   {0xbdbe3c96,238,-1}, /* Contra Fighter iNES version */
+/*   {0xbdbe3c96,238,-1}, Contra Fighter iNES version */
 
    {0xb7f28915,153,-1}, /* Magical Taruruuto-kun 2 - Mahou Daibouken (J) */
    {0xe170404c,153,-1}, /* SD Gundam Gaiden - Knight Gundam Monogatari (J) (V1.0) [!] */

@@ -109,12 +109,12 @@ static DECLFW(M216WriteHi)
 
 static DECLFW(M216Write5000)
 {
-//  FCEU_printf("WRITE: %04x:%04x (PC=%02x cnt=%02x)\n",A,V,X.PC,sim0bcnt);
+/*  FCEU_printf("WRITE: %04x:%04x (PC=%02x cnt=%02x)\n",A,V,X.PC,sim0bcnt);*/
 }
 
 static DECLFR(M216Read5000)
 {
-//    FCEU_printf("READ: %04x PC=%04x out=%02x byte=%02x cnt=%02x bit=%02x\n",A,X.PC,sim0out,sim0byte,sim0bcnt,sim0bit);
+/*    FCEU_printf("READ: %04x PC=%04x out=%02x byte=%02x cnt=%02x bit=%02x\n",A,X.PC,sim0out,sim0byte,sim0bcnt,sim0bit);*/
     return 0;
 }
 

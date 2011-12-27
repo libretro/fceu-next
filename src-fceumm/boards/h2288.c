@@ -42,33 +42,33 @@ static void H2288PW(uint32 A, uint8 V)
 
 static DECLFW(H2288WriteHi)
 {
-  switch (A&0x8001)
-  {
-    case 0x8000: MMC3_CMDWrite(0x8000,(V&0xC0)|(m114_perm[V&7])); break;
-    case 0x8001: MMC3_CMDWrite(0x8001,V); break;
-  }
+	switch (A&0x8001)
+	{
+		case 0x8000: MMC3_CMDWrite(0x8000,(V&0xC0)|(m114_perm[V&7])); break;
+		case 0x8001: MMC3_CMDWrite(0x8001,V); break;
+	}
 }
 
 static DECLFW(H2288WriteLo)
 {
-  if(A&0x800)
-  {
-    if(A&1)
-      EXPREGS[1]=V;
-    else
-      EXPREGS[0]=V;
-    FixMMC3PRG(MMC3_cmd);
-  }
+	if(A&0x800)
+	{
+		if(A&1)
+			EXPREGS[1]=V;
+		else
+			EXPREGS[0]=V;
+		FixMMC3PRG(MMC3_cmd);
+	}
 }
 
 static void H2288Power(void)
 {
-  EXPREGS[0]=EXPREGS[1]=0;
-  GenMMC3Power();
-//  SetReadHandler(0x5000,0x5FFF,H2288Read);
-  SetReadHandler(0x8000,0xFFFF,CartBR);
-  SetWriteHandler(0x5000,0x5FFF,H2288WriteLo);
-  SetWriteHandler(0x8000,0x9FFF,H2288WriteHi);
+	EXPREGS[0]=EXPREGS[1]=0;
+	GenMMC3Power();
+	/*  SetReadHandler(0x5000,0x5FFF,H2288Read);*/
+	SetReadHandler(0x8000,0xFFFF,CartBR);
+	SetWriteHandler(0x5000,0x5FFF,H2288WriteLo);
+	SetWriteHandler(0x8000,0x9FFF,H2288WriteHi);
 }
 
 void UNLH2288_Init(CartInfo *info)

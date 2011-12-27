@@ -64,7 +64,7 @@ static void latchcheck(uint32 VAddr)
      }
 }
 
-DECLFW(Mapper9_write)        // $Axxx
+DECLFW(Mapper9_write)        /* $Axxx*/
 {
  ROM_BANK8(0x8000,V);
 }
