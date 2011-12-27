@@ -34,7 +34,7 @@ typedef uint32_t uint32;
 #ifdef __GNUC__
  typedef unsigned long long uint64;
  typedef long long int64;
-#elif MSVC
+#elif _MSC_VER
  typedef __int64 int64;
  typedef unsigned __int64 uint64;
  #define PSS_STYLE 2      /* Does MSVC compile for anything
