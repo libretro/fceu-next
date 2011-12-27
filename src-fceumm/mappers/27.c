@@ -4,8 +4,8 @@ static uint32 regchr[9];
 
 static DECLFW(Mapper27_write)
 {
+	 int regnum;
  A&=0xF00F;
- int regnum;
  if((A>=0xB000) && (A<=0xE003)) {
     regnum=((((A>>12)+1)&0x03)<<1)|((A&0x02)>>1);
     if(A&1)

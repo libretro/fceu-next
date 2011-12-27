@@ -1,13 +1,15 @@
 #ifndef __MEMSTREAM_H
 #define __MEMSTREAM_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
+#ifndef _MSC_VER
 #include <stdbool.h>
+#else
+#define TRUE 1
+#define FALSE 0
+typedef unsigned char bool;
+#endif
 
 typedef struct memstream memstream_t;
 
@@ -24,9 +26,5 @@ int memstream_seek(memstream_t *stream, int offset, int whence);
 
 void memstream_set_buffer(uint8_t *buffer, size_t size);
 size_t memstream_get_last_size(void);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

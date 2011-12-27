@@ -1,8 +1,26 @@
 #include <stdio.h>
 #include <stdint.h>
+#ifndef _MSC_VER
 #include <stdbool.h>
+#else
+#define TRUE 1
+#define FALSE 0
+typedef unsigned char bool;
+#endif
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
+
+#define LIBSNES_CORE 1
+
+#if defined(_MSC_VER) && defined(LIBSNES_CORE)
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
 
 #include "libsnes.h"
 
@@ -314,47 +332,47 @@ struct st_palettes palettes[] = {
 	}
 };
 
-unsigned snes_library_revision_major(void)
+EXPORT unsigned snes_library_revision_major(void)
 {
    return 1;
 }
 
-unsigned snes_library_revision_minor(void)
+EXPORT unsigned snes_library_revision_minor(void)
 {
    return 3;
 }
 
-const char *snes_library_id(void)
+EXPORT const char *snes_library_id(void)
 {
    return "FCEUNext";
 }
 
-void snes_set_video_refresh(snes_video_refresh_t cb)
+EXPORT void snes_set_video_refresh(snes_video_refresh_t cb)
 {
    video_cb = cb;
 }
 
-void snes_set_audio_sample(snes_audio_sample_t cb)
+EXPORT void snes_set_audio_sample(snes_audio_sample_t cb)
 {
    audio_cb = cb;
 }
 
-void snes_set_input_poll(snes_input_poll_t cb)
+EXPORT void snes_set_input_poll(snes_input_poll_t cb)
 {
    poll_cb = cb;
 }
 
-void snes_set_input_state(snes_input_state_t cb)
+EXPORT void snes_set_input_state(snes_input_state_t cb)
 {
    input_cb = cb;
 }
 
-void snes_set_controller_port_device(bool a, unsigned b)
+EXPORT void snes_set_controller_port_device(bool a, unsigned b)
 {}
 
 static char g_basename[1024];
 
-void snes_set_cartridge_basename(const char * path_)
+EXPORT void snes_set_cartridge_basename(const char * path_)
 {
 	char path[1024], *split;
 	strncpy(path, path_, sizeof(path));
@@ -379,9 +397,9 @@ void snes_set_cartridge_basename(const char * path_)
 
 /* SSNES extension.*/
 static snes_environment_t environ_cb;
-void snes_set_environment(snes_environment_t cb) { environ_cb = cb; }
+EXPORT void snes_set_environment(snes_environment_t cb) { environ_cb = cb; }
 
-void snes_init(void)
+EXPORT void snes_init(void)
 {
    if (environ_cb)
    {
@@ -429,14 +447,14 @@ static void fceu_init(void)
 	FCEUD_SoundToggle();
 }
 
-void snes_term(void) {}
+EXPORT void snes_term(void) {}
 
-void snes_power(void)
+EXPORT void snes_power(void)
 {
    PowerNES();
 }
 
-void snes_reset(void)
+EXPORT void snes_reset(void)
 {
    ResetNES();
 }
@@ -476,7 +494,7 @@ static void update_input(void)
 	JSReturn = pad[0] | pad[1] << 8;
 }
 
-void snes_run(void)
+EXPORT void snes_run(void)
 {
 	unsigned i, y, x;
 	uint8_t *gfx;
@@ -500,7 +518,8 @@ void snes_run(void)
 
 
 static unsigned serialize_size = 0;
-unsigned snes_serialize_size(void)
+
+EXPORT unsigned snes_serialize_size(void)
 {
    if (serialize_size == 0)
    {
@@ -516,46 +535,48 @@ unsigned snes_serialize_size(void)
    return serialize_size;
 }
 
-bool snes_serialize(uint8_t *data, unsigned size)
+EXPORT bool snes_serialize(uint8_t *data, unsigned size)
 {
    if (size != snes_serialize_size())
-      return false;
+      return FALSE;
 
    memstream_set_buffer(data, size);
    FCEUSS_Save();
-   return true;
+   return TRUE;
 }
 
-bool snes_unserialize(const uint8_t *data, unsigned size)
+EXPORT bool snes_unserialize(const uint8_t *data, unsigned size)
 {
    if (size != snes_serialize_size())
-      return false;
+      return FALSE;
 
    memstream_set_buffer((uint8_t*)data, size);
    FCEUSS_Load();
-   return true;
+   return TRUE;
 }
 
-void snes_cheat_reset(void) {}
+EXPORT void snes_cheat_reset(void) {}
 
-void snes_cheat_set(unsigned a, bool b, const char* c) { }
+EXPORT void snes_cheat_set(unsigned a, bool b, const char* c) { }
 
-bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, unsigned rom_size)
+EXPORT bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, unsigned rom_size)
 {
+	FILE *file;
+	char actual_path[512];
+
    FCEUI_Initialize();
 
    FCEUI_SetSoundVolume(256);
    FCEUI_Sound(32050);
 
    /* Append basename to detect certain ROM types from filename (Hack).*/
-   char actual_path[512];
    snprintf(actual_path, sizeof(actual_path), "FCEU_tmp_%s", g_basename);
 
    fprintf(stderr, "[FCEU]: Using temp path: \"%s\"\n", actual_path);
 
-   FILE *file = fopen(actual_path, "wb");
+   file = fopen(actual_path, "wb");
    if (!file)
-      return false;
+      return FALSE;
 
    fwrite(rom_data, 1, rom_size, file);
    fclose(file);
@@ -564,7 +585,9 @@ bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, unsigned
    #if !defined(__CELLOS_LV2__)
    #if !defined(__LIBXENON__)
    #if !defined(GEKKO)
+#if !defined(_MSC_VER)
    unlink(actual_path);
+#endif
    #endif
    #endif
    #endif
@@ -583,45 +606,45 @@ bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, unsigned
 	environ_cb(SNES_ENVIRONMENT_SET_TIMING, &timing);
    }
 
-   return true;
+   return TRUE;
 }
 
-bool snes_load_cartridge_bsx_slotted(
+EXPORT bool snes_load_cartridge_bsx_slotted(
   const char* a, const uint8_t* b, unsigned c,
   const char* d, const uint8_t* e, unsigned f
 )
-{ return false; }
+{ return FALSE; }
 
-bool snes_load_cartridge_bsx(
+EXPORT bool snes_load_cartridge_bsx(
   const char* a, const uint8_t * b, unsigned c,
   const char* d, const uint8_t * e, unsigned f
 )
-{ return false; }
+{ return FALSE; }
 
-bool snes_load_cartridge_sufami_turbo(
+EXPORT bool snes_load_cartridge_sufami_turbo(
   const char* a, const uint8_t* b, unsigned c,
   const char* d, const uint8_t* e, unsigned f,
   const char* g, const uint8_t* h, unsigned i
 )
-{ return false; }
+{ return FALSE; }
 
-bool snes_load_cartridge_super_game_boy(
+EXPORT bool snes_load_cartridge_super_game_boy(
   const char* a, const uint8_t* b, unsigned c,
   const char* d, const uint8_t* e, unsigned f
 )
-{ return false; }
+{ return FALSE; }
 
-void snes_unload_cartridge(void)
+EXPORT void snes_unload_cartridge(void)
 {
 	FCEUI_CloseGame();
 }
 
-bool snes_get_region(void)
+EXPORT bool snes_get_region(void)
 {
    return FSettings.PAL ? SNES_REGION_PAL : SNES_REGION_NTSC;
 }
 
-uint8_t *snes_get_memory_data(unsigned id)
+EXPORT uint8_t *snes_get_memory_data(unsigned id)
 {
    if (id != SNES_MEMORY_CARTRIDGE_RAM)
       return NULL;
@@ -634,7 +657,7 @@ uint8_t *snes_get_memory_data(unsigned id)
    return 0;
 }
 
-unsigned snes_get_memory_size(unsigned id)
+EXPORT unsigned snes_get_memory_size(unsigned id)
 {
    if (id != SNES_MEMORY_CARTRIDGE_RAM)
       return 0;

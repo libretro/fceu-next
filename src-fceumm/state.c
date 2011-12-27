@@ -24,7 +24,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 #include "types.h"
 #include "x6502.h"
@@ -378,7 +380,7 @@ void FCEUSS_Load(void)
 	uint8 header[16];
 	memstream_t *mem;
 
-	mem = memstream_open(false);
+	mem = memstream_open(FALSE);
 
 	memstream_read(mem, header, 16);
 
@@ -409,7 +411,7 @@ void FCEUSS_Load(void)
 
 void FCEUSS_Save(void)
 {
-   memstream_t *mem = memstream_open(true);
+   memstream_t *mem = memstream_open(TRUE);
 
    uint32 totalsize;
    uint8 header[16] = {0};

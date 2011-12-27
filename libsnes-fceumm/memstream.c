@@ -1,9 +1,9 @@
-#include "memstream.h"
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
-#include <stdbool.h>
+#include "memstream.h"
 
 static uint8_t *g_buffer = NULL;
 static size_t g_size = 0;
@@ -46,10 +46,11 @@ size_t memstream_get_last_size(void)
 
 memstream_t *memstream_open(bool writing)
 {
+   memstream_t *stream;
    if (!g_buffer || !g_size)
       return NULL;
 
-   memstream_t *stream = calloc(1, sizeof(*stream));
+   stream = (memstream_t*)calloc(1, sizeof(*stream));
    memstream_init(stream, g_buffer, g_size, writing);
    g_buffer = NULL;
    g_size = 0;

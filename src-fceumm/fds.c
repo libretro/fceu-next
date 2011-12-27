@@ -739,16 +739,17 @@ static void PostSave(void)
 
 int FDSLoad(const char *name, FCEUFILE *fp)
 {
+	char *fn, *fn2;
 	FILE *zp;
 	int x;
+	FCEUFILE *tp;
 
 	FCEU_fseek(fp,0,SEEK_SET);
 
 	if(!SubLoad(fp))
 		return(0);
 
-
-	const char * fn = FCEU_MakeFName(FCEUMKF_FDSROM,0,0);
+	fn = FCEU_MakeFName(FCEUMKF_FDSROM,0,0);
 
 	if(!(zp=fopen(fn,"rb")))
 	{
@@ -769,10 +770,7 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 	}
 
 	fclose(zp);
-
-
-	FCEUFILE *tp;
-	const char *fn2 = FCEU_MakeFName(FCEUMKF_FDS,0,0);
+	fn2 = FCEU_MakeFName(FCEUMKF_FDS,0,0);
 
 	for(x=0;x<TotalSides;x++)
 	{

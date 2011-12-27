@@ -22,7 +22,16 @@
 #ifndef __FCEU_TYPES
 #define __FCEU_TYPES
 
+#include <stdint.h>
+#ifndef _MSC_VER
 #include <inttypes.h>
+#else
+typedef unsigned char bool;
+#endif
+
+#define TRUE 1
+#define FALSE 0
+
 typedef int8_t int8;
 typedef int16_t int16;
 typedef int32_t int32;

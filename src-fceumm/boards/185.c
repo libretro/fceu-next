@@ -102,12 +102,12 @@ void Mapper185_Init(CartInfo *info)
 
 void Mapper181_Init(CartInfo *info)
 {
+	  int x;
   Sync=Sync181;
   info->Power=MPower;
   info->Close=MClose;
   GameStateRestore=MRestore;
   DummyCHR=(uint8*)FCEU_gmalloc(8192);
-  int x;
   for(x=0;x<8192;x++)
      DummyCHR[x]=0xff;
   SetupCartCHRMapping(0x10,DummyCHR,8192,0);
