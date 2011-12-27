@@ -49,7 +49,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;MSVC2010_EXPORTS;__LIBSNES__;LOCAL_LE;INLINE=_inline;SOUND_QUALITY=0;PSS_STYLE=2;PATH_MAX=1024;LSB_FIRST;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;MSVC2010_EXPORTS;__LIBSNES__;LOCAL_LE;INLINE=_inline;SOUND_QUALITY=0;PSS_STYLE=2;PATH_MAX=1024;LSB_FIRST;_CRT_SECURE_NO_WARNINGS;ZLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\fir;$(SolutionDir)\..\src-fceumm\mappers;$(SolutionDir)\..\src-fceumm\palettes;$(SolutionDir)\..\libsnes-fceumm;$(SolutionDir)\..\utils\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -65,7 +65,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;MSVC2010_EXPORTS;__LIBSNES__;INLINE=_inline;SOUND_QUALITY=0;LOCAL_LE;PSS_STYLE=2;PATH_MAX=1024;LSB_FIRST;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;MSVC2010_EXPORTS;__LIBSNES__;INLINE=_inline;SOUND_QUALITY=0;LOCAL_LE;PSS_STYLE=2;PATH_MAX=1024;LSB_FIRST;_CRT_SECURE_NO_WARNINGS;ZLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\fir;$(SolutionDir)\..\src-fceumm\mappers;$(SolutionDir)\..\src-fceumm\palettes;$(SolutionDir)\..\libsnes-fceumm;$(SolutionDir)\..\utils\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -919,7 +919,6 @@
     <ClCompile Include="..\utils\zlib\crc32.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\utils\zlib\deflate.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
