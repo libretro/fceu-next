@@ -91,7 +91,7 @@ endif
 PPU_SRCS = $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c)) \
 $(FCEU_API_DIR)/cart.c \
 $(FCEU_API_DIR)/cheat.c \
-$(FCEU_API_DIR)/crc32.c \
+$(FCEU_API_DIR)/mycrc32.c \
 $(FCEU_API_DIR)/fceu.c \
 $(FCEU_API_DIR)/fds.c \
 $(FCEU_API_DIR)/file.c \
