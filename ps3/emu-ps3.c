@@ -538,7 +538,7 @@ void emulator_save_settings(uint64_t filetosave)
 					/* OSK Util gets updated */
 					glClear(GL_COLOR_BUFFER_BIT);
 					ps3graphics_draw_menu(1920, 1080);
-					psglSwap();
+					_jsPlatformSwapBuffers(psgl_device);
 					cell_console_poll();
 					cellSysutilCheckCallback();
 				}
@@ -562,7 +562,7 @@ void emulator_save_settings(uint64_t filetosave)
 						/* OSK Util gets updated */
 						glClear(GL_COLOR_BUFFER_BIT);
 						ps3graphics_draw_menu(1920, 1080);
-						psglSwap();
+						_jsPlatformSwapBuffers(psgl_device);
 						cell_console_poll();
 						cellSysutilCheckCallback();
 					}
@@ -611,7 +611,7 @@ void emulator_save_settings(uint64_t filetosave)
 					/* OSK Util gets updated */
 					glClear(GL_COLOR_BUFFER_BIT);
 					ps3graphics_draw_menu(1920, 1080);
-					psglSwap();
+					_jsPlatformSwapBuffers(psgl_device);
 					cell_console_poll();
 					cellSysutilCheckCallback();
 				}
@@ -635,7 +635,7 @@ void emulator_save_settings(uint64_t filetosave)
 						/* OSK Util gets updated */
 						glClear(GL_COLOR_BUFFER_BIT);
 						ps3graphics_draw_menu(1920, 1080);
-						psglSwap();
+						_jsPlatformSwapBuffers(psgl_device);
 						cell_console_poll();
 						cellSysutilCheckCallback();
 					}
@@ -713,7 +713,7 @@ void emulator_toggle_sound(uint64_t soundmode)
 			while(dialog_is_running && is_running)
 			{
 				glClear(GL_COLOR_BUFFER_BIT);
-				psglSwap();
+				_jsPlatformSwapBuffers(psgl_device);
 				cell_console_poll();
 				cellSysutilCheckCallback();	
 			}
@@ -1457,7 +1457,7 @@ static  void ingame_menu(void)
 								stuck_in_loop = 0;
 							}
 
-							psglSwap();
+							_jsPlatformSwapBuffers(psgl_device);
 							cellSysutilCheckCallback();
 							old_state = state;
 						}while(stuck_in_loop && is_ingame_menu_running);
@@ -1477,7 +1477,7 @@ static  void ingame_menu(void)
 							}
 
 							ps3graphics_draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
-							psglSwap();
+							_jsPlatformSwapBuffers(psgl_device);
 							cellSysutilCheckCallback();
 							old_state = state;
 						}
@@ -1646,7 +1646,6 @@ static  void ingame_menu(void)
 		{
 			cellDbgFontPrintf (0.09f, 0.90f, 1.51f, BLUE,	special_action_msg);
 			cellDbgFontPrintf (0.09f, 0.90f, 1.50f, WHITE,	special_action_msg);
-			cellDbgFontDraw();
 		}
 		else
 		{
@@ -1655,7 +1654,7 @@ static  void ingame_menu(void)
 			cellDbgFontPrintf (0.09f,   0.90f,   0.98f,      LIGHTBLUE,           comment);
 		}
 		cellDbgFontDraw();
-		psglSwap();
+		_jsPlatformSwapBuffers(psgl_device);
 		old_state = state;
 		cellSysutilCheckCallback();
 	}while(is_ingame_menu_running);
@@ -1761,7 +1760,7 @@ static void emulator_start()
 		}
 		else
 			special_action_msg_expired = 0;
-		psglSwap();
+		_jsPlatformSwapBuffers(psgl_device);
 
 		if(Settings.Throttled)
 			audio_driver->write(audio_handle, (int16_t*)sound, ssize << 1);

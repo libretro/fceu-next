@@ -144,4 +144,8 @@ extern char DEFAULT_SHADER_FILE[MAX_PATH_LENGTH];
 extern char DEFAULT_MENU_SHADER_FILE[MAX_PATH_LENGTH];
 extern uint16_t ps3graphics_palette[256];
 
+extern PSGLdevice * psgl_device;
+
+extern void _jsPlatformSwapBuffers( PSGLdevice * device);
+
 #endif /* FCEUGRAPHICS_H_ */
