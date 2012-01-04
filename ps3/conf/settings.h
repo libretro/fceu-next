@@ -27,6 +27,7 @@
 struct SSettings
 {
 	int			PS3OverscanAmount;
+	uint32_t		Orientation;
 	uint32_t		PS3PALTemporalMode60Hz;
 	uint32_t		PS3FontSize;
 	uint32_t		PS3CurrentResolution;

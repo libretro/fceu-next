@@ -397,6 +397,7 @@ static void emulator_init_settings(void)
 	init_setting_uint("PS3General::ViewportWidth", Settings.ViewportWidth, 0);
 	init_setting_uint("PS3General::ViewportHeight", Settings.ViewportHeight, 0);
 	init_setting_uint("PS3General::ScaleEnabled", Settings.ScaleEnabled, 1);
+	init_setting_uint("PS3General::Orientation", Settings.Orientation, 0);
 	init_setting_uint("PS3General::PS3CurrentResolution", Settings.PS3CurrentResolution, NULL);
 	init_setting_uint("PS3General::OverscanEnabled", Settings.PS3OverscanEnabled, 0);
 	init_setting_int("PS3General::OverscanAmount", Settings.PS3OverscanAmount, 0);
@@ -446,6 +447,7 @@ void emulator_implementation_set_shader_preset(const char * fname)
 	init_setting_uint("Smooth", Settings.PS3Smooth, Settings.PS3Smooth);
 	init_setting_uint("Smooth2", Settings.PS3Smooth2, Settings.PS3Smooth2);
 	init_setting_uint("ScaleEnabled", Settings.ScaleEnabled, Settings.ScaleEnabled);
+	init_setting_uint("Orientation", Settings.Orientation, Settings.Orientation);
 	init_setting_char("PS3CurrentShader", Settings.PS3CurrentShader, DEFAULT_SHADER_FILE);
 	init_setting_char("PS3CurrentShader2", Settings.PS3CurrentShader2, DEFAULT_SHADER_FILE);
 	init_setting_char("Border", Settings.PS3CurrentBorder, DEFAULT_BORDER_FILE);
@@ -509,21 +511,22 @@ void emulator_save_settings(uint64_t filetosave)
 			config_set_string(currentconfig, "PS3Paths::PathROMDirectory", Settings.PS3PathROMDirectory);
 			config_set_string(currentconfig, "RSound::RSoundServerIPAddress", Settings.RSoundServerIPAddress);
 			config_set_uint(currentconfig, "PS3General::ScaleEnabled", Settings.ScaleEnabled);
-				
-				//Emulator-specific settings
-				config_set_string(currentconfig, "PS3Paths::PathCheats",Settings.PS3PathCheats);
-				config_set_string(currentconfig, "PS3Paths::PathBaseDirectory",Settings.PS3PathBaseDirectory);
-				config_set_uint(currentconfig, "FCEU::Controlstyle",Settings.FCEUControlstyle);
-				config_set_uint(currentconfig, "FCEU::DisableSpriteLimitation",Settings.FCEUDisableSpriteLimitation);
-				config_set_uint(currentconfig, "FCEU::FCEUPPUMode",Settings.FCEUPPUMode);
-				config_set_uint(currentconfig, "FCEU::ScanlineNTSCStart",Settings.FCEUScanlineNTSCStart);
-				config_set_int(currentconfig, "FCEU::ScanlineNTSCEnd",Settings.FCEUScanlineNTSCEnd);
-				config_set_int(currentconfig, "FCEU::ScanlinePALStart",Settings.FCEUScanlinePALStart);
-				config_set_int(currentconfig, "FCEU::ScanlinePALEnd",Settings.FCEUScanlinePALEnd);
-				config_set_int(currentconfig, "FCEU::GameGenie",Settings.FCEUGameGenie);
+			config_set_uint(currentconfig, "PS3General::Orientation", Settings.Orientation);
 
-				config_file_write(currentconfig, filepath);
-				emulator_set_controls(filepath, WRITE_CONTROLS, "Default");
+			//Emulator-specific settings
+			config_set_string(currentconfig, "PS3Paths::PathCheats",Settings.PS3PathCheats);
+			config_set_string(currentconfig, "PS3Paths::PathBaseDirectory",Settings.PS3PathBaseDirectory);
+			config_set_uint(currentconfig, "FCEU::Controlstyle",Settings.FCEUControlstyle);
+			config_set_uint(currentconfig, "FCEU::DisableSpriteLimitation",Settings.FCEUDisableSpriteLimitation);
+			config_set_uint(currentconfig, "FCEU::FCEUPPUMode",Settings.FCEUPPUMode);
+			config_set_uint(currentconfig, "FCEU::ScanlineNTSCStart",Settings.FCEUScanlineNTSCStart);
+			config_set_int(currentconfig, "FCEU::ScanlineNTSCEnd",Settings.FCEUScanlineNTSCEnd);
+			config_set_int(currentconfig, "FCEU::ScanlinePALStart",Settings.FCEUScanlinePALStart);
+			config_set_int(currentconfig, "FCEU::ScanlinePALEnd",Settings.FCEUScanlinePALEnd);
+			config_set_int(currentconfig, "FCEU::GameGenie",Settings.FCEUGameGenie);
+
+			config_file_write(currentconfig, filepath);
+			emulator_set_controls(filepath, WRITE_CONTROLS, "Default");
 			break;
 		case SHADER_PRESET_FILE:
 			{
@@ -592,12 +595,13 @@ void emulator_save_settings(uint64_t filetosave)
 					config_set_uint(currentconfig, "ViewportHeight", ps3graphics_get_viewport_height());
 					config_set_uint(currentconfig, "ScaleFactor", Settings.ScaleFactor);
 					config_set_uint(currentconfig, "ScaleEnabled", Settings.ScaleEnabled);
+					config_set_uint(currentconfig, "Orientation", Settings.Orientation);
 					config_set_uint(currentconfig, "OverscanEnabled", Settings.PS3OverscanEnabled);
 					config_set_uint(currentconfig, "OverscanAmount", Settings.PS3OverscanAmount);
 					config_file_write(currentconfig, filepath);
 				}
 			}
-				break;
+			break;
 		case INPUT_PRESET_FILE:
 			{
 				bool filename_entered = false;
@@ -655,7 +659,7 @@ void emulator_save_settings(uint64_t filetosave)
 					emulator_set_controls(filepath, WRITE_CONTROLS, filetitle_tmp);
 				}
 			}
-				break;
+			break;
 	}
 }
 
@@ -1297,7 +1301,7 @@ static void emulator_input_loop()
 static  void ingame_menu(void)
 {
 	uint32_t menuitem_colors[MENU_ITEM_LAST];
-	char comment[256];
+	char comment[256], msg_temp[256];
 
 	do
 	{
@@ -1429,6 +1433,33 @@ static  void ingame_menu(void)
 					}
 					ingame_menu_reset_entry_colors (ingame_menu_item);
 					strcpy(comment,"Press LEFT or RIGHT to change the [Overscan] settings.\nPress START to reset back to default values.");
+					break;
+				case MENU_ITEM_ORIENTATION:
+					if(CTRL_LEFT(button_was_pressed)  ||  CTRL_LSTICK_LEFT(button_was_pressed) || CTRL_CROSS(button_was_pressed) || CTRL_LSTICK_LEFT(button_was_held))
+					{
+						if(Settings.Orientation > 0)
+						{
+							Settings.Orientation--;
+							ps3graphics_set_orientation(Settings.Orientation);
+						}
+					}
+
+					if(CTRL_RIGHT(button_was_pressed) || CTRL_LSTICK_RIGHT(button_was_pressed) || CTRL_CROSS(button_was_pressed) || CTRL_LSTICK_RIGHT(button_was_held))
+					{
+						if(Settings.Orientation != MAX_ORIENTATION)
+						{
+							Settings.Orientation++;
+							ps3graphics_set_orientation(Settings.Orientation);
+						}
+					}
+
+					if(CTRL_START(button_was_pressed))
+					{
+						Settings.Orientation = NORMAL;
+						ps3graphics_set_orientation(Settings.Orientation);
+					}
+					ingame_menu_reset_entry_colors (ingame_menu_item);
+					strcpy(comment, "Press LEFT or RIGHT to change the [Orientation] settings.\nPress START to reset back to default values.");
 					break;
 				case MENU_ITEM_FRAME_ADVANCE:
 					if(CTRL_CROSS(state) || CTRL_R2(state) || CTRL_L2(state))
@@ -1611,6 +1642,26 @@ static  void ingame_menu(void)
 		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_OVERSCAN_AMOUNT)),	font_size+0.01f,	BLUE,	"Overscan: %f", (float)Settings.PS3OverscanAmount/100);
 		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_OVERSCAN_AMOUNT)),	font_size,	menuitem_colors[MENU_ITEM_OVERSCAN_AMOUNT],	"Overscan: %f", (float)Settings.PS3OverscanAmount/100);
 
+		switch(ps3graphics_get_orientation_name())
+		{
+			case NORMAL:
+				snprintf(msg_temp, sizeof(msg_temp), "Normal");
+				break;
+			case VERTICAL:
+				snprintf(msg_temp, sizeof(msg_temp), "Vertical");
+				break;
+			case FLIPPED:
+				snprintf(msg_temp, sizeof(msg_temp), "Flipped");
+				break;
+			case FLIPPED_ROTATED:
+				snprintf(msg_temp, sizeof(msg_temp), "Flipped Rotated");
+				break;
+		}
+
+
+		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_ORIENTATION)),	font_size+0.01f,	BLUE,	"Orientation: %s", msg_temp);
+		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_ORIENTATION)),	font_size,	menuitem_colors[MENU_ITEM_ORIENTATION],	"Orientation: %s", msg_temp);
+
 		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_RESIZE_MODE)),	font_size+0.01f,	BLUE,	"Resize Mode");
 		cellDbgFontPrintf	(x_position,	(ypos+(ypos_increment*MENU_ITEM_RESIZE_MODE)),	font_size,	menuitem_colors[MENU_ITEM_RESIZE_MODE],	"Resize Mode");
 
@@ -1724,6 +1775,8 @@ static void emulator_close_game(void)
 
 static void emulator_start()
 {
+	ps3graphics_set_orientation(Settings.Orientation);
+
 	int32 *sound=0;
 	int32 ssize=0;
 
@@ -1931,6 +1984,7 @@ int main (int argc, char **argv)
 		switch(mode_switch)
 		{
 			case MODE_MENU:
+				ps3graphics_set_orientation(NORMAL);
 				MenuMainLoop();
 				break;
 			case MODE_EMULATION:
