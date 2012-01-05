@@ -21,10 +21,13 @@
 /*  Contains file I/O functions that write/read data    */
 /*  LSB first.              */
 
-
 #include <stdio.h>
 #include "types.h"
 #include "myendian.h"
+
+#ifdef __SNC__
+#include <ppu_intrinsics.h>
+#endif
 
 void FlipByteOrder(uint8 *src, uint32 count)
 {
@@ -72,6 +75,8 @@ int read32le(uint32 *Bufo, FILE *fp)
 		return 0;
 #ifdef LSB_FIRST
 	*(uint32*)Bufo=buf;
+#elif __SNC__
+	*(uint32*)Bufo = __builtin_lwbrx(&buf, 0);
 #else
 	*(uint32*)Bufo=((buf&0xFF)<<24)|((buf&0xFF00)<<8)|((buf&0xFF0000)>>8)|((buf&0xFF000000)>>24);
 #endif

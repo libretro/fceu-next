@@ -1484,7 +1484,8 @@ static  void ingame_menu(void)
 							ps3graphics_resize_aspect_mode_input_loop(state);
 							if(CTRL_CIRCLE(state))
 							{
-								blocking = 0;
+								set_text_message("", 7);
+								blocking = 1;
 								stuck_in_loop = 0;
 							}
 
