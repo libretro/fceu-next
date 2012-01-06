@@ -27,7 +27,7 @@
 #define lseek fseek
 #endif
 
-#include "zlib.h"
+#include <zlib.h>
 #include "unzip.h"
 
 #include "types.h"

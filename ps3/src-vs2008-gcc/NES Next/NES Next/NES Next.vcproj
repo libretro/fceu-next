@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="NES Next"
+	Name="FCEU Next"
 	ProjectGUID="{3A2B84C2-A816-485C-95D1-641F17F2A8EF}"
 	RootNamespace="NES Next"
 	TargetFrameworkVersion="196613"
@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-g -Wall -fno-exceptions -fno-rtti"
-				AdditionalIncludeDirectories="&quot;$(SN_PS3_PATH)\ppu\include\sn&quot;;&quot;$(SCE_PS3_ROOT)\target\ppu\include&quot;;&quot;$(SCE_PS3_ROOT)\target\common\include&quot;;&quot;C:\local-repos\nes-next\utils\unzip&quot;;&quot;C:\local-repos\nes-next\utils\zlib&quot;"
-				PreprocessorDefinitions="SN_TARGET_PS3;_DEBUG;__GCC__;__CELL_ASSERT__;PSS_STYLE=1;GEKKO;PSGL;PATH_MAX=1024"
+				AdditionalIncludeDirectories="&quot;$(SN_PS3_PATH)\ppu\include\sn&quot;;&quot;$(SCE_PS3_ROOT)\target\ppu\include&quot;;&quot;$(SCE_PS3_ROOT)\target\common\include&quot;;&quot;$(SolutionDir)\..\..\..\utils\zlib&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3;_DEBUG;__GCC__;__CELL_ASSERT__;PSS_STYLE=1;GEKKO;PSGL;PATH_MAX=1024;INLINE=inline;SOUND_QUALITY=0"
 				ProgramDataBaseFileName=""
 				CompileAs="0"
 			/>
@@ -111,8 +111,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Wall -fno-exceptions -fno-rtti -O2"
-				AdditionalIncludeDirectories="&quot;$(SN_PS3_PATH)\ppu\include\sn&quot;;&quot;$(SCE_PS3_ROOT)\target\ppu\include&quot;;&quot;$(SCE_PS3_ROOT)\target\common\include&quot;;&quot;$(SolutionDir)\..\..\utils\unzip&quot;;&quot;$(SolutionDir)\..\..\utils\zlib&quot;"
-				PreprocessorDefinitions="SN_TARGET_PS3;NDEBUG;__GCC__;PSS_STYLE=1;GEKKO;PSGL;PATH_MAX=1024"
+				AdditionalIncludeDirectories="&quot;$(SN_PS3_PATH)\ppu\include\sn&quot;;&quot;$(SCE_PS3_ROOT)\target\ppu\include&quot;;&quot;$(SCE_PS3_ROOT)\target\common\include&quot;;&quot;$(SolutionDir)\..\..\..\utils\zlib&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3;NDEBUG;__GCC__;PSS_STYLE=1;GEKKO;PSGL;PATH_MAX=1024;INLINE=inline;SOUND_QUALITY=0"
 				ProgramDataBaseFileName=""
 				CompileAs="0"
 			/>
@@ -166,25 +166,13 @@
 			Filter="cpp;c;cxx;cc;s;asm"
 			>
 			<Filter
-				Name="cellframework"
-				>
-				<Filter
-					Name="fileio"
-					>
-					<File
-						RelativePath="..\..\..\src\cellframework\fileio\FileBrowser.cpp"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
 				Name="cellframework2"
 				>
 				<Filter
 					Name="audio"
 					>
 					<File
-						RelativePath="..\..\..\src\cellframework2\audio\audioport.c"
+						RelativePath="..\..\..\cellframework2\audio\audioport.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -204,7 +192,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\cellframework2\audio\buffer.c"
+						RelativePath="..\..\..\cellframework2\audio\buffer.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -224,7 +212,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\cellframework2\audio\librsound.c"
+						RelativePath="..\..\..\cellframework2\audio\librsound.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -244,7 +232,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\cellframework2\audio\resampler.c"
+						RelativePath="..\..\..\cellframework2\audio\resampler.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -264,7 +252,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\cellframework2\audio\rsound.c"
+						RelativePath="..\..\..\cellframework2\audio\rsound.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -288,7 +276,7 @@
 					Name="input"
 					>
 					<File
-						RelativePath="..\..\..\src\cellframework2\input\mouse_input.c"
+						RelativePath="..\..\..\cellframework2\input\mouse_input.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -308,7 +296,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\cellframework2\input\pad_input.c"
+						RelativePath="..\..\..\cellframework2\input\pad_input.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -332,7 +320,31 @@
 					Name="utility"
 					>
 					<File
-						RelativePath="..\..\..\src\cellframework2\utility\oskutil.c"
+						RelativePath="..\..\..\cellframework2\utility\oskutil.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+				</Filter>
+				<Filter
+					Name="fileio"
+					>
+					<File
+						RelativePath="..\..\..\cellframework2\fileio\file_browser.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -357,15 +369,7 @@
 				Name="cellemuframework"
 				>
 				<File
-					RelativePath="..\..\..\src\emu-ps3.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\menu.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\ps3input.c"
+					RelativePath="..\..\..\emu-ps3.c"
 					>
 					<FileConfiguration
 						Name="PS3 Debug|Win32"
@@ -385,18 +389,70 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\ps3video.cpp"
+					RelativePath="..\..\..\menu.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
-				<Filter
-					Name="menu"
+				<File
+					RelativePath="..\..\..\ps3input.c"
 					>
-				</Filter>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\ps3video.c"
+					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+				</File>
 				<Filter
 					Name="conf"
 					>
 					<File
-						RelativePath="..\..\..\src\conf\config_file.c"
+						RelativePath="..\..\..\conf\config_file.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -416,7 +472,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\conf\snes_state.c"
+						RelativePath="..\..\..\conf\snes_state.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -441,774 +497,410 @@
 				Name="emu"
 				>
 				<File
-					RelativePath="..\..\..\src\fceu\cart.cpp"
+					RelativePath="..\..\..\..\src-fceumm\cart.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\cheat.cpp"
+					RelativePath="..\..\..\..\src-fceumm\cheat.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\drawing.cpp"
+					RelativePath="..\..\..\..\src-fceumm\fceu.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\emufile.cpp"
+					RelativePath="..\..\..\..\src-fceumm\fds.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\fceu.cpp"
+					RelativePath="..\..\..\..\src-fceumm\file.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\fds.cpp"
+					RelativePath="..\..\..\..\src-fceumm\general.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\file.cpp"
+					RelativePath="..\..\..\..\src-fceumm\ines.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\filter.cpp"
+					RelativePath="..\..\..\..\src-fceumm\input.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\ines.cpp"
+					RelativePath="..\..\..\..\src-fceumm\md5.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\input.cpp"
+					RelativePath="..\..\..\..\src-fceumm\memory.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\nsf.cpp"
+					RelativePath="..\..\..\..\src-fceumm\mycrc32.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\palette.cpp"
+					RelativePath="..\..\..\..\src-fceumm\myendian.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\ppu.cpp"
+					RelativePath="..\..\..\..\src-fceumm\palette.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\sound.cpp"
+					RelativePath="..\..\..\..\src-fceumm\ppu.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\state.cpp"
+					RelativePath="..\..\..\..\src-fceumm\sound.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\unif.cpp"
+					RelativePath="..\..\..\..\src-fceumm\state.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\video.cpp"
+					RelativePath="..\..\..\..\src-fceumm\unif.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\vsuni.cpp"
+					RelativePath="..\..\..\..\src-fceumm\unzip.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\x6502.cpp"
+					RelativePath="..\..\..\..\src-fceumm\vsuni.c"
 					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src-fceumm\x6502.c"
+					>
+					<FileConfiguration
+						Name="PS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="PS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="1"
+						/>
+					</FileConfiguration>
 				</File>
 				<Filter
 					Name="boards"
 					>
 					<File
-						RelativePath="..\..\..\src\fceu\boards\01-222.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\103.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\106.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\108.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\112.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\117.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\120.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\121.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\15.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\164.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\175.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\176.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\177.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\178.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\179.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\183.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\185.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\186.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\187.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\189.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\199.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\208.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\222.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\23.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\235.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\253.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\3d-block.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\411120-c.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\43.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\57.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\603-5052.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\68.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\8157.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\8237.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\830118C.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\88.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\90.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\95.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\__dummy_mapper.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\a9711.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\a9746.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\addrlatch.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\ax5705.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\bandai.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\bmc13in1jy110.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\bmc42in1r.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\bmc64in1nr.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\bmc70in1.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\bonza.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\bs-5.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\copyfami_mmc3.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\dance.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\datalatch.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\deirom.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\dream.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\edu2000.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\fk23c.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\ghostbusters63in1.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\gs-2004.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\gs-2013.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\h2288.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\karaoke.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\kof97.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\konami-qtai.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\ks7032.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\malee.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\mapinc.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\mmc1.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\mmc3.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\mmc3.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\mmc5.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\n-c22m.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\n106.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\n625092.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\novel.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\onebus.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\sachen.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\sc-127.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\sheroes.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\sl1632.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\smb2j.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\subor.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\super24.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\supervision.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\t-227-1.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\t-262.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\tengen.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\boards\tf-1201.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="input"
-					>
-					<File
-						RelativePath="..\..\..\src\fceu\input\arkanoid.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\bworld.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\cursor.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\famicom3d.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\fkb.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\ftrainer.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\hypershot.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\mahjong.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\mouse.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\oekakids.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\powerpad.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\quiz.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\shadow.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\suborkb.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\toprider.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\zapper.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="mappers"
-					>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\151.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\16.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\17.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\18.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\193.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\201.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\202.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\203.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\204.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\21.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\212.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\213.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\214.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\215.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\217.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\22.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\225.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\227.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\228.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\229.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\230.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\231.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\232.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\234.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\241.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\242.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\244.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\246.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\24and26.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\25.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\255.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\27.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\32.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\33.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\40.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\41.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\42.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\46.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\50.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\51.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\59.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\6.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\60.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\61.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\62.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\65.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\67.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\69.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\71.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\72.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\73.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\75.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\76.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\77.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\79.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\8.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\80.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\82.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\83.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\85.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\86.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\89.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\91.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\92.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\97.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\99.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\mappers\emu2413.c"
+						RelativePath="..\..\..\..\src-fceumm\boards\01-222.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1218,46 +910,3722 @@
 								CompileAs="1"
 							/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\mappers\mmc2and4.cpp"
+						RelativePath="..\..\..\..\src-fceumm\boards\103.c"
 						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\mappers\simple.cpp"
+						RelativePath="..\..\..\..\src-fceumm\boards\106.c"
 						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\108.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\112.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\116.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\117.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\120.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\121.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\12in1.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\15.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\156.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\164.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\168.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\170.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\175.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\176.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\177.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\178.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\183.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\185.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\186.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\187.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\189.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\193.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\199.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\208.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\222.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\225.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\23.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\235.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\253.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\3d-block.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\411120-c.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\43.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\57.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\603-5052.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\68.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\8157.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\8237.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\830118C.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\88.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\90.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\95.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\a9746.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\ac-08.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\addrlatch.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\ax5705.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\bandai.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\bmc13in1jy110.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\bmc42in1r.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\bmc64in1nr.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\bmc70in1.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\bonza.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\bs-5.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\copyfami_emu.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\copyfami_hwi.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\dance2000.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\datalatch.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\deirom.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\dream.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\dummy_mapper.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\edu2000.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\fk23c.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\ghostbusters63in1.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\gs-2004.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\gs-2013.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\h2288.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\karaoke.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\kof97.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\konami-qtai.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\KS7012.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\KS7013.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\KS7017.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\KS7032.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\KS7037.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\KS7057.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\le05.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\malee.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\mmc1.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\mmc3.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\mmc5.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\n106.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\n625092.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\novel.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\onebus.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\pec-586.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\sachen.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\sc-127.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\sheroes.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\sl1632.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\smb2j.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\subor.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\super24.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\supervision.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\t-227-1.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\t-262.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\tengen.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\tf-1201.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\transformer.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\vrc7.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\yoko.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 				</Filter>
 				<Filter
-					Name="palettes"
+					Name="input"
 					>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\arkanoid.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\bbox.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\bworld.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\cursor.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\fkb.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\ftrainer.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\hypershot.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\mahjong.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\mouse.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\oekakids.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\pads.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\pec586kb.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\powerpad.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\quiz.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\shadow.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\suborkb.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\toprider.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\input\zapper.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
 				</Filter>
 				<Filter
-					Name="utils"
+					Name="mappers"
 					>
 					<File
-						RelativePath="..\..\..\src\fceu\utils\crc32-fceu.cpp"
+						RelativePath="..\..\..\..\src-fceumm\mappers\151.c"
 						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\utils\endian.cpp"
+						RelativePath="..\..\..\..\src-fceumm\mappers\157.c"
 						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\utils\general.cpp"
+						RelativePath="..\..\..\..\src-fceumm\mappers\17.c"
 						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\utils\md5.cpp"
+						RelativePath="..\..\..\..\src-fceumm\mappers\18.c"
 						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\utils\memory.cpp"
+						RelativePath="..\..\..\..\src-fceumm\mappers\201.c"
 						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\utils\xstring.cpp"
+						RelativePath="..\..\..\..\src-fceumm\mappers\202.c"
 						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\203.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\204.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\21.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\212.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\213.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\214.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\215.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\217.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\22.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\227.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\228.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\229.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\230.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\231.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\232.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\234.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\241.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\242.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\244.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\246.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\24and26.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\25.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\255.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\27.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\32.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\33.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\40.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\41.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\42.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\46.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\50.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\51.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\59.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\6.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\61.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\62.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\65.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\67.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\69.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\71.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\72.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\73.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\75.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\76.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\77.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\79.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\8.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\80.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\82.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\83.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\85.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\86.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\89.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\91.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\92.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\97.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\99.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\emu2413.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\mmc2and4.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\mappers\simple.c"
+						>
+						<FileConfiguration
+							Name="PS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="PS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								CompileAs="1"
+							/>
+						</FileConfiguration>
 					</File>
 				</Filter>
 			</Filter>
@@ -1265,94 +4633,10 @@
 				Name="utils"
 				>
 				<Filter
-					Name="unzip"
-					>
-					<File
-						RelativePath="..\..\..\utils\unzip\ioapi.c"
-						>
-						<FileConfiguration
-							Name="PS3 Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="PS3 Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\..\utils\unzip\mztools.c"
-						>
-						<FileConfiguration
-							Name="PS3 Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="PS3 Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\..\utils\unzip\unzip.c"
-						>
-						<FileConfiguration
-							Name="PS3 Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="PS3 Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\..\utils\unzip\zip.c"
-						>
-						<FileConfiguration
-							Name="PS3 Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="PS3 Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								CompileAs="1"
-							/>
-						</FileConfiguration>
-					</File>
-				</Filter>
-				<Filter
 					Name="zlib"
 					>
 					<File
-						RelativePath="..\..\..\utils\zlib\adler32.c"
+						RelativePath="..\..\..\..\utils\zlib\adler32.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1372,7 +4656,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\compress.c"
+						RelativePath="..\..\..\..\utils\zlib\compress.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1392,7 +4676,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\crc32.c"
+						RelativePath="..\..\..\..\utils\zlib\crc32.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1412,7 +4696,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\deflate.c"
+						RelativePath="..\..\..\..\utils\zlib\deflate.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1432,7 +4716,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\gzclose.c"
+						RelativePath="..\..\..\..\utils\zlib\gzclose.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1452,7 +4736,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\gzlib.c"
+						RelativePath="..\..\..\..\utils\zlib\gzlib.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1472,7 +4756,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\gzread.c"
+						RelativePath="..\..\..\..\utils\zlib\gzread.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1492,7 +4776,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\gzwrite.c"
+						RelativePath="..\..\..\..\utils\zlib\gzwrite.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1512,7 +4796,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\infback.c"
+						RelativePath="..\..\..\..\utils\zlib\infback.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1532,7 +4816,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\inffast.c"
+						RelativePath="..\..\..\..\utils\zlib\inffast.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1552,7 +4836,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\inflate.c"
+						RelativePath="..\..\..\..\utils\zlib\inflate.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1572,7 +4856,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\inftrees.c"
+						RelativePath="..\..\..\..\utils\zlib\inftrees.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1592,7 +4876,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\trees.c"
+						RelativePath="..\..\..\..\utils\zlib\trees.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1612,7 +4896,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\uncompr.c"
+						RelativePath="..\..\..\..\utils\zlib\uncompr.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1632,7 +4916,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\utils\zlib\zutil.c"
+						RelativePath="..\..\..\..\utils\zlib\zutil.c"
 						>
 						<FileConfiguration
 							Name="PS3 Debug|Win32"
@@ -1659,13 +4943,53 @@
 			Filter="h;hpp"
 			>
 			<Filter
-				Name="cellframework"
+				Name="utils"
 				>
 				<Filter
-					Name="fileio"
+					Name="zlib"
 					>
 					<File
-						RelativePath="..\..\..\src\cellframework\fileio\FileBrowser.hpp"
+						RelativePath="..\..\..\..\utils\zlib\crc32.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\utils\zlib\deflate.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\utils\zlib\gzguts.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\utils\zlib\inffast.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\utils\zlib\inffixed.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\utils\zlib\inflate.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\utils\zlib\inftrees.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\utils\zlib\trees.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\utils\zlib\zconf.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\utils\zlib\zlib.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\utils\zlib\zutil.h"
 						>
 					</File>
 				</Filter>
@@ -1677,19 +5001,19 @@
 					Name="audio"
 					>
 					<File
-						RelativePath="..\..\..\src\cellframework2\audio\buffer.h"
+						RelativePath="..\..\..\cellframework2\audio\buffer.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\cellframework2\audio\resampler.h"
+						RelativePath="..\..\..\cellframework2\audio\resampler.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\cellframework2\audio\rsound.h"
+						RelativePath="..\..\..\cellframework2\audio\rsound.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\cellframework2\audio\stream.h"
+						RelativePath="..\..\..\cellframework2\audio\stream.h"
 						>
 					</File>
 				</Filter>
@@ -1697,11 +5021,11 @@
 					Name="input"
 					>
 					<File
-						RelativePath="..\..\..\src\cellframework2\input\mouse_input.h"
+						RelativePath="..\..\..\cellframework2\input\mouse_input.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\cellframework2\input\pad_input.h"
+						RelativePath="..\..\..\cellframework2\input\pad_input.h"
 						>
 					</File>
 				</Filter>
@@ -1709,7 +5033,15 @@
 					Name="utility"
 					>
 					<File
-						RelativePath="..\..\..\src\cellframework2\utility\oskutil.h"
+						RelativePath="..\..\..\cellframework2\utility\oskutil.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="fileio"
+					>
+					<File
+						RelativePath="..\..\..\cellframework2\fileio\file_browser.h"
 						>
 					</File>
 				</Filter>
@@ -1717,43 +5049,43 @@
 			<Filter
 				Name="cellemuframework"
 				>
+				<File
+					RelativePath="..\..\..\colors.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\emu-ps3-constants.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\emu-ps3.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\menu.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\ps3input.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\ps3video.h"
+					>
+				</File>
 				<Filter
 					Name="conf"
 					>
 					<File
-						RelativePath="..\..\..\src\conf\config_file.h"
+						RelativePath="..\..\..\conf\config_file.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\conf\settings.h"
+						RelativePath="..\..\..\conf\settings.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\conf\snes_state.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="menu"
-					>
-					<File
-						RelativePath="..\..\..\src\menu\menu-choice.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\menu\menu-entries.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\menu\menu-helpmessages.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\menu\menu-logic.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\menu\settings-logic.h"
+						RelativePath="..\..\..\conf\snes_state.h"
 						>
 					</File>
 				</Filter>
@@ -1762,154 +5094,158 @@
 				Name="emu"
 				>
 				<File
-					RelativePath="..\..\..\src\fceu\asm.h"
+					RelativePath="..\..\..\..\src-fceumm\cart.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\cart.h"
+					RelativePath="..\..\..\..\src-fceumm\cheat.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\cheat.h"
+					RelativePath="..\..\..\..\src-fceumm\crc32.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\drawing.h"
+					RelativePath="..\..\..\..\src-fceumm\driver.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\driver.h"
+					RelativePath="..\..\..\..\src-fceumm\fceu.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\emufile.h"
+					RelativePath="..\..\..\..\src-fceumm\fcoeffs.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\emufile_types.h"
+					RelativePath="..\..\..\..\src-fceumm\fds.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\fceu.h"
+					RelativePath="..\..\..\..\src-fceumm\file.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\fceulua.h"
+					RelativePath="..\..\..\..\src-fceumm\general.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\fcoeffs.h"
+					RelativePath="..\..\..\..\src-fceumm\git.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\fds.h"
+					RelativePath="..\..\..\..\src-fceumm\ines-bad.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\file.h"
+					RelativePath="..\..\..\..\src-fceumm\ines-correct.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\filter.h"
+					RelativePath="..\..\..\..\src-fceumm\ines.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\git.h"
+					RelativePath="..\..\..\..\src-fceumm\input.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\ines-bad.h"
+					RelativePath="..\..\..\..\src-fceumm\md5.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\ines-correct.h"
+					RelativePath="..\..\..\..\src-fceumm\memory.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\ines.h"
+					RelativePath="..\..\..\..\src-fceumm\myendian.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\input.h"
+					RelativePath="..\..\..\..\src-fceumm\ops.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\nsf.h"
+					RelativePath="..\..\..\..\src-fceumm\palette.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\palette.h"
+					RelativePath="..\..\..\..\src-fceumm\ppu.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\ppu.h"
+					RelativePath="..\..\..\..\src-fceumm\pputile.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\sound.h"
+					RelativePath="..\..\..\..\src-fceumm\ppuview.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\state.h"
+					RelativePath="..\..\..\..\src-fceumm\sound.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\types-des.h"
+					RelativePath="..\..\..\..\src-fceumm\sound_hq_.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\types.h"
+					RelativePath="..\..\..\..\src-fceumm\sound_lq_.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\unif.h"
+					RelativePath="..\..\..\..\src-fceumm\state.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\version.h"
+					RelativePath="..\..\..\..\src-fceumm\types.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\video.h"
+					RelativePath="..\..\..\..\src-fceumm\unif.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\vsuni.h"
+					RelativePath="..\..\..\..\src-fceumm\unzip.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\x6502.h"
+					RelativePath="..\..\..\..\src-fceumm\vsuni.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\x6502abbrev.h"
+					RelativePath="..\..\..\..\src-fceumm\x6502.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\fceu\x6502struct.h"
+					RelativePath="..\..\..\..\src-fceumm\x6502struct.h"
 					>
 				</File>
 				<Filter
 					Name="boards"
 					>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\mapinc.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\src-fceumm\boards\mmc3.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="input"
 					>
 					<File
-						RelativePath="..\..\..\src\fceu\input\fkb.h"
+						RelativePath="..\..\..\..\src-fceumm\input\fkb.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\input\share.h"
+						RelativePath="..\..\..\..\src-fceumm\input\share.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\input\suborkb.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\input\zapper.h"
+						RelativePath="..\..\..\..\src-fceumm\input\suborkb.h"
 						>
 					</File>
 				</Filter>
@@ -1917,63 +5253,19 @@
 					Name="mappers"
 					>
 					<File
-						RelativePath="..\..\..\src\fceu\mappers\emu2413.h"
+						RelativePath="..\..\..\..\src-fceumm\mappers\emu2413.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\mappers\emutypes.h"
+						RelativePath="..\..\..\..\src-fceumm\mappers\emutypes.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\mappers\mapinc.h"
+						RelativePath="..\..\..\..\src-fceumm\mappers\mapinc.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\mappers\vrc7tone.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="utils"
-					>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\ConvertUTF.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\crc32.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\endian.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\general.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\guid.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\md5.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\memory.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\memorystream.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\valuearray.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\fceu\utils\xstring.h"
+						RelativePath="..\..\..\..\src-fceumm\mappers\vrc7tone.h"
 						>
 					</File>
 				</Filter>
@@ -1981,62 +5273,26 @@
 					Name="palettes"
 					>
 					<File
-						RelativePath="..\..\..\src\fceu\palettes\palettes.h"
+						RelativePath="..\..\..\..\src-fceumm\palettes\palettes.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\palettes\rp2c04001.h"
+						RelativePath="..\..\..\..\src-fceumm\palettes\rp2c04001.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\palettes\rp2c04002.h"
+						RelativePath="..\..\..\..\src-fceumm\palettes\rp2c04002.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\palettes\rp2c04003.h"
+						RelativePath="..\..\..\..\src-fceumm\palettes\rp2c04003.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\..\src\fceu\palettes\rp2c05004.h"
+						RelativePath="..\..\..\..\src-fceumm\palettes\rp2c05004.h"
 						>
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="unzip"
-				>
-				<File
-					RelativePath="..\..\..\utils\unzip\crypt.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\utils\unzip\ioapi.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\utils\unzip\iowin32.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\utils\unzip\mztools.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\utils\unzip\unzip.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\utils\unzip\zconf.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\utils\unzip\zip.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\utils\unzip\zlib.h"
-					>
-				</File>
 			</Filter>
 		</Filter>
 	</Files>
