@@ -1978,7 +1978,7 @@ int main (int argc, char **argv)
 #if(CELL_SDK_VERSION > 0x340000)
 	cellSysutilEnableBgmPlayback();
 #endif
-	MenuInit();
+	menu_init();
 
 	do
 	{
@@ -1986,7 +1986,7 @@ int main (int argc, char **argv)
 		{
 			case MODE_MENU:
 				ps3graphics_set_orientation(NORMAL);
-				MenuMainLoop();
+				menu_loop();
 				break;
 			case MODE_EMULATION:
 				if(ingame_menu_item != 0)
