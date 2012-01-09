@@ -53,34 +53,29 @@ SOURCES_LAST   =  $(UTILS_DIR)/zlib
 
 ifeq ($(CELL_DEBUG_CONSOLE),1)
 PPU_CFLAGS     += -DCELL_DEBUG_CONSOLE
-PPU_CXXFLAGS   += -DCELL_DEBUG_CONSOLE
 L_CONTROL_CONSOLE_LDLIBS = -lcontrol_console_ppu
 L_NET_CTL_LDLIBS = -lnetctl_stub
 endif
 
 ifeq ($(CELL_DEBUG_FPS),1)
 PPU_CFLAGS     += -DCELL_DEBUG_FPS
-PPU_CXXFLAGS   += -DCELL_DEBUG_FPS
 endif
 
 ifeq ($(CELL_DEBUG_PRINTF),1)
 #Delay - change as necessary
 DEFINES        = -DCELL_DEBUG_PRINTF -DCELL_DEBUG_PRINTF_DELAY
 PPU_CFLAGS     += $(DEFINES)
-PPU_CXXFLAGS   += $(DEFINES)
 endif
 
 ifeq ($(CELL_DEBUG_LOGGER),1)
 DEFINES        = -DCELL_DEBUG_LOGGER
 PPU_CFLAGS     += $(DEFINES)
-PPU_CXXFLAGS   += $(DEFINES)
 SOURCES        += $(CELL_FRAMEWORK2_DIR)/logger
 L_NET_CTL_LDLIBS = -lnetctl_stub
 endif
 
 ifeq ($(MULTIMAN_SUPPORT),1)
 PPU_CFLAGS     += -DMULTIMAN_SUPPORT=1
-PPU_CXXFLAGS   += -DMULTIMAN_SUPPORT=1
    ifeq ($(shell uname), Linux)
       MKFSELF_WC		= $(HOME)/bin/make_self_wc
    else
@@ -88,7 +83,7 @@ PPU_CXXFLAGS   += -DMULTIMAN_SUPPORT=1
    endif
 endif
 
-PPU_SRCS = $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c)) \
+PPU_SRCS = $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c)) \
 $(FCEU_API_DIR)/cart.c \
 $(FCEU_API_DIR)/cheat.c \
 $(FCEU_API_DIR)/mycrc32.c \
@@ -110,17 +105,14 @@ $(FCEU_API_DIR)/unzip.c \
 $(FCEU_API_DIR)/vsuni.c \
 $(FCEU_API_DIR)/x6502.c
 
-PPU_SRCS += $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.cpp)) $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.c))
+PPU_SRCS += $(foreach dir,$(SOURCES_LAST),$(wildcard $(dir)/*.c))
 
 PPU_TARGET		=	fceu-ps3.ppu.elf
 DEFINES			+=	-I. -I$(FCEU_API_DIR) -I$(UTILS_DIR)/zlib -DPSS_STYLE=1 -DINLINE=inline -DPSGL -DPATH_MAX=1024 -DNDEBUG=1 -DSOUND_QUALITY=0
-PPU_CXXFLAGS		+=	$(DEFINES)
 PPU_CFLAGS		+=	$(DEFINES)
 
 ifeq ($(CELL_BUILD_TOOLS),SNC)
 PPU_CFLAGS		+= 	-Xbranchless=1 -Xfastmath=1 -Xassumecorrectsign=1 -Xassumecorrectalignment=1 \
-				-Xunroll=1 -Xautovecreg=1
-PPU_CXXFLAGS		+=	-Xbranchless=1 -Xfastmath=1 -Xassumecorrectsign=1 -Xassumecorrectalignment=1 \
 				-Xunroll=1 -Xautovecreg=1
 endif
 
