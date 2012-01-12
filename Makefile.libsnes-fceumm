@@ -28,6 +28,11 @@ else ifeq ($(platform), ps3)
    CC = ppu-lv2-gcc
    AR = ppu-lv2-ar
    PLATFORM_DEFINES := -D__CELLOS_LV2
+else ifeq ($(platform), snc-ps3)
+   TARGET := libsnes.a
+   CC = ps3ppusnc
+   AR = ps3snarl
+   PLATFORM_DEFINES := -D__CELLOS_LV2
 else ifeq ($(platform), xenon)
    TARGET := libsnes.a
    CC = xenon-gcc
@@ -66,14 +71,24 @@ OBJS := $(FCEU_COBJ)
 
 FCEU_DEFINES := -D__LIBSNES__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DINLINE=inline -DPSS_STYLE=1 $(PLATFORM_DEFINES)
 
-CFLAGS += -std=gnu99 $(fpic) -Wno-write-strings $(FCEU_DEFINES) $(ENDIANNESS_DEFINES)
-LDFLAGS += -lm -Wl,-no-undefined
+ifeq ($(platform), snc-ps3)
+CODE_DEFINES =
+WARNING_DEFINES =
+else
+CODE_DEFINES = -std=gnu99
+WARNING_DEFINES = -Wl -Wno-write-strings
+endif
+
+CFLAGS += $(CODE_DEFINES) $(fpic) $(WARNING_DEFINES) $(FCEU_DEFINES) $(ENDIANNESS_DEFINES)
+LDFLAGS += -lm,-no-undefined
 
 INCDIRS := -I$(LIBSNES_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers -I$(UTILS_DIR)/zlib 
 LIBS :=
 
 $(TARGET): $(OBJS)
 ifeq ($(platform), ps3)
+	$(AR) rcs $@ $(OBJS)
+else ifeq ($(platform), snc-ps3)
 	$(AR) rcs $@ $(OBJS)
 else ifeq ($(platform), xenon)
 	$(AR) rcs $@ $(OBJS)

@@ -558,6 +558,50 @@ static void display_help_text(int currentsetting)
 		case SETTING_RSOUND_SERVER_IP_ADDRESS:
 			print_help_message(menu_generalaudiosettings, currentsetting);
 			break;
+		case SETTING_CONTROLS_SCHEME:
+			cellDbgFontPrintf(0.09f, 0.83f, 0.86f, LIGHTBLUE,
+					Settings.ControlScheme == CONTROL_SCHEME_DEFAULT ? "INFO - Control scheme [Default] is selected.\nNOTE: You can't customize the controls with this scheme." : "INFO - Control scheme [Custom] is selected.\nNOTE: You can customize the controls with this scheme.");
+			break;
+		case SETTING_CONTROLS_DPAD_UP:
+		case SETTING_CONTROLS_DPAD_DOWN:
+		case SETTING_CONTROLS_DPAD_LEFT:
+		case SETTING_CONTROLS_DPAD_RIGHT:
+		case SETTING_CONTROLS_BUTTON_CIRCLE:
+		case SETTING_CONTROLS_BUTTON_CROSS:
+		case SETTING_CONTROLS_BUTTON_TRIANGLE:
+		case SETTING_CONTROLS_BUTTON_SQUARE:
+		case SETTING_CONTROLS_BUTTON_SELECT:
+		case SETTING_CONTROLS_BUTTON_START:
+		case SETTING_CONTROLS_BUTTON_L1:
+		case SETTING_CONTROLS_BUTTON_R1:
+		case SETTING_CONTROLS_BUTTON_L2:
+		case SETTING_CONTROLS_BUTTON_R2:
+		case SETTING_CONTROLS_BUTTON_L3:
+		case SETTING_CONTROLS_BUTTON_R3:
+		case SETTING_CONTROLS_BUTTON_L2_BUTTON_L3:
+		case SETTING_CONTROLS_BUTTON_L2_BUTTON_R3:
+		case SETTING_CONTROLS_BUTTON_L2_ANALOG_R_RIGHT:
+		case SETTING_CONTROLS_BUTTON_L2_ANALOG_R_LEFT:
+		case SETTING_CONTROLS_BUTTON_L2_ANALOG_R_UP:
+		case SETTING_CONTROLS_BUTTON_L2_ANALOG_R_DOWN:
+		case SETTING_CONTROLS_BUTTON_R2_ANALOG_R_RIGHT:
+		case SETTING_CONTROLS_BUTTON_R2_ANALOG_R_LEFT:
+		case SETTING_CONTROLS_BUTTON_R2_ANALOG_R_UP:
+		case SETTING_CONTROLS_BUTTON_R2_ANALOG_R_DOWN:
+		case SETTING_CONTROLS_BUTTON_R2_BUTTON_R3:
+		case SETTING_CONTROLS_BUTTON_R3_BUTTON_L3:
+		case SETTING_CONTROLS_ANALOG_R_UP:
+		case SETTING_CONTROLS_ANALOG_R_DOWN:
+		case SETTING_CONTROLS_ANALOG_R_LEFT:
+		case SETTING_CONTROLS_ANALOG_R_RIGHT:
+			cellDbgFontPrintf(0.09f, 0.83f, 0.86f, LIGHTBLUE, "INFO - [%s] on the PS3 controller is mapped to action:\n[%s].", menu_controlssettings.items[currentsetting].text, Input_PrintMappedButton(control_binds[currently_selected_controller_menu][currentsetting-FIRST_CONTROL_BIND]));
+			break;
+		case SETTING_CONTROLS_SAVE_CUSTOM_CONTROLS:
+			cellDbgFontPuts(0.09f, 0.83f, 0.86f, LIGHTBLUE, "INFO - Save the custom control settings.\nNOTE: This option will not do anything with Control Scheme [New] or [Default].");
+			break;
+		case SETTING_CONTROLS_DEFAULT_ALL:
+			cellDbgFontPuts(0.09f, 0.83f, 0.86f, LIGHTBLUE, "INFO - Set all 'Controls' settings back to their default values.");
+			break;
 		case SETTING_EMU_CURRENT_SAVE_STATE_SLOT:
 		case SETTING_EMU_DEFAULT_ALL:
 			print_help_message(menu_emu_settings, currentsetting);
