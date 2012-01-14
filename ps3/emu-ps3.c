@@ -60,25 +60,25 @@ uint32_t control_binds[MAX_PADS][BTN_DEF_MAX];
 
 struct SSettings Settings;
 
-int mode_switch = MODE_MENU;				// mode the main loop is in
+int mode_switch = MODE_MENU;				/* mode the main loop is in*/
 int control_style;
-static uint32_t is_running;				// is the ROM currently running in the emulator?
-static bool is_ingame_menu_running;			// is the ingame menu currently running?
-static bool return_to_MM = false;			// launch multiMAN on exit if ROM is passed
-static uint32_t emulator_initialized = 0;		// is the emulator loaded?
-uint32_t rom_loaded = 0;				// is a rom currently loaded?
-static char * current_rom;				// filename of the current rom being emulated
-static bool dialog_is_running;				// is a dialog screen currently running?
-static char special_action_msg[256];			// message which should be overlaid on top of the screen
-uint32_t special_action_msg_expired;			// time at which the message no longer needs to be overlaid onscreen
-uint64_t ingame_menu_item = 0;				// the current ingame menu item that is selected
+uint32_t is_running;					/* is the ROM currently running in the emulator?*/
+static bool is_ingame_menu_running;			/* is the ingame menu currently running?*/
+static bool return_to_MM = false;			/* launch multiMAN on exit if ROM is passed*/
+static uint32_t emulator_initialized = 0;		/* is the emulator loaded?*/
+uint32_t rom_loaded = 0;				/* is a rom currently loaded?*/
+static char * current_rom;				/* filename of the current rom being emulated*/
+static bool dialog_is_running;				/* is a dialog screen currently running?*/
+static char special_action_msg[256];			/* message which should be overlaid on top of the screen*/
+uint32_t special_action_msg_expired;			/* time at which the message no longer needs to be overlaid onscreen*/
+uint64_t ingame_menu_item = 0;				/* the current ingame menu item that is selected*/
 
 /* Emulator-specific global variables */
 
 static uint32 JSReturn = 0;
 void *InputDPR;
-static uint8 *gfx=0;					// had to be made a global because ingame_menu needs access to it too
-static uint32_t hack_prevent_game_sram_from_being_erased = 1; //ugly hack - is set to 0 after the hack has been applied
+static uint8 *gfx=0;					/* had to be made a global because ingame_menu needs access to it too*/
+static uint32_t hack_prevent_game_sram_from_being_erased = 1; /*ugly hack - is set to 0 after the hack has been applied*/
 
 #if 0
 static INPUTC *zapperdata[2];
@@ -248,14 +248,12 @@ static void emulator_toggle_throttle(bool enable)
 	if(!(config_get_char_array(currentconfig, charstring, setting, sizeof(setting)))) \
 		strncpy(setting,defaultvalue, sizeof(setting));
 
-#if 0
 void emulator_implementation_set_gameaware(const char * fname)
 {
 	ps3graphics_init_state_uniforms(fname);
 	strcpy(Settings.PS3CurrentShader, ps3graphics_get_fragment_shader_path(0));
 	strcpy(Settings.PS3CurrentShader2, ps3graphics_get_fragment_shader_path(1));
 }
-#endif
 
 static void map_ps3_standard_controls(const char * config_file)
 {

@@ -4,14 +4,16 @@
  *  Created on: Nov 4, 2010
 ********************************************************************************/
 
-#include "cellframework2/input/pad_input.h"
-
 #include <string.h>
 #include "ps3video.h"
 
 #ifdef CELL_DEBUG_FPS
 #include <sys/sys_time.h>
 #endif
+
+#include "conf/config_file.h"
+#include "conf/snes_state.h"
+#include "cellframework2/input/pad_input.h"
 
 #define MENU_SHADER_NO 2
 
@@ -82,8 +84,9 @@ static CGparameter _cgp_vertex_timer[3];
 PSGLdevice* psgl_device;
 static PSGLcontext* psgl_context;
 static CellVideoOutState m_stored_video_state;
-/*snes_tracker_t *tracker;*/
-/* static std::vector<lookup_texture> lut_textures; */
+snes_tracker_t *tracker; /* State tracker*/
+static struct lookup_texture lut_textures[16]; /* Lookup textures in use.*/
+static unsigned lut_textures_ptr;
 
 uint16_t ps3graphics_palette[256];
 
@@ -553,18 +556,14 @@ void ps3graphics_destroy()
 	ps3graphics_deinit();
 	free(decode_buffer);
 
-	#if 0
 	if (tracker)
 	{
 		snes_tracker_free(tracker);
 
-		for (std::vector<lookup_texture>::iterator itr = lut_textures.begin();
-				itr != lut_textures.end(); ++itr)
-		{
-			glDeleteTextures(1, &itr->tex);
-		}
+		for (unsigned i = 0; i < lut_textures_ptr; i++)
+			glDeleteTextures(1, &lut_textures[i].tex);
+		lut_textures_ptr = 0;
 	}
-	#endif
 }
 
 void ps3graphics_set_fbo_scale(uint32_t enable, unsigned scale)
@@ -685,7 +684,6 @@ static void dprintf_noswap(float x, float y, float scale, const char* fmt, ...)
 ********************************************************************************/
 
 /* Set SNES state uniforms.*/
-#if 0
 static void ps3graphics_update_state_uniforms(unsigned index)
 {
 	if (tracker)
@@ -700,15 +698,14 @@ static void ps3graphics_update_state_uniforms(unsigned index)
 			cgGLSetParameter1f(param_f, info[i].value);
 		}
 
-		for (std::vector<lookup_texture>::const_iterator itr = lut_textures.begin(); itr != lut_textures.end(); ++itr)
+		for (unsigned i = 0; i < lut_textures_ptr; i++)
 		{
-			CGparameter param = cgGetNamedParameter(_fragmentProgram[index], itr->id.c_str());
-			cgGLSetTextureParameter(param, itr->tex);
+			CGparameter param = cgGetNamedParameter(_fragmentProgram[index], lut_textures[i].id);
+			cgGLSetTextureParameter(param, lut_textures[i].tex);
 			cgGLEnableTextureParameter(param);
 		}
 	}
 }
-#endif
 
 static void ps3graphics_update_cg_params(unsigned width, unsigned height, unsigned tex_width, unsigned tex_height, unsigned view_width, unsigned view_height, unsigned index)
 {
@@ -1609,7 +1606,6 @@ bool ps3graphics_load_menu_texture(enum menu_type type, const char * path)
 	Game Aware Shaders
 ********************************************************************************/
 
-#if 0
 static void ps3graphics_load_textures(config_file_t *conf, char *attr)
 {
 	const char *id = strtok(attr, ";");
@@ -1621,24 +1617,24 @@ static void ps3graphics_load_textures(config_file_t *conf, char *attr)
 
 		unsigned width, height;
 
-		lookup_texture tex;
-		tex.id = id;
+		struct lookup_texture tex;
+		strncpy(tex.id, id, sizeof(tex.id));
 
 		if(strstr(path, ".PNG") != NULL || strstr(path, ".png") != NULL)
 		{
-			if (!ps3graphics_load_png(path, width, height, decode_buffer))
+			if (!ps3graphics_load_png(path, &width, &height, decode_buffer))
 				goto error;
 		}
 		else
 		{
-			if (!ps3graphics_load_jpeg(path, width, height, decode_buffer))
+			if (!ps3graphics_load_jpeg(path, &width, &height, decode_buffer))
 				goto error;
 		}
 
 		glGenTextures(1, &tex.tex);
 		ps3graphics_setup_texture(tex.tex, width, height);
 
-		lut_textures.push_back(tex);
+      lut_textures[lut_textures_ptr++] = tex;
 		free(path);
 		id = strtok(NULL, ";");
 	}
@@ -1654,11 +1650,13 @@ error:
 
 static void ps3graphics_load_imports(config_file_t *conf, char *attr)
 {
-	std::vector<snes_tracker_uniform_info> info;
+	struct snes_tracker_uniform_info info[64];
+   unsigned info_ptr = 0;
+
 	const char *id = strtok(attr, ";");
 	while (id)
 	{
-		snes_tracker_uniform_info uniform;
+		struct snes_tracker_uniform_info uniform;
 
 		char base[MAX_PATH_LENGTH];
 		strcpy(base, id);
@@ -1733,16 +1731,16 @@ static void ps3graphics_load_imports(config_file_t *conf, char *attr)
 		uniform.mask = mask;
 		uniform.ram_type = ram_type;
 
-		info.push_back(uniform);
+		info[info_ptr++] = uniform;
 		free(semantic);
 
 		id = strtok(NULL, ";");
 	}
 
-	snes_tracker_info tracker_info;
-	tracker_info.wram = (const uint8_t**)&Memory.RAM;
+	struct snes_tracker_info tracker_info;
+	/* tracker_info.wram = (const uint8_t**)&Memory.RAM; */
 	tracker_info.info = &info[0];
-	tracker_info.info_elem = info.size();
+	tracker_info.info_elem = info_ptr;
 
 	tracker = snes_tracker_init(&tracker_info);
 
@@ -1760,13 +1758,10 @@ void ps3graphics_init_state_uniforms(const char * path)
 		snes_tracker_free(tracker);
 		tracker = NULL;
 
-		for (std::vector<lookup_texture>::iterator itr = lut_textures.begin();
-				itr != lut_textures.end(); ++itr)
-		{
-			glDeleteTextures(1, &itr->tex);
-		}
+		for (unsigned i = 0; i < lut_textures_ptr; i++)
+			glDeleteTextures(1, &lut_textures[i].tex);
 
-		lut_textures.clear();
+      lut_textures_ptr = 0;
 	}
 
 	config_file_t *conf = config_file_new(path);
@@ -1802,4 +1797,3 @@ void ps3graphics_init_state_uniforms(const char * path)
 
 	config_file_free(conf);
 }
-#endif

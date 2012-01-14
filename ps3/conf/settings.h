@@ -10,20 +10,6 @@
 
 #define MAX_PATH_LENGTH		1024
 
-#define EMULATOR_SETTINGS_UINT32_T() \
-	uint32_t		FCEUDisableSpriteLimitation; \
-	uint32_t		FCEUGameGenie; \
-	uint32_t		FCEUPPUMode; \
-	uint32_t		FCEUControlstyle; \
-	uint32_t		FCEUPalette; \
-	uint32_t		FCEUScanlinePALStart; \
-	uint32_t		FCEUScanlinePALEnd; \
-	uint32_t		FCEUScanlineNTSCStart; \
-	uint32_t		FCEUScanlineNTSCEnd;
-
-#define EMULATOR_SETTINGS_STD_STRING() \
-	char			PS3PathBaseDirectory[MAX_PATH_LENGTH];
-
 struct SSettings
 {
 	int			PS3OverscanAmount;
@@ -50,7 +36,15 @@ struct SSettings
 	uint32_t		SaveCustomControlScheme;
 	uint32_t		CurrentSaveStateSlot;
 	uint32_t		CurrentCheatPosition;
-	EMULATOR_SETTINGS_UINT32_T();
+	uint32_t		FCEUDisableSpriteLimitation;
+	uint32_t		FCEUGameGenie;
+	uint32_t		FCEUPPUMode;
+	uint32_t		FCEUControlstyle;
+	uint32_t		FCEUPalette;
+	uint32_t		FCEUScanlinePALStart;
+	uint32_t		FCEUScanlinePALEnd;
+	uint32_t		FCEUScanlineNTSCStart;
+	uint32_t		FCEUScanlineNTSCEnd;
 	char			PS3CurrentShader[MAX_PATH_LENGTH];
 	char			PS3CurrentShader2[MAX_PATH_LENGTH];
 	char			ShaderPresetPath[MAX_PATH_LENGTH];
@@ -63,7 +57,7 @@ struct SSettings
 	char			PS3PathCheats[MAX_PATH_LENGTH];
 	char			GameAwareShaderPath[MAX_PATH_LENGTH];
 	char			PS3CurrentInputPresetTitle[MAX_PATH_LENGTH];
-	EMULATOR_SETTINGS_STD_STRING();
+	char			PS3PathBaseDirectory[MAX_PATH_LENGTH];
 };
 
 extern struct SSettings		Settings;

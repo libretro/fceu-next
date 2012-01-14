@@ -112,6 +112,7 @@ extern int AddCheatEntry(char *name, uint32 addr, uint8 val, int compare, int st
 extern cell_audio_handle_t audio_handle;			// cell audio handle
 extern const struct cell_audio_driver *audio_driver;		// cell audio driver opaque pointer
 extern uint32_t rom_loaded;
+extern uint32_t is_running;
 
 extern char contentInfoPath[MAX_PATH_LENGTH];
 extern char usrDirPath[MAX_PATH_LENGTH];
