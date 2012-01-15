@@ -65,9 +65,8 @@ int control_style;
 uint32_t is_running;					/* is the ROM currently running in the emulator?*/
 static bool is_ingame_menu_running;			/* is the ingame menu currently running?*/
 static bool return_to_MM = false;			/* launch multiMAN on exit if ROM is passed*/
-static uint32_t emulator_initialized = 0;		/* is the emulator loaded?*/
-uint32_t rom_loaded = 0;				/* is a rom currently loaded?*/
-static char * current_rom;				/* filename of the current rom being emulated*/
+uint32_t emulator_initialized = 0;			/* is the emulator loaded?*/
+char current_rom[MAX_PATH_LENGTH];			/* filename of the current rom being emulated*/
 static bool dialog_is_running;				/* is a dialog screen currently running?*/
 static char special_action_msg[256];			/* message which should be overlaid on top of the screen*/
 uint32_t special_action_msg_expired;			/* time at which the message no longer needs to be overlaid onscreen*/
@@ -152,18 +151,6 @@ static void emulator_increment_current_cheat_position(void)\
 
 /* PS3 frontend - ROM-related functions */
 
-static void Emulator_StopROMRunning()
-{
-	is_running = 0;
-}
-
-void Emulator_StartROMRunning(uint32_t set_is_running)
-{
-	if(set_is_running)
-		is_running = 1;
-	mode_switch = MODE_EMULATION;
-}
-
 float Emulator_GetFontSize()
 {
 	return Settings.PS3FontSize/100.0;
@@ -191,7 +178,7 @@ static void sysutil_exit_callback (uint64_t status, uint64_t param, void *userda
 		case CELL_SYSUTIL_REQUEST_EXITGAME:
 			menu_is_running = 0;
 			is_ingame_menu_running = 0;
-			Emulator_StopROMRunning();
+			is_running = 0;
 			#ifdef MULTIMAN_SUPPORT
 			return_to_MM = false;
 			#endif
@@ -1082,7 +1069,7 @@ static void special_actions(int specialbuttonmap)
 	{
 		if(specialbuttonmap & BTN_EXITTOMENU)
 		{
-			Emulator_StopROMRunning();
+			is_running = 0;
 			mode_switch = MODE_MENU;
 			set_text_message("", 15);
 		}
@@ -1322,7 +1309,7 @@ static  void ingame_menu(void)
 				is_running = 1;
 				ingame_menu_item = 0;
 				is_ingame_menu_running = 0;
-				Emulator_StartROMRunning(0);
+				mode_switch = MODE_EMULATION;
 			}
 
 			switch(ingame_menu_item)
@@ -1334,7 +1321,7 @@ static  void ingame_menu(void)
 						is_running = 1;
 						ingame_menu_item = 0;
 						is_ingame_menu_running = 0;
-						Emulator_StartROMRunning(0);
+						mode_switch = MODE_EMULATION;
 					}
 
 					if(CTRL_LEFT(button_was_pressed) || CTRL_LSTICK_LEFT(button_was_pressed))
@@ -1359,7 +1346,7 @@ static  void ingame_menu(void)
 						is_running = 1;
 						ingame_menu_item = 0;
 						is_ingame_menu_running = 0;
-						Emulator_StartROMRunning(0);
+						mode_switch = MODE_EMULATION;
 					}
 
 					if(CTRL_LEFT(button_was_pressed) || CTRL_LSTICK_LEFT(button_was_pressed))
@@ -1465,7 +1452,7 @@ static  void ingame_menu(void)
 						is_running = 0;
 						ingame_menu_item = MENU_ITEM_FRAME_ADVANCE;
 						is_ingame_menu_running = 0;
-						Emulator_StartROMRunning(0);
+						mode_switch = MODE_EMULATION;
 					}
 					ingame_menu_reset_entry_colors (ingame_menu_item);
 					strcpy(comment,"Press 'CROSS', 'L2' or 'R2' button to step one frame.\nNOTE: Pressing the button rapidly will advance the frame more slowly\nand prevent buttons from being input.");
@@ -1522,7 +1509,7 @@ static  void ingame_menu(void)
 						is_running = 1;
 						ingame_menu_item = 0;
 						is_ingame_menu_running = 0;
-						Emulator_StartROMRunning(0);
+						mode_switch = MODE_EMULATION;
 					} 
 					ingame_menu_reset_entry_colors (ingame_menu_item);
 					strcpy(comment,"Press 'CROSS' to return back to the game.");
@@ -1534,7 +1521,7 @@ static  void ingame_menu(void)
 						is_running = 1;
 						ingame_menu_item = 0;
 						is_ingame_menu_running = 0;
-						Emulator_StartROMRunning(0);
+						mode_switch = MODE_EMULATION;
 					} 
 					ingame_menu_reset_entry_colors (ingame_menu_item);
 					strcpy(comment,"Press 'CROSS' to reset the game.");
@@ -1545,7 +1532,7 @@ static  void ingame_menu(void)
 						//need_load_rom = 1;
 						is_running = 1;
 						is_ingame_menu_running = 0;
-						Emulator_StartROMRunning(0);
+						mode_switch = MODE_EMULATION;
 						ingame_menu_item = 0;
 					} 
 					ingame_menu_reset_entry_colors (ingame_menu_item);
@@ -1557,7 +1544,7 @@ static  void ingame_menu(void)
 						//need_load_rom = 1;
 						is_running = 1;
 						is_ingame_menu_running = 0;
-						Emulator_StartROMRunning(0);
+						mode_switch = MODE_EMULATION;
 						ingame_menu_item = 0;
 					} 
 					ingame_menu_reset_entry_colors (ingame_menu_item);
@@ -1765,7 +1752,7 @@ static void emulator_shutdown()
 
 static void emulator_close_game(void)
 {
-	if(rom_loaded)
+	if(emulator_initialized)
 	{
 		FCEUI_CloseGame();
 		FCEUGameInfo = 0;
@@ -1796,7 +1783,7 @@ static void emulator_start()
 	if(hack_prevent_game_sram_from_being_erased)
 	{
 		hack_prevent_game_sram_from_being_erased = 0;
-		Emulator_RequestLoadROM(current_rom, 1);
+		Emulator_RequestLoadROM();
 		return;
 	}
 
@@ -1824,23 +1811,16 @@ static void emulator_start()
 
 /* PS3 Frontend - Main ROM loading function */
 
-void Emulator_RequestLoadROM(const char * filename, uint32_t forceReload)
+void Emulator_RequestLoadROM (void)
 {
-	if (!rom_loaded || forceReload || current_rom == NULL || strcmp(filename, current_rom) != 0)
-	{
-		current_rom = strdup(filename);
+	//emulator-specific
+	if (emulator_initialized)
+		emulator_close_game();
 
-		//emulator-specific
-		if (emulator_initialized && rom_loaded)
-			emulator_close_game();
-
-		if(hack_prevent_game_sram_from_being_erased)
-			FCEUGameInfo = FCEUI_LoadGame(DEFAULT_GAME_HACK);
-		else
-			FCEUGameInfo = FCEUI_LoadGame(current_rom);
-
-		rom_loaded = 1;
-	}
+	if(hack_prevent_game_sram_from_being_erased)
+		FCEUGameInfo = FCEUI_LoadGame(DEFAULT_GAME_HACK);
+	else
+		FCEUGameInfo = FCEUI_LoadGame(current_rom);
 }
 
 void emulator_implementation_set_texture(const char * fname)
@@ -1999,8 +1979,10 @@ int main (int argc, char **argv)
 					ingame_menu();
 				break;
 			case MODE_MULTIMAN_STARTUP:
-				Emulator_StartROMRunning(1);
-				Emulator_RequestLoadROM(MULTIMAN_GAME_TO_BOOT, 1);
+				is_running = 1;
+				mode_switch = MODE_EMULATION;
+				snprintf(current_rom, sizeof(current_rom), MULTIMAN_GAME_TO_BOOT);
+				Emulator_RequestLoadROM();
 				break;
 			case MODE_EXIT:
 				emulator_shutdown();

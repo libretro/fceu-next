@@ -261,7 +261,7 @@ static void browser_update(filebrowser_t * b)
 		if (CTRL_L3(state) && CTRL_R3(state))
 		{
 			/* if a rom is loaded then resume it */
-			if (rom_loaded)
+			if (emulator_initialized)
 			{
 				menu_is_running = 0;
 				is_running = 1;
@@ -1111,7 +1111,7 @@ static void select_setting(menu * menu_obj)
 
 		if (CTRL_L3(state) && CTRL_R3(state))
 		{
-			if (rom_loaded)
+			if (emulator_initialized)
 			{
 				menu_is_running = 0;
 				is_running = 1;
@@ -1193,11 +1193,14 @@ static void select_rom(void)
 
 			snprintf(rom_path_temp, sizeof(rom_path_temp), "%s/%s", FILEBROWSER_GET_CURRENT_DIRECTORY_NAME(browser), FILEBROWSER_GET_CURRENT_FILENAME(browser));
 
+
+			snprintf(current_rom, sizeof(current_rom), rom_path_temp);
+
+			Emulator_RequestLoadROM();
+
 			menu_is_running = 0;
 			is_running =1;
 			mode_switch = MODE_EMULATION;
-
-			Emulator_RequestLoadROM(rom_path_temp, 1);
 
 			old_state = state;
 			return;

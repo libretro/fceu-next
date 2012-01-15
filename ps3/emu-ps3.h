@@ -99,8 +99,7 @@ void emulator_implementation_switch_control_scheme();
 void emulator_implementation_set_shader_preset(const char * fname);
 void emulator_implementation_set_texture(const char * fname);
 void emulator_toggle_sound(uint64_t soundmode);
-void Emulator_RequestLoadROM(const char * rom, uint32_t forceReload);
-void Emulator_StartROMRunning(uint32_t set_is_running);
+void Emulator_RequestLoadROM (void);
 void set_text_message(const char * message, uint32_t speed);
 
 /* Emulator-specific extern function prototypes */
@@ -128,6 +127,8 @@ extern char DEFAULT_SHADER_FILE[MAX_PATH_LENGTH];
 extern char DEFAULT_MENU_SHADER_FILE[MAX_PATH_LENGTH];
 extern char DEFAULT_GAME_HACK[MAX_PATH_LENGTH];
 extern oskutil_params oskutil_handle;
+extern char current_rom[MAX_PATH_LENGTH];
+extern uint32_t emulator_initialized;
 extern int mode_switch;
 extern int control_style;
 
