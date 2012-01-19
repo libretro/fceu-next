@@ -1700,122 +1700,16 @@ static  void ingame_menu(void)
 /* PS3 Frontend - main functions */
 extern uint8 *XBuf;
 
-#define emulation_loop() \
-
-static void emulator_set_paths()
-{
-	//emulator-specific
-	FCEUI_SetBaseDirectory(usrDirPath);
-	FCEUI_SetDirOverride(FCEUIOD_STATE, Settings.PS3PathSaveStates);
-	FCEUI_SetDirOverride(FCEUIOD_NV, Settings.PS3PathSRAM);
-	FCEUI_SetDirOverride(FCEUIOD_CHEATS, Settings.PS3PathCheats);
-}
-
-static void emulator_shutdown()
-{
-	emulator_save_settings(CONFIG_FILE);
-
-#ifdef PS3_PROFILING
-	// shutdown everything
-	ps3graphics_DeinitDbgFont();
-	ps3graphics_Deinit();
-
-	if (Graphics)
-		delete Graphics;
-
-	cellSysmoduleUnloadModule(CELL_SYSMODULE_FS);
-	cellSysmoduleUnloadModule(CELL_SYSMODULE_IO);
-	cellSysmoduleUnloadModule(CELL_SYSMODULE_SYSUTIL_SCREENSHOT);
-	cellSysutilUnregisterCallback(0);
-
-	exit(0);		// force exit
-#else
-#ifdef MULTIMAN_SUPPORT
-	if(return_to_MM)
-	{
-		if(audio_handle)
-		{
-			audio_driver->free(audio_handle);
-			audio_handle = NULL;
-		}
-		sys_spu_initialize(6, 0);
-		char multiMAN[512];
-		snprintf(multiMAN, sizeof(multiMAN), "%s", "/dev_hdd0/game/BLES80608/USRDIR/RELOAD.SELF");
-		sys_game_process_exitspawn2((char*) multiMAN, NULL, NULL, NULL, 0, 2048, SYS_PROCESS_PRIMARY_STACK_SIZE_64K);
-		sys_process_exit(0);
-	}
-	else
-#endif
-		sys_process_exit(0);
-#endif
-}
-
-static void emulator_close_game(void)
-{
-	if(emulator_initialized)
-	{
-		FCEUI_CloseGame();
-		FCEUGameInfo = 0;
-	}
-}
-
-static void emulator_start()
-{
-	ps3graphics_set_orientation(Settings.Orientation);
-
-	int32 *sound=0;
-	int32 ssize=0;
-
-	emulator_set_paths();
-
-	emulator_set_input();
-
-	emulator_set_custom_palette();
-
-	if(ps3graphics_calculate_aspect_ratio_before_game_load())
-		ps3graphics_set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
-
-	if(Settings.Throttled)
-		audio_driver->unpause(audio_handle);
-	else
-		FCEUI_SetSoundVolume(0);
-	
-	if(hack_prevent_game_sram_from_being_erased)
-	{
-		hack_prevent_game_sram_from_being_erased = 0;
-		Emulator_RequestLoadROM();
-		return;
-	}
-
-	do
-	{
-		FCEUI_Emulate(&gfx, &sound, &ssize);
-		ps3graphics_draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
-		if(frame_count < special_action_msg_expired)
-		{
-			cellDbgFontPrintf (0.09f, 0.90f, 1.51f, BLUE,	special_action_msg);
-			cellDbgFontPrintf (0.09f, 0.90f, 1.50f, WHITE,	special_action_msg);
-			cellDbgFontDraw();
-		}
-		else
-			special_action_msg_expired = 0;
-		_jsPlatformSwapBuffers(psgl_device);
-
-		if(Settings.Throttled)
-			audio_driver->write(audio_handle, (int16_t*)sound, ssize << 1);
-		emulator_input_loop();
-		cell_console_poll();
-		cellSysutilCheckCallback();
-	}while (is_running);
-}
-
 /* PS3 Frontend - Main ROM loading function */
 
 void Emulator_RequestLoadROM (void)
 {
 	//emulator-specific
 	if (emulator_initialized)
-		emulator_close_game();
+	{
+		FCEUI_CloseGame();
+		FCEUGameInfo = 0;
+	}
 
 	if(hack_prevent_game_sram_from_being_erased)
 		FCEUGameInfo = FCEUI_LoadGame(DEFAULT_GAME_HACK);
@@ -1958,34 +1852,118 @@ int main (int argc, char **argv)
 #endif
 	menu_init();
 
-	do
+begin_loop:
+	if(mode_switch == MODE_EMULATION)
 	{
-		switch(mode_switch)
+		if(ingame_menu_item != 0)
+			is_ingame_menu_running = 1;
+
+		ps3graphics_set_orientation(Settings.Orientation);
+
+		int32 *sound=0;
+		int32 ssize=0;
+
+		FCEUI_SetBaseDirectory(usrDirPath);
+		FCEUI_SetDirOverride(FCEUIOD_STATE, Settings.PS3PathSaveStates);
+		FCEUI_SetDirOverride(FCEUIOD_NV, Settings.PS3PathSRAM);
+		FCEUI_SetDirOverride(FCEUIOD_CHEATS, Settings.PS3PathCheats);
+
+		emulator_set_input();
+
+		emulator_set_custom_palette();
+
+		if(ps3graphics_calculate_aspect_ratio_before_game_load())
+			ps3graphics_set_aspect_ratio(Settings.PS3KeepAspect, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT, 1);
+
+		if(Settings.Throttled)
+			audio_driver->unpause(audio_handle);
+		else
+			FCEUI_SetSoundVolume(0);
+
+		if(hack_prevent_game_sram_from_being_erased)
 		{
-			case MODE_MENU:
-				ps3graphics_set_orientation(NORMAL);
-				menu_loop();
-				break;
-			case MODE_EMULATION:
-				if(ingame_menu_item != 0)
-					is_ingame_menu_running = 1;
-
-				emulator_start();
-
-				if(Settings.Throttled)
-					audio_driver->pause(audio_handle);
-
-				if(is_ingame_menu_running)
-					ingame_menu();
-				break;
-			case MODE_MULTIMAN_STARTUP:
-				is_running = 1;
-				mode_switch = MODE_EMULATION;
-				snprintf(current_rom, sizeof(current_rom), MULTIMAN_GAME_TO_BOOT);
-				Emulator_RequestLoadROM();
-				break;
-			case MODE_EXIT:
-				emulator_shutdown();
+			hack_prevent_game_sram_from_being_erased = 0;
+			Emulator_RequestLoadROM();
 		}
-	}while(1);
+
+		do
+		{
+			FCEUI_Emulate(&gfx, &sound, &ssize);
+			ps3graphics_draw(gfx, SCREEN_RENDER_TEXTURE_WIDTH, SCREEN_RENDER_TEXTURE_HEIGHT);
+			if(frame_count < special_action_msg_expired)
+			{
+				cellDbgFontPrintf (0.09f, 0.90f, 1.51f, BLUE,	special_action_msg);
+				cellDbgFontPrintf (0.09f, 0.90f, 1.50f, WHITE,	special_action_msg);
+				cellDbgFontDraw();
+			}
+			else
+				special_action_msg_expired = 0;
+			_jsPlatformSwapBuffers(psgl_device);
+
+			if(Settings.Throttled)
+				audio_driver->write(audio_handle, (int16_t*)sound, ssize << 1);
+			emulator_input_loop();
+			cell_console_poll();
+			cellSysutilCheckCallback();
+		}while (is_running);
+
+		if(Settings.Throttled)
+			audio_driver->pause(audio_handle);
+
+		if(is_ingame_menu_running)
+			ingame_menu();
+	}
+	else if(mode_switch == MODE_MENU)
+	{
+		ps3graphics_set_orientation(NORMAL);
+		menu_loop();
+	}
+#ifdef MULTIMAN_SUPPORT
+	else if(mode_switch == MODE_MULTIMAN_STARTUP)
+	{
+		is_running = 1;
+		mode_switch = MODE_EMULATION;
+		snprintf(current_rom, sizeof(current_rom), MULTIMAN_GAME_TO_BOOT);
+		Emulator_RequestLoadROM();
+	}
+#endif
+	else
+		goto begin_shutdown;
+
+	goto begin_loop;
+
+begin_shutdown:
+	emulator_save_settings(CONFIG_FILE);
+
+#ifdef PS3_PROFILING
+	// shutdown everything
+	ps3graphics_DeinitDbgFont();
+	ps3graphics_Deinit();
+
+	if (Graphics)
+		delete Graphics;
+
+	cellSysmoduleUnloadModule(CELL_SYSMODULE_FS);
+	cellSysmoduleUnloadModule(CELL_SYSMODULE_IO);
+	cellSysmoduleUnloadModule(CELL_SYSMODULE_SYSUTIL_SCREENSHOT);
+	cellSysutilUnregisterCallback(0);
+
+	exit(0);		// force exit
+#else
+#ifdef MULTIMAN_SUPPORT
+	if(return_to_MM)
+	{
+		if(audio_handle)
+		{
+			audio_driver->free(audio_handle);
+			audio_handle = NULL;
+		}
+		sys_spu_initialize(6, 0);
+		char multiMAN[512];
+		snprintf(multiMAN, sizeof(multiMAN), "%s", "/dev_hdd0/game/BLES80608/USRDIR/RELOAD.SELF");
+		sys_game_process_exitspawn2((char*) multiMAN, NULL, NULL, NULL, 0, 2048, SYS_PROCESS_PRIMARY_STACK_SIZE_64K);
+	}
+#endif
+	sys_process_exit(0);
+#endif
 }
