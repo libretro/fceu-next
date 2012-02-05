@@ -69,7 +69,7 @@ extern CartInfo UNIFCart;
 
 /* emulator-specific callback functions */
 
-const char * GetKeyboard(void) {}
+const char * GetKeyboard(void) { return ""; }
 void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b)
 {
    r >>= 3;
@@ -496,10 +496,9 @@ static void update_input(void)
 
 EXPORT void snes_run(void)
 {
-	unsigned i, y, x;
+	unsigned i, y, x, ssize;
 	uint8_t *gfx;
 	static uint16_t video_out[1024 * 240];
-	int32 ssize;
 
 	ssize = 0;
 	FCEUI_Emulate(&gfx, &sound, &ssize);

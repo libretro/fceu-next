@@ -1871,7 +1871,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3FF56BB8-80B9-4477-9B55-248DFEFF7469}</ProjectGuid>
     <Keyword>Xbox360Proj</Keyword>
-    <ProjectName>fceu-next-msvc-2010-360</ProjectName>
+    <ProjectName>fceu-next-360</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CodeAnalysis|Xbox 360'" Label="Configuration">
@@ -1922,22 +1922,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
-    <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CodeAnalysis|Xbox 360'">
-    <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Xbox 360'">
-    <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile_FastCap|Xbox 360'">
-    <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
-    <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">
-    <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
     <ClCompile>
