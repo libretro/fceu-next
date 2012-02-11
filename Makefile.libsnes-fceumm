@@ -76,11 +76,11 @@ CODE_DEFINES =
 WARNING_DEFINES =
 else
 CODE_DEFINES = -std=gnu99
-WARNING_DEFINES = -Wl -Wno-write-strings
+WARNING_DEFINES = -Wno-write-strings
 endif
 
 CFLAGS += $(CODE_DEFINES) $(fpic) $(WARNING_DEFINES) $(FCEU_DEFINES) $(ENDIANNESS_DEFINES)
-LDFLAGS += -lm,-no-undefined
+LDFLAGS += -lm
 
 INCDIRS := -I$(LIBSNES_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers -I$(UTILS_DIR)/zlib 
 LIBS :=
