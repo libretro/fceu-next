@@ -560,50 +560,36 @@ EXPORT void snes_cheat_set(unsigned a, bool b, const char* c) { }
 
 EXPORT bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, unsigned rom_size)
 {
-	FILE *file;
-	char actual_path[512];
+   if (!environ_cb)
+   {
+      fprintf(stderr, "Environment callback not set. Cannot continue ...\n");
+      return FALSE;
+   }
+
+   const char *full_path;
+   if (!environ_cb(SNES_ENVIRONMENT_GET_FULLPATH, &full_path) || !full_path)
+   {
+      fprintf(stderr, "GET_FULLPATH extension not supported. Cannot continue ...\n");
+      return FALSE;
+   }
 
    FCEUI_Initialize();
 
    FCEUI_SetSoundVolume(256);
    FCEUI_Sound(32050);
 
-   /* Append basename to detect certain ROM types from filename (Hack).*/
-   snprintf(actual_path, sizeof(actual_path), "FCEU_tmp_%s", g_basename);
-
-   fprintf(stderr, "[FCEU]: Using temp path: \"%s\"\n", actual_path);
-
-   file = fopen(actual_path, "wb");
-   if (!file)
-      return FALSE;
-
-   fwrite(rom_data, 1, rom_size, file);
-   fclose(file);
-   /*FIXME: we need a real filename with real file extension here*/
-   FCEUGameInfo = FCEUI_LoadGame(actual_path);
-   #if !defined(__CELLOS_LV2__)
-   #if !defined(__LIBXENON__)
-   #if !defined(GEKKO)
-#if !defined(_MSC_VER)
-   unlink(actual_path);
-#endif
-   #endif
-   #endif
-   #endif
+   FCEUGameInfo = FCEUI_LoadGame(full_path);
 
    fceu_init();
 
-   if (environ_cb)
-   {
-   	struct snes_system_timing timing;
-	timing.sample_rate = 32050.0;
-	if (FSettings.PAL)
-		timing.fps = 838977920.0/16777215.0;
-	else
-		timing.fps = 1008307711.0/16777215.0;
-	
-	environ_cb(SNES_ENVIRONMENT_SET_TIMING, &timing);
-   }
+   struct snes_system_timing timing;
+   timing.sample_rate = 32050.0;
+   if (FSettings.PAL)
+      timing.fps = 838977920.0/16777215.0;
+   else
+      timing.fps = 1008307711.0/16777215.0;
+
+   environ_cb(SNES_ENVIRONMENT_SET_TIMING, &timing);
 
    return TRUE;
 }
