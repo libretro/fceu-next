@@ -560,13 +560,15 @@ EXPORT void snes_cheat_set(unsigned a, bool b, const char* c) { }
 
 EXPORT bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, unsigned rom_size)
 {
+	const char *full_path;
+	struct snes_system_timing timing;
+
    if (!environ_cb)
    {
       fprintf(stderr, "Environment callback not set. Cannot continue ...\n");
       return FALSE;
    }
 
-   const char *full_path;
    if (!environ_cb(SNES_ENVIRONMENT_GET_FULLPATH, &full_path) || !full_path)
    {
       fprintf(stderr, "GET_FULLPATH extension not supported. Cannot continue ...\n");
@@ -582,7 +584,6 @@ EXPORT bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, u
 
    fceu_init();
 
-   struct snes_system_timing timing;
    timing.sample_rate = 32050.0;
    if (FSettings.PAL)
       timing.fps = 838977920.0/16777215.0;
