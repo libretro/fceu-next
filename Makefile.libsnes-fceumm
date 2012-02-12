@@ -23,6 +23,7 @@ else ifeq ($(platform), osx)
    fpic := -fPIC
    SHARED := -dynamiclib
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
+   CFLAGS += -DHAVE_ASPRINTF
 else ifeq ($(platform), ps3)
    TARGET := libsnes.a
    CC = ppu-lv2-gcc
