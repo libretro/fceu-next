@@ -498,7 +498,7 @@ static void update_input(void)
 
    // This shouldn't matter. Why? Something very weird is going on.
 #if defined(__CELLOS_LV2__) || defined(_XBOX) || defined(GEKKO) // <-- big endian
-	JSReturn = pad[0] | (pad[1] << 8);
+	JSReturn[0] = pad[0] | (pad[1] << 8);
 #else
 	JSReturn[0] = pad[0];
 	JSReturn[1] = pad[1];
