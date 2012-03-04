@@ -63,7 +63,7 @@ LIBSNES_DIR := ./libsnes-fceumm
 FCEU_DIR := ./src-fceumm
 UTILS_DIR := ./utils
 
-FCEU_SRC_DIRS := $(LIBSNES_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(FCEU_DIR)/utils $(UTILS_DIR)/zlib
+FCEU_SRC_DIRS := $(LIBSNES_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(FCEU_DIR)/utils
 
 FCEU_CSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.c))
 FCEU_COBJ := $(FCEU_CSRCS:.c=.o)
@@ -83,7 +83,7 @@ endif
 CFLAGS += $(CODE_DEFINES) $(fpic) $(WARNING_DEFINES) $(FCEU_DEFINES) $(ENDIANNESS_DEFINES)
 LDFLAGS += -lm
 
-INCDIRS := -I$(LIBSNES_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers -I$(UTILS_DIR)/zlib 
+INCDIRS := -I$(LIBSNES_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers
 LIBS :=
 
 $(TARGET): $(OBJS)

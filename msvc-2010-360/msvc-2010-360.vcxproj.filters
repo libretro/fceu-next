@@ -18,12 +18,6 @@
     <Filter Include="Source Files\input">
       <UniqueIdentifier>{3e0d408c-7e29-4169-b0a2-fedbac18c1dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\zlib">
-      <UniqueIdentifier>{16a81890-b247-4dc2-a0be-d4dbd4a7f33a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\zlib">
-      <UniqueIdentifier>{e339d527-357f-4071-9715-849c48cc8f16}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\boards">
       <UniqueIdentifier>{0be626d6-22ae-486d-bae4-cf5ee5226f8a}</UniqueIdentifier>
     </Filter>
@@ -659,51 +653,6 @@
     <ClCompile Include="..\src-fceumm\mappers\mmc2and4.c">
       <Filter>Source Files\mappers</Filter>
     </ClCompile>
-    <ClCompile Include="..\utils\zlib\zutil.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\adler32.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\compress.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\crc32.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\deflate.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\gzclose.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\gzlib.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\gzread.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\gzwrite.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\infback.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\inffast.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\inflate.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\inftrees.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\trees.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utils\zlib\uncompr.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
     <ClCompile Include="..\libsnes-fceumm\memstream.c">
       <Filter>Source Files\libsnes</Filter>
     </ClCompile>
@@ -738,39 +687,6 @@
     </ClInclude>
     <ClInclude Include="..\src-fceumm\boards\mapinc.h">
       <Filter>Header Files\boards</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\zutil.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\crc32.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\deflate.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\gzguts.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\inffast.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\inffixed.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\inflate.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\inftrees.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\trees.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\zconf.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\zlib\zlib.h">
-      <Filter>Header Files\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\libsnes-fceumm\memstream.h">
       <Filter>Header Files\libsnes</Filter>
