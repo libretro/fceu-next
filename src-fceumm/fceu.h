@@ -13,6 +13,9 @@ void SetWriteHandler(int32 start, int32 end, writefunc func);
 writefunc GetWriteHandler(int32 a);
 readfunc GetReadHandler(int32 a);
 
+void FCEU_printf(char *format, ...);
+void FCEU_PrintError(char *format, ...);
+
 int AllocGenieRW(void);
 void FlushGenieRW(void);
 
