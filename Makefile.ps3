@@ -102,7 +102,6 @@ $(FCEU_API_DIR)/ppu.c \
 $(FCEU_API_DIR)/sound.c \
 $(FCEU_API_DIR)/state.c \
 $(FCEU_API_DIR)/unif.c \
-$(FCEU_API_DIR)/unzip.c \
 $(FCEU_API_DIR)/vsuni.c \
 $(FCEU_API_DIR)/x6502.c
 
