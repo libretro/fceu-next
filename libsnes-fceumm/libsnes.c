@@ -396,7 +396,14 @@ EXPORT void snes_set_cartridge_basename(const char * path_)
 
 /* SSNES extension.*/
 static snes_environment_t environ_cb;
-EXPORT void snes_set_environment(snes_environment_t cb) { environ_cb = cb; }
+EXPORT void snes_set_environment(snes_environment_t cb)
+{
+	bool dummy;
+	environ_cb = cb;
+	dummy = 0;
+	cb(SNES_ENVIRONMENT_SET_BATCH_LOAD, &dummy);
+	cb(SNES_ENVIRONMENT_SET_ROM_FORMATS, "fds|FDS|zip|ZIP|nes|NES|unif|UNIF");
+}
 
 EXPORT void snes_init(void)
 {
