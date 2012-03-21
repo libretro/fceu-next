@@ -26,13 +26,13 @@ else ifeq ($(platform), osx)
    CFLAGS += -DHAVE_ASPRINTF
 else ifeq ($(platform), ps3)
    TARGET := libsnes.a
-   CC = ppu-lv2-gcc
-   AR = ppu-lv2-ar
+   CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
+   AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
    PLATFORM_DEFINES := -D__CELLOS_LV2
 else ifeq ($(platform), snc-ps3)
    TARGET := libsnes.a
-   CC = ps3ppusnc
-   AR = ps3snarl
+   CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
+   AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
    PLATFORM_DEFINES := -D__CELLOS_LV2
 else ifeq ($(platform), xenon)
    TARGET := libsnes.a
@@ -61,9 +61,8 @@ endif
 
 LIBSNES_DIR := ./libsnes-fceumm
 FCEU_DIR := ./src-fceumm
-UTILS_DIR := ./utils
 
-FCEU_SRC_DIRS := $(LIBSNES_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(FCEU_DIR)/utils
+FCEU_SRC_DIRS := $(LIBSNES_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers
 
 FCEU_CSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.c))
 FCEU_COBJ := $(FCEU_CSRCS:.c=.o)
