@@ -6,7 +6,7 @@ typedef struct {
   uint32 type;    /* 0=normal file */
 } FCEUFILE;
 
-FCEUFILE *FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext);
+FCEUFILE *FCEU_fopen(const char *path, char *mode, char *ext);
 int FCEU_fclose(FCEUFILE*);
 uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE*);
 uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE*);

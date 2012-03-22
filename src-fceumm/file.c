@@ -70,7 +70,7 @@ doret:
 #endif
 
 
-FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext)
+FCEUFILE * FCEU_fopen(const char *path, char *mode, char *ext)
 {
 	FCEUFILE *fceufp;
 	void *t;

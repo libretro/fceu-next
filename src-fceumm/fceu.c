@@ -228,7 +228,6 @@ int FDSLoad(const char *name, FCEUFILE *fp);
 
 FCEUGI *FCEUI_LoadGame(const char *name)
 {
-	char *ipsfn;
 	FCEUFILE *fp;
 
 	ResetGameLoaded();
@@ -245,20 +244,12 @@ FCEUGI *FCEUI_LoadGame(const char *name)
 	FCEUGameInfo->inputfc=-1;
 	FCEUGameInfo->cspecial=0;
 
-#ifdef FCEU_LOG
-	FCEU_printf("Loading %s...\n\n",name);
-#endif
-
 	GetFileBase(name);
 
-	ipsfn=FCEU_MakeFName(FCEUMKF_IPS,0,0);
-	fp=FCEU_fopen(name,ipsfn,"rb",0);
-	free(ipsfn);
+	fp=FCEU_fopen(name,"rb",0);
 
 	if(!fp)
-	{
 		return 0;	/*Error opening ROM*/
-	}
 
 	if(iNESLoad(name,fp))
 		goto endlseq;

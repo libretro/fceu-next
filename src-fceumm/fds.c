@@ -778,7 +778,7 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 		memcpy(diskdatao[x],diskdata[x],65500);
 	}
 
-	if((tp=FCEU_fopen(fn2,0,"rb",0)))
+	if((tp=FCEU_fopen(fn2,"rb",0)))
 	{
 		FreeFDSMemory();
 		if(!SubLoad(tp))
