@@ -325,7 +325,7 @@ unsigned snes_library_revision_minor(void)
 
 const char *snes_library_id(void)
 {
-   return "FCEUNext";
+   return "FCEUX";
 }
 
 void snes_set_video_refresh(snes_video_refresh_t cb)

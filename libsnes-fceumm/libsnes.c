@@ -343,7 +343,7 @@ EXPORT unsigned snes_library_revision_minor(void)
 
 EXPORT const char *snes_library_id(void)
 {
-   return "FCEUNext";
+   return "FCEUmm";
 }
 
 EXPORT void snes_set_video_refresh(snes_video_refresh_t cb)
