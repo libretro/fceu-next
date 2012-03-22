@@ -42,7 +42,6 @@
 #include "ppu.h"
 #include "video.h"
 #include "input.h"
-#include "zlib.h"
 #include "driver.h"
 
 using namespace std;
@@ -349,24 +348,22 @@ static bool FCEUSS_SaveMS(EMUFILE* outstream)
 		return false;
 	}
 
-	int error = Z_OK;
 	uint8* cbuf = (uint8*)ms.buf();
-	uLongf comprlen = -1;
 
 	//dump the header
 	uint8 header[16]="FCSX";
 	FCEU_en32lsb(header+4, totalsize);
 	FCEU_en32lsb(header+8, FCEU_VERSION_NUMERIC);
-	FCEU_en32lsb(header+12, comprlen);
+	FCEU_en32lsb(header+12, -1);
 
 	//dump it to the destination file
 	outstream->fwrite((char*)header,16);
-	outstream->fwrite((char*)cbuf, comprlen == -1 ? totalsize : comprlen);
+	outstream->fwrite((char*)cbuf, totalsize);
 
 	if(cbuf != (uint8*)ms.buf())
 		delete[] cbuf;
 
-	return error == Z_OK;
+	return 0;
 }
 
 #ifdef __LIBSNES__
@@ -560,21 +557,7 @@ static bool FCEUSS_LoadFP(EMUFILE* is)
 
 	std::vector<uint8> buf(totalsize);
 
-	//not compressed:
-	if(comprlen != -1)
-	{
-		//load the compressed chunk and decompress
-		std::vector<char> cbuf(comprlen);
-		is->fread((char*)&cbuf[0],comprlen);
-
-		uLongf uncomprlen = totalsize;
-		int error = uncompress((uint8*)&buf[0],&uncomprlen,(uint8*)&cbuf[0],comprlen);
-		if(error != Z_OK || uncomprlen != totalsize)
-			return false;
-		//we dont need to restore the backup here because we havent messed with the emulator state yet
-	}
-	else
-		is->fread((char*)&buf[0],totalsize);
+	is->fread((char*)&buf[0],totalsize);
 
 	EMUFILE_MEMORY mstemp(&buf);
 	bool x = ReadStateChunks(&mstemp,totalsize)!=0;

@@ -367,7 +367,14 @@ void snes_set_cartridge_basename(const char* path_)
 
 // SSNES extension.
 static snes_environment_t environ_cb;
-void snes_set_environment(snes_environment_t cb) { environ_cb = cb; }
+void snes_set_environment(snes_environment_t cb)
+{
+	bool dummy;
+	environ_cb = cb;
+	dummy = 0;
+	cb(SNES_ENVIRONMENT_SET_BATCH_LOAD, &dummy);
+	cb(SNES_ENVIRONMENT_SET_ROM_FORMATS, (void*)"fds|FDS|zip|ZIP|nes|NES|unif|UNIF");
+}
 
 void snes_init(void)
 {
@@ -474,21 +481,22 @@ static void update_input(void)
 
 void snes_run(void)
 {
-	if (geniestage != 1)
-		FCEU_ApplyPeriodicCheats();
+   if (geniestage != 1)
+      FCEU_ApplyPeriodicCheats();
 
    update_input();
 
-	FCEUX_PPU_Loop(0);			//for now, just use new PPU
+   FCEUX_PPU_Loop(0);	//for now, just use new PPU
 
-	ssize = FlushEmulateSound();
-	timestampbase += timestamp;
-	timestamp = 0;
-	gfx = XBuf;
-	sound = WaveFinal;
+   ssize = FlushEmulateSound();
+   timestampbase += timestamp;
+   timestamp = 0;
+   gfx = XBuf;
+   sound = WaveFinal;
 
    static uint16_t video_out[1024 * 240];
    const uint8_t *gfx = XBuf;
+
    for (unsigned y = 0; y < 240; y++)
       for (unsigned x = 0; x < 256; x++, gfx++)
          video_out[y * 1024 + x] = palette[*gfx];
@@ -525,25 +533,37 @@ void snes_cheat_set(unsigned, bool, const char*)
 
 bool snes_load_cartridge_normal(const char*, const uint8_t *rom_data, unsigned rom_size)
 {
+   const char *full_path;
+   struct snes_system_timing timing;
+
+   if (!environ_cb)
+   {
+      fprintf(stderr, "Environment callback not set. Cannot continue ...\n");
+      return FALSE;
+   }
+
+   if (!environ_cb(SNES_ENVIRONMENT_GET_FULLPATH, &full_path) || !full_path)
+   {
+      fprintf(stderr, "GET_FULLPATH extension not supported. Cannot continue ...\n");
+      return FALSE;
+   }
+
    FCEUI_Initialize();
 
-   // Append basename to detect certain ROM types from filename (Hack).
-   std::string actual_path = "FCEU_tmp_";
-   actual_path += g_basename;
+   FCEUI_SetSoundVolume(256);
+   FCEUI_Sound(32050);
 
-   fprintf(stderr, "[FCEU]: Using temp path: \"%s\"\n", actual_path.c_str());
-
-   FILE *file = fopen(actual_path.c_str(), "wb");
-   if (!file)
-      return false;
-
-   fwrite(rom_data, 1, rom_size, file);
-   fclose(file);
-   //FIXME: we need a real filename with real file extension here
-   GameInfo = FCEUI_LoadGame(actual_path.c_str(), 1);
-   unlink(actual_path.c_str());
+   GameInfo = FCEUI_LoadGame(full_path, 1);
 
    fceu_init();
+
+   timing.sample_rate = 32050.0;
+   if (FSettings.PAL)
+      timing.fps = 838977920.0/16777215.0;
+   else
+      timing.fps = 1008307711.0/16777215.0;
+
+   environ_cb(SNES_ENVIRONMENT_SET_TIMING, &timing);
 
    return true;
 }

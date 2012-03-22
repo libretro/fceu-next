@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <zlib.h>
 
 #include "types.h"
 #include "video.h"
@@ -53,9 +52,7 @@ int FCEU_InitVirtualVideo(void)
 
 
 		if(!(XBuf= (uint8*) (realloc(XBuf, 256 * 256 + 16))) || !(XBackBuf= (uint8*) (realloc(XBackBuf, 256 * 256 + 16))))
-		{
 			return 0;
-		}
 
 		if( sizeof(uint8*) == 4 )
 		{

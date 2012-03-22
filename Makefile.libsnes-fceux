@@ -91,7 +91,17 @@ LDFLAGS += -Wl,-no-undefined
 INCDIRS := -I$(FCEU_DIR)
 
 $(TARGET): $(OBJS)
+ifeq ($(platform), ps3)
+	$(AR) rcs $@ $(OBJS)
+else ifeq ($(platform), snc-ps3)
+	$(AR) rcs $@ $(OBJS)
+else ifeq ($(platform), xenon)
+	$(AR) rcs $@ $(OBJS)
+else ifeq ($(platform), wii)
+	$(AR) rcs $@ $(OBJS)
+else
 	$(CXX) -o $@ $(SHARED) $(OBJS) $(LDFLAGS)
+endif
 
 %.o: %.cpp
 	$(CXX) -c -o $@ $< $(CXXFLAGS) $(INCDIRS)

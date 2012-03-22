@@ -32,7 +32,6 @@
 #include "utils/endian.h"
 #include "utils/memory.h"
 #include "utils/md5.h"
-#include <unzip.h>
 #include "driver.h"
 #include "types.h"
 #include "fceu.h"
@@ -172,76 +171,6 @@ static FileBaseInfo DetermineFileBase(const char *f)
 
 }
 
-static FCEUFILE * TryUnzip(const std::string& path) {
-	unzFile tz;
-	if((tz=unzOpen(path.c_str())))  // If it's not a zip file, use regular file handlers.
-		// Assuming file type by extension usually works,
-		// but I don't like it. :)
-	{
-		if(unzGoToFirstFile(tz)==UNZ_OK)
-		{
-			for(;;)
-			{
-				char tempu[512];	// Longer filenames might be possible, but I don't
-				// think people would name files that long in zip files...
-				unzGetCurrentFileInfo(tz,0,tempu,512,0,0,0,0);
-				tempu[511]=0;
-				if(strlen(tempu)>=4)
-				{
-					char *za=tempu+strlen(tempu)-4;
-
-					//if(!ext)
-					{
-						if(!strcasecmp(za,".nes") || !strcasecmp(za,".fds") ||
-							!strcasecmp(za,".nsf") || !strcasecmp(za,".unf") ||
-							!strcasecmp(za,".nez"))
-							break;
-					}
-					//else if(!strcasecmp(za,ext))
-					//	break;
-				}
-				if(strlen(tempu)>=5)
-				{
-					if(!strcasecmp(tempu+strlen(tempu)-5,".unif"))
-						break;
-				}
-				if(unzGoToNextFile(tz)!=UNZ_OK)
-				{
-					if(unzGoToFirstFile(tz)!=UNZ_OK) goto zpfail;
-					unzCloseCurrentFile(tz);
-					unzClose(tz);
-					return 0;
-				}
-			}
-			if(unzOpenCurrentFile(tz)!=UNZ_OK)
-				goto zpfail;
-		}
-		else
-		{
-zpfail:
-			unzClose(tz);
-			return 0;
-		}
-
-		unz_file_info ufo;
-		unzGetCurrentFileInfo(tz,&ufo,0,0,0,0,0,0);
-		
-		int size = ufo.uncompressed_size;
-		EMUFILE_MEMORY* ms = new EMUFILE_MEMORY(size);
-		unzReadCurrentFile(tz,ms->buf(),ufo.uncompressed_size);
-		unzCloseCurrentFile(tz);
-		unzClose(tz);
-
-		FCEUFILE *fceufp = new FCEUFILE();
-		fceufp->stream = ms;
-		fceufp->size = size;
-		return fceufp;
-		
-	}
-
-	return 0;
-}
-
 static ArchiveScanRecord FCEUD_ScanArchive(std::string fname)
 {
 	return ArchiveScanRecord();
@@ -280,55 +209,6 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, co
 				return 0;
 			}
 
-			//try to read a zip file
-			{
-				fceufp = TryUnzip(fileToOpen);
-				if(fceufp) {
-					delete fp;
-					fceufp->filename = fileToOpen;
-					fceufp->logicalPath = fileToOpen;
-					fceufp->fullFilename = fileToOpen;
-					fceufp->archiveIndex = -1;
-					goto applyips;
-				}
-			}
-
-			//try to read a gzipped file
-			{
-				uint32 magic;
-				
-				magic = fp->fgetc();
-				magic|=fp->fgetc()<<8;
-				magic|=fp->fgetc()<<16;
-				fp->fseek(0,SEEK_SET);
-
-				if(magic==0x088b1f) {
-					 // maybe gzip... 
-
-					void* gzfile = gzopen(fileToOpen.c_str(),"rb");
-					if(gzfile) {
-						delete fp;
-
-						int size;
-						for(size=0; gzgetc(gzfile) != EOF; size++) {}
-						EMUFILE_MEMORY* ms = new EMUFILE_MEMORY(size);
-						gzseek(gzfile,0,SEEK_SET);
-						gzread(gzfile,ms->buf(),size);
-						gzclose(gzfile);
-
-						fceufp = new FCEUFILE();
-						fceufp->filename = fileToOpen;
-						fceufp->logicalPath = fileToOpen;
-						fceufp->fullFilename = fileToOpen;
-						fceufp->archiveIndex = -1;
-						fceufp->stream = ms;
-						fceufp->size = size;
-						goto applyips;
-					}
-				}
-			}
-
-		
 			//open a plain old file
 			fceufp = new FCEUFILE();
 			fceufp->filename = fileToOpen;
@@ -359,14 +239,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, const char * mode, co
 			goto applyips;
 		}
 
-	applyips:
-		//try to open the ips file
-		if(!ipsfile && !ipsfn)
-		{
-			std::string soot = FCEU_MakeIpsFilename(DetermineFileBase(fceufp->logicalPath.c_str()));
-			ipsfile=fopen(soot.c_str(),"rb");
-		}
-		ApplyIPS(ipsfile,fceufp);
+applyips:
 		return fceufp;
 	}
 	return 0;
