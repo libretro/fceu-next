@@ -16,7 +16,7 @@ endif
 ifeq ($(platform), unix)
    TARGET := libsnes.so
    fpic := -fPIC
-   PLATFORM_DEFINES := -DLOCAL_LE=1 -DLSB_FIRST
+   PLATFORM_DEFINES := -DLOCAL_LE=1 -DLSB_FIRST=1
    SHARED := -shared -Wl,--version-script=libsnes-fceux/link.T
 else ifeq ($(platform), osx)
    TARGET := libsnes.dylib
@@ -73,7 +73,7 @@ LIBSNES_DIR := ./libsnes-fceux
 FCEU_DIR := ./src-fceux
 UTILS_DIR := ./utils
 
-FCEU_SRC_DIRS := $(LIBSNES_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(FCEU_DIR)/utils $(UTILS_DIR)/zlib $(UTILS_DIR)/unzip
+FCEU_SRC_DIRS := $(LIBSNES_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(FCEU_DIR)/utils
 
 FCEU_CXXSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.cpp))
 FCEU_CXXOBJ := $(FCEU_CXXSRCS:.cpp=.o)
@@ -88,11 +88,10 @@ CFLAGS += -std=gnu99 $(fpic) -Wno-write-strings $(FCEU_DEFINES)
 CXXFLAGS += $(fpic) -Wno-write-strings $(FCEU_DEFINES)
 LDFLAGS += -Wl,-no-undefined
 
-INCDIRS := -I$(FCEU_DIR) -I$(UTILS_DIR)/zlib -I$(UTILS_DIR)/unzip
-LIBS :=
+INCDIRS := -I$(FCEU_DIR)
 
 $(TARGET): $(OBJS)
-	$(CXX) -o $@ $(SHARED) $(OBJS) $(LDFLAGS) $(LIBS)
+	$(CXX) -o $@ $(SHARED) $(OBJS) $(LDFLAGS)
 
 %.o: %.cpp
 	$(CXX) -c -o $@ $< $(CXXFLAGS) $(INCDIRS)
