@@ -402,7 +402,7 @@ EXPORT void snes_set_environment(snes_environment_t cb)
 	environ_cb = cb;
 	dummy = 0;
 	cb(SNES_ENVIRONMENT_SET_BATCH_LOAD, &dummy);
-	cb(SNES_ENVIRONMENT_SET_ROM_FORMATS, "fds|FDS|zip|ZIP|nes|NES|unif|UNIF");
+	cb(SNES_ENVIRONMENT_SET_ROM_FORMATS, (void*)"fds|FDS|zip|ZIP|nes|NES|unif|UNIF");
 }
 
 EXPORT void snes_init(void)
