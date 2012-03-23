@@ -20,7 +20,8 @@
 
 #include "mapinc.h"
 
-static uint8 latche, latcheinit, bus_conflict;
+static uint8 bus_conflict = 0;
+static uint8 latche, latcheinit;
 static uint16 addrreg0, addrreg1;
 static uint8 *WRAM=NULL;
 static uint32 WRAMSIZE;
@@ -57,9 +58,8 @@ static void StateRestore(int version)
   WSync();
 }
 
-static void Latch_Init(CartInfo *info, void (*proc)(void), uint8 init, uint16 adr0, uint16 adr1, uint8 wram, uint8 busc)
+static void Latch_Init(CartInfo *info, void (*proc)(void), uint8 init, uint16 adr0, uint16 adr1, uint8 wram)
 {
-  bus_conflict = busc;
   latcheinit=init;
   addrreg0=adr0;
   addrreg1=adr1;
@@ -80,6 +80,7 @@ static void Latch_Init(CartInfo *info, void (*proc)(void), uint8 init, uint16 ad
     AddExState(WRAM, WRAMSIZE, 0, "WRAM");
   }
   AddExState(&latche, 1, 0, "LATC");
+  AddExState(&bus_conflict, 1, 0, "BUSC");
 }
 
 /*------------------ CPROM ---------------------------*/
@@ -93,7 +94,7 @@ static void CPROMSync(void)
 
 void CPROM_Init(CartInfo *info)
 {
-  Latch_Init(info, CPROMSync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, CPROMSync, 0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ Map 184 ---------------------------*/
@@ -107,7 +108,7 @@ static void M184Sync(void)
 
 void Mapper184_Init(CartInfo *info)
 {
-  Latch_Init(info, M184Sync, 0, 0x6000, 0x7FFF, 0, 0);
+  Latch_Init(info, M184Sync, 0, 0x6000, 0x7FFF, 0);
 }
 
 /*------------------ CNROM ---------------------------*/
@@ -121,7 +122,8 @@ static void CNROMSync(void)
 
 void CNROM_Init(CartInfo *info)
 {
-  Latch_Init(info, CNROMSync, 0, 0x8000, 0xFFFF, 1, 0);
+  bus_conflict = 1;
+  Latch_Init(info, CNROMSync, 0, 0x8000, 0xFFFF, 1);
 }
 
 /*------------------ ANROM ---------------------------*/
@@ -135,7 +137,7 @@ static void ANROMSync()
 
 void ANROM_Init(CartInfo *info)
 {
-  Latch_Init(info, ANROMSync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, ANROMSync, 0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ Map 70 ---------------------------*/
@@ -149,7 +151,7 @@ static void M70Sync()
 
 void Mapper70_Init(CartInfo *info)
 {
-  Latch_Init(info, M70Sync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, M70Sync, 0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ Map 152 ---------------------------*/
@@ -164,7 +166,7 @@ static void M152Sync()
 
 void Mapper152_Init(CartInfo *info)
 {
-  Latch_Init(info, M152Sync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, M152Sync, 0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ Map 78 ---------------------------*/
@@ -179,7 +181,7 @@ static void M78Sync()
 
 void Mapper78_Init(CartInfo *info)
 {
-  Latch_Init(info, M78Sync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, M78Sync, 0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ MHROM ---------------------------*/
@@ -192,17 +194,17 @@ static void MHROMSync(void)
 
 void MHROM_Init(CartInfo *info)
 {
-  Latch_Init(info, MHROMSync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, MHROMSync, 0, 0x8000, 0xFFFF, 0);
 }
 
 void Mapper140_Init(CartInfo *info)
 {
-  Latch_Init(info, MHROMSync, 0, 0x6000, 0x7FFF, 0, 0);
+  Latch_Init(info, MHROMSync, 0, 0x6000, 0x7FFF, 0);
 }
 
 void Mapper240_Init(CartInfo *info)
 {
-  Latch_Init(info, MHROMSync, 0, 0x4020, 0x5FFF, 0, 0);
+  Latch_Init(info, MHROMSync, 0, 0x4020, 0x5FFF, 0);
   /* need SRAM.*/
 }
 
@@ -216,7 +218,7 @@ static void M87Sync(void)
 
 void Mapper87_Init(CartInfo *info)
 {
-  Latch_Init(info, M87Sync, ~0, 0x6000, 0xFFFF, 0, 0);
+  Latch_Init(info, M87Sync, ~0, 0x6000, 0xFFFF, 0);
 }
 
 /*------------------ Map 101 ---------------------------*/
@@ -229,7 +231,7 @@ static void M101Sync(void)
 
 void Mapper101_Init(CartInfo *info)
 {
-  Latch_Init(info, M101Sync, ~0, 0x6000, 0x7FFF, 0, 0);
+  Latch_Init(info, M101Sync, ~0, 0x6000, 0x7FFF, 0);
 }
 
 /*------------------ Map 11 ---------------------------*/
@@ -242,12 +244,12 @@ static void M11Sync(void)
 
 void Mapper11_Init(CartInfo *info)
 {
-  Latch_Init(info, M11Sync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, M11Sync, 0, 0x8000, 0xFFFF, 0);
 }
 
 void Mapper144_Init(CartInfo *info)
 {
-  Latch_Init(info, M11Sync, 0, 0x8001, 0xFFFF, 0, 0);
+  Latch_Init(info, M11Sync, 0, 0x8001, 0xFFFF, 0);
 }
 
 /*------------------ Map 38 ---------------------------*/
@@ -260,7 +262,7 @@ static void M38Sync(void)
 
 void Mapper38_Init(CartInfo *info)
 {
-  Latch_Init(info, M38Sync, 0, 0x7000, 0x7FFF, 0, 0);
+  Latch_Init(info, M38Sync, 0, 0x7000, 0x7FFF, 0);
 }
 
 /*------------------ Map 36 ---------------------------*/
@@ -273,7 +275,7 @@ static void M36Sync(void)
 
 void Mapper36_Init(CartInfo *info)
 {
-  Latch_Init(info, M36Sync, 0, 0x8400, 0xfffe, 0, 0);
+  Latch_Init(info, M36Sync, 0, 0x8400, 0xfffe, 0);
 }
 /*------------------ UNROM ---------------------------*/
 
@@ -286,7 +288,8 @@ static void UNROMSync(void)
 
 void UNROM_Init(CartInfo *info)
 {
-  Latch_Init(info, UNROMSync, 0, 0x8000, 0xFFFF, 0, 1);
+  bus_conflict = 1;
+  Latch_Init(info, UNROMSync, 0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ Map 93 ---------------------------*/
@@ -300,7 +303,7 @@ static void SSUNROMSync(void)
 
 void SUNSOFT_UNROM_Init(CartInfo *info)
 {
-  Latch_Init(info, SSUNROMSync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, SSUNROMSync, 0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ Map 94 ---------------------------*/
@@ -314,7 +317,7 @@ static void M94Sync(void)
 
 void Mapper94_Init(CartInfo *info)
 {
-  Latch_Init(info, M94Sync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, M94Sync, 0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ Map 180 ---------------------------*/
@@ -328,7 +331,7 @@ static void M180Sync(void)
 
 void Mapper180_Init(CartInfo *info)
 {
-  Latch_Init(info, M180Sync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, M180Sync, 0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ Map 107 ---------------------------*/
@@ -341,7 +344,7 @@ static void M107Sync(void)
 
 void Mapper107_Init(CartInfo *info)
 {
-  Latch_Init(info, M107Sync, ~0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, M107Sync, ~0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ Map 113 ---------------------------*/
@@ -355,7 +358,7 @@ static void M113Sync(void)
 
 void Mapper113_Init(CartInfo *info)
 {
-  Latch_Init(info, M113Sync, 0, 0x4100, 0x7FFF, 0, 0);
+  Latch_Init(info, M113Sync, 0, 0x4100, 0x7FFF, 0);
 }
 
 /*------------------ A65AS ---------------------------*/
@@ -383,7 +386,7 @@ static void BMCA65ASSync(void)
 
 void BMCA65AS_Init(CartInfo *info)
 {
-  Latch_Init(info, BMCA65ASSync, 0, 0x8000, 0xFFFF, 0, 0);
+  Latch_Init(info, BMCA65ASSync, 0, 0x8000, 0xFFFF, 0);
 }
 
 /*------------------ NROM ---------------------------*/
