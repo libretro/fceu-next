@@ -49,6 +49,7 @@ static snes_video_refresh_t video_cb = NULL;
 static snes_audio_sample_t audio_cb = NULL;
 static snes_input_poll_t poll_cb = NULL;
 static snes_input_state_t input_cb = NULL;
+static snes_audio_sample_batch_t audio_batch_cb = NULL;
 
 /* emulator-specific variables */
 
@@ -529,8 +530,13 @@ EXPORT void snes_run(void)
 	video_cb(video_out, 256, 240);
 	update_input();
 
-	for ( i = 0; i < ssize; i++)
-		audio_cb(sound[i] & 0xffff, sound[i] & 0xffff);
+	if (audio_batch_cb)
+		audio_batch_cb(sound, ssize);
+	else
+	{
+		for ( i = 0; i < ssize; i++)
+			audio_cb(sound[i] & 0xffff, sound[i] & 0xffff);
+	}
 }
 
 
@@ -609,6 +615,7 @@ EXPORT bool snes_load_cartridge_normal(const char* a, const uint8_t *rom_data, u
       timing.fps = 1008307711.0/16777215.0;
 
    environ_cb(SNES_ENVIRONMENT_SET_TIMING, &timing);
+   environ_cb(SNES_ENVIRONMENT_GET_AUDIO_BATCH_CB, &audio_batch_cb);
 
    return TRUE;
 }

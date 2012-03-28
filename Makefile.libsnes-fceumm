@@ -29,7 +29,7 @@ else ifeq ($(platform), ps3)
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
    AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
    PLATFORM_DEFINES := -D__CELLOS_LV2
-else ifeq ($(platform), snc-ps3)
+else ifeq ($(platform), sncps3)
    TARGET := libsnes.a
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
@@ -71,7 +71,7 @@ OBJS := $(FCEU_COBJ)
 
 FCEU_DEFINES := -D__LIBSNES__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DINLINE=inline -DPSS_STYLE=1 $(PLATFORM_DEFINES)
 
-ifeq ($(platform), snc-ps3)
+ifeq ($(platform), sncps3)
 CODE_DEFINES =
 WARNING_DEFINES =
 else
@@ -88,7 +88,7 @@ LIBS :=
 $(TARGET): $(OBJS)
 ifeq ($(platform), ps3)
 	$(AR) rcs $@ $(OBJS)
-else ifeq ($(platform), snc-ps3)
+else ifeq ($(platform), sncps3)
 	$(AR) rcs $@ $(OBJS)
 else ifeq ($(platform), xenon)
 	$(AR) rcs $@ $(OBJS)
