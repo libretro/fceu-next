@@ -404,6 +404,7 @@ EXPORT void snes_set_environment(snes_environment_t cb)
 	dummy = 0;
 	cb(SNES_ENVIRONMENT_SET_BATCH_LOAD, &dummy);
 	cb(SNES_ENVIRONMENT_SET_ROM_FORMATS, (void*)"fds|FDS|zip|ZIP|nes|NES|unif|UNIF");
+	cb(SNES_ENVIRONMENT_SET_CORE_VERSION, (void*)"SVN r88");
 }
 
 EXPORT void snes_init(void)
