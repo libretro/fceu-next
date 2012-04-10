@@ -366,7 +366,7 @@ static bool FCEUSS_SaveMS(EMUFILE* outstream)
 	return 0;
 }
 
-#ifdef __LIBSNES__
+#ifdef __LIBRETRO__
 void FCEUSS_SaveMemory(uint8_t *data, unsigned size)
 {
    EMUFILE_MEMORY mem(size);

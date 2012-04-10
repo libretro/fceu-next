@@ -31,10 +31,10 @@
     <Filter Include="Header Files\mappers">
       <UniqueIdentifier>{b4b19633-6ff4-4f3f-9c27-5057a190bdc7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\libsnes">
+    <Filter Include="Header Files\libretro">
       <UniqueIdentifier>{8ae4a17b-52df-4e85-9258-855de98b4a99}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\libsnes">
+    <Filter Include="Source Files\libretro">
       <UniqueIdentifier>{8a306150-9ba0-404c-aa2f-668430e786e5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -651,22 +651,22 @@
     <ClCompile Include="..\src-fceumm\mappers\mmc2and4.c">
       <Filter>Source Files\mappers</Filter>
     </ClCompile>
-    <ClCompile Include="..\libsnes-fceumm\memstream.c">
-      <Filter>Source Files\libsnes</Filter>
+    <ClCompile Include="..\libretro-fceumm\memstream.c">
+      <Filter>Source Files\libretro</Filter>
     </ClCompile>
-    <ClCompile Include="..\libsnes-fceumm\libsnes.c">
-      <Filter>Source Files\libsnes</Filter>
+    <ClCompile Include="..\libretro-fceumm\libretro.c">
+      <Filter>Source Files\libretro</Filter>
     </ClCompile>
     <ClCompile Include="..\src-fceumm\mycrc32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\libsnes-fceumm\memstream.h">
-      <Filter>Header Files\libsnes</Filter>
+    <ClInclude Include="..\libretro-fceumm\memstream.h">
+      <Filter>Header Files\libretro</Filter>
     </ClInclude>
-    <ClInclude Include="..\libsnes-fceumm\libsnes.h">
-      <Filter>Header Files\libsnes</Filter>
+    <ClInclude Include="..\libretro-fceumm\libretro.h">
+      <Filter>Header Files\libretro</Filter>
     </ClInclude>
     <ClInclude Include="..\src-fceumm\boards\mmc3.h">
       <Filter>Header Files\boards</Filter>

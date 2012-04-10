@@ -14,42 +14,42 @@ endif
 endif
 
 ifeq ($(platform), unix)
-   TARGET := libsnes.so
+   TARGET := libretro.so
    fpic := -fPIC
-   SHARED := -shared -Wl,--version-script=libsnes-fceumm/link.T
+   SHARED := -shared -Wl,--version-script=libretro-fceumm/link.T
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
 else ifeq ($(platform), osx)
-   TARGET := libsnes.dylib
+   TARGET := libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
    CFLAGS += -DHAVE_ASPRINTF
 else ifeq ($(platform), ps3)
-   TARGET := libsnes.a
+   TARGET := libretro.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
    AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
    PLATFORM_DEFINES := -D__CELLOS_LV2
 else ifeq ($(platform), sncps3)
-   TARGET := libsnes.a
+   TARGET := libretro.a
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
    PLATFORM_DEFINES := -D__CELLOS_LV2
 else ifeq ($(platform), xenon)
-   TARGET := libsnes.a
+   TARGET := libretro.a
    CC = xenon-gcc
    AR = xenon-ar
    PLATFORM_DEFINES := -D__LIBXENON__
    CFLAGS += -DHAVE_ASPRINTF
 else ifeq ($(platform), wii)
-   TARGET := libsnes.a
+   TARGET := libretro.a
    CC = powerpc-eabi-gcc
    AR = powerpc-eabi-ar
    PLATFORM_DEFINES := -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float
    CFLAGS += -DHAVE_ASPRINTF
 else
-   TARGET := snes.dll
+   TARGET := libretro.dll
    CC = gcc
-   SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=libsnes-fceumm/link.T
+   SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=libretro-fceumm/link.T
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
 endif
 
@@ -59,17 +59,17 @@ else
 	CFLAGS += -O3 -DNDEBUG
 endif
 
-LIBSNES_DIR := ./libsnes-fceumm
+LIBRETRO_DIR := ./libretro-fceumm
 FCEU_DIR := ./src-fceumm
 
-FCEU_SRC_DIRS := $(LIBSNES_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers
+FCEU_SRC_DIRS := $(LIBRETRO_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers
 
 FCEU_CSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.c))
 FCEU_COBJ := $(FCEU_CSRCS:.c=.o)
 
 OBJS := $(FCEU_COBJ)
 
-FCEU_DEFINES := -D__LIBSNES__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DINLINE=inline -DPSS_STYLE=1 $(PLATFORM_DEFINES)
+FCEU_DEFINES := -D__LIBRETRO__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DINLINE=inline -DPSS_STYLE=1 $(PLATFORM_DEFINES)
 
 ifeq ($(platform), sncps3)
 CODE_DEFINES =
@@ -82,7 +82,7 @@ endif
 CFLAGS += $(CODE_DEFINES) $(fpic) $(WARNING_DEFINES) $(FCEU_DEFINES) $(ENDIANNESS_DEFINES)
 LDFLAGS += -lm
 
-INCDIRS := -I$(LIBSNES_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers
+INCDIRS := -I$(LIBRETRO_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers
 LIBS :=
 
 $(TARGET): $(OBJS)

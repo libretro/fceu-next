@@ -14,9 +14,9 @@ typedef unsigned char bool;
 #define snprintf _snprintf
 #endif
 
-#define LIBSNES_CORE 1
+#define LIBRETRO_CORE 1
 
-#if defined(_MSC_VER) && defined(LIBSNES_CORE)
+#if defined(_MSC_VER) && defined(LIBRETRO_CORE)
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT

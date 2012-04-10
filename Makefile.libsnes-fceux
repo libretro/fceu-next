@@ -14,17 +14,17 @@ endif
 endif
 
 ifeq ($(platform), unix)
-   TARGET := libsnes.so
+   TARGET := libretro.so
    fpic := -fPIC
    PLATFORM_DEFINES := -DLOCAL_LE=1 -DLSB_FIRST=1
-   SHARED := -shared -Wl,--version-script=libsnes-fceux/link.T
+   SHARED := -shared -Wl,--version-script=libretro-fceux/link.T
 else ifeq ($(platform), osx)
-   TARGET := libsnes.dylib
+   TARGET := libretro.dylib
    fpic := -fPIC
    PLATFORM_DEFINES := -DLOCAL_LE=1 -DLSB_FIRST=1
    SHARED := -dynamiclib
 else ifeq ($(platform), ps3)
-   TARGET := libsnes.a
+   TARGET := libretro.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
    CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
    AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
@@ -32,7 +32,7 @@ else ifeq ($(platform), ps3)
    CFLAGS += -DHAVE_ASPRINTF
    CXXFLAGS += -DHAVE_ASPRINTF
 else ifeq ($(platform), snc-ps3)
-   TARGET := libsnes.a
+   TARGET := libretro.a
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    CXX = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
@@ -40,25 +40,25 @@ else ifeq ($(platform), snc-ps3)
    CFLAGS += -DHAVE_ASPRINTF
    CXXFLAGS += -DHAVE_ASPRINTF
 else ifeq ($(platform), xenon)
-   TARGET := libsnes.a
+   TARGET := libretro.a
    CC = xenon-gcc
    CXX = xenon-g++
    AR = xenon-ar
    PLATFORM_DEFINES := -D__LIBXENON__
    CFLAGS += -DHAVE_ASPRINTF
 else ifeq ($(platform), wii)
-   TARGET := libsnes.a
+   TARGET := libretro.a
    CC = powerpc-eabi-gcc
    AR = powerpc-eabi-ar
    PLATFORM_DEFINES := -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float
    CFLAGS += -DHAVE_ASPRINTF
    CXXFLAGS += -DHAVE_ASPRINTF
 else
-   TARGET := snes.dll
+   TARGET := libretro.dll
    CC = gcc
    CXX = g++
    PLATFORM_DEFINES := -DLOCAL_LE=1 -DLSB_FIRST=1
-   SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=libsnes-fceux/link.T
+   SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=libretro-fceux/link.T
 endif
 
 ifeq ($(DEBUG), 1)
@@ -69,11 +69,11 @@ else
 	CXXFLAGS += -O3
 endif
 
-LIBSNES_DIR := ./libsnes-fceux
+LIBRETRO_DIR := ./libretro-fceux
 FCEU_DIR := ./src-fceux
 UTILS_DIR := ./utils
 
-FCEU_SRC_DIRS := $(LIBSNES_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(FCEU_DIR)/utils
+FCEU_SRC_DIRS := $(LIBRETRO_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(FCEU_DIR)/utils
 
 FCEU_CXXSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.cpp))
 FCEU_CXXOBJ := $(FCEU_CXXSRCS:.cpp=.o)
@@ -82,7 +82,7 @@ FCEU_COBJ := $(FCEU_CSRCS:.c=.o)
 
 OBJS := $(FCEU_COBJ) $(FCEU_CXXOBJ)
 
-FCEU_DEFINES := -D__LIBSNES__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DINLINE=inline -DPSS_STYLE=1 $(PLATFORM_DEFINES)
+FCEU_DEFINES := -D__LIBRETRO__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DINLINE=inline -DPSS_STYLE=1 $(PLATFORM_DEFINES)
 
 CFLAGS += -std=gnu99 $(fpic) -Wno-write-strings $(FCEU_DEFINES)
 CXXFLAGS += $(fpic) -Wno-write-strings $(FCEU_DEFINES)

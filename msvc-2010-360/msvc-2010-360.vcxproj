@@ -27,7 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\libsnes-fceumm\libsnes.c">
+    <ClCompile Include="..\libretro-fceumm\libretro.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='CodeAnalysis|Xbox 360'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Profile|Xbox 360'">CompileAsC</CompileAs>
@@ -35,7 +35,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\libsnes-fceumm\memstream.c">
+    <ClCompile Include="..\libretro-fceumm\memstream.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='CodeAnalysis|Xbox 360'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Profile|Xbox 360'">CompileAsC</CompileAs>
@@ -1685,8 +1685,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\libsnes-fceumm\libsnes.h" />
-    <ClInclude Include="..\libsnes-fceumm\memstream.h" />
+    <ClInclude Include="..\libretro-fceumm\libretro.h" />
+    <ClInclude Include="..\libretro-fceumm\memstream.h" />
     <ClInclude Include="..\src-fceumm\boards\mapinc.h" />
     <ClInclude Include="..\src-fceumm\boards\mmc3.h" />
     <ClInclude Include="..\src-fceumm\cart.h" />
@@ -1782,22 +1782,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
-    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
+    <OutputFile>$(OutDir)libretro$(TargetExt)</OutputFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CodeAnalysis|Xbox 360'">
-    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
+    <OutputFile>$(OutDir)libretro$(TargetExt)</OutputFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Xbox 360'">
-    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
+    <OutputFile>$(OutDir)libretro$(TargetExt)</OutputFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile_FastCap|Xbox 360'">
-    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
+    <OutputFile>$(OutDir)libretro$(TargetExt)</OutputFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
-    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
+    <OutputFile>$(OutDir)libretro$(TargetExt)</OutputFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">
-    <OutputFile>$(OutDir)libsnes$(TargetExt)</OutputFile>
+    <OutputFile>$(OutDir)libretro$(TargetExt)</OutputFile>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
     <ClCompile>
@@ -1810,9 +1810,9 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PreprocessorDefinitions>_DEBUG;_XBOX;_LIB;__LIBSNES__;SOUND_QUALITY=0;INLINE=_inline;PSS_STYLE=2;PATH_MAX=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_XBOX;_LIB;__LIBRETRO__;SOUND_QUALITY=0;INLINE=_inline;PSS_STYLE=2;PATH_MAX=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CallAttributedProfiling>Callcap</CallAttributedProfiling>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\libsnes-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\libretro-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1832,7 +1832,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessorDefinitions>_DEBUG;_XBOX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CallAttributedProfiling>Callcap</CallAttributedProfiling>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\libsnes-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\libretro-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1853,7 +1853,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>NDEBUG;_XBOX;PROFILE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CallAttributedProfiling>Callcap</CallAttributedProfiling>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\libsnes-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\libretro-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1877,7 +1877,7 @@
       <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>NDEBUG;_XBOX;PROFILE;FASTCAP;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\libsnes-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\libretro-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1898,8 +1898,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>NDEBUG;_XBOX;_LIB;__LIBSNES__;SOUND_QUALITY=0;INLINE=_inline;PSS_STYLE=2;PATH_MAX=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\libsnes-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_XBOX;_LIB;__LIBRETRO__;SOUND_QUALITY=0;INLINE=_inline;PSS_STYLE=2;PATH_MAX=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\libretro-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1920,8 +1920,8 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>NDEBUG;_XBOX;LTCG;_LIB;__LIBSNES__;SOUND_QUALITY=0;INLINE=_inline;PSS_STYLE=2;PATH_MAX=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\libsnes-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_XBOX;LTCG;_LIB;__LIBRETRO__;SOUND_QUALITY=0;INLINE=_inline;PSS_STYLE=2;PATH_MAX=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\libretro-fceumm;$(SolutionDir)\..\src-fceumm;$(SolutionDir)\..\src-fceumm\boards;$(SolutionDir)\..\src-fceumm\input;$(SolutionDir)\..\src-fceumm\mappers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

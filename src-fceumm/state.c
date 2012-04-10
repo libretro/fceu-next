@@ -121,7 +121,7 @@ static int SubWrite(FILE *st, SFORMAT *sf)
 	return(acc);
 }
 
-#ifdef __LIBSNES__
+#ifdef __LIBRETRO__
 static int SubWrite_Mem(memstream_t *mem, SFORMAT *sf)
 {
 	uint32 acc=0;
@@ -180,7 +180,7 @@ static int WriteStateChunk(FILE *st, int type, SFORMAT *sf)
 	return (bsize+5);
 }
 
-#ifdef __LIBSNES__
+#ifdef __LIBRETRO__
 static int WriteStateChunk_Mem(memstream_t *mem, int type, SFORMAT *sf)
 {
 	int bsize;
@@ -249,7 +249,7 @@ static int ReadStateChunk(FILE *st, SFORMAT *sf, int size)
 	return 1;
 }
 
-#ifdef __LIBSNES__
+#ifdef __LIBRETRO__
 static int ReadStateChunk_Mem(memstream_t *mem, SFORMAT *sf, int size)
 {
 	SFORMAT *tmp;
@@ -315,7 +315,7 @@ endo:
 	return ret;
 }
 
-#ifdef __LIBSNES__
+#ifdef __LIBRETRO__
 static int ReadStateChunks_Mem(memstream_t *st, int32 totalsize)
 {
    int t;
@@ -373,7 +373,7 @@ endo:
 
 extern int geniestage;
 
-#ifdef __LIBSNES__
+#ifdef __LIBRETRO__
 void FCEUSS_Load(void)
 {
 	int x, stateversion;

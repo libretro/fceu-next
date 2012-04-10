@@ -81,7 +81,7 @@ int read32le(uint32 *Bufo, FILE *fp)
 	return 1;
 }
 
-#ifdef __LIBSNES__
+#ifdef __LIBRETRO__
 int write32le_mem(uint32 b, memstream_t *mem)
 {
  uint8 s[4];

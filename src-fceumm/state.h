@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-#ifdef __LIBSNES__
+#ifdef __LIBRETRO__
 void FCEUSS_Load(void);
 void FCEUSS_Save(void);
 #else
