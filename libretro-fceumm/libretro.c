@@ -528,12 +528,12 @@ EXPORT void retro_run(void)
    video_cb(video_out, 256, 240, 512);
    update_input();
 
-   audio_batch_cb(sound, ssize);
+   audio_batch_cb((const int16_t*)sound, ssize);
 }
 
 static unsigned serialize_size = 0;
 
-EXPORT unsigned retro_serialize_size(void)
+EXPORT size_t retro_serialize_size(void)
 {
    if (serialize_size == 0)
    {
@@ -600,7 +600,7 @@ EXPORT unsigned retro_get_region(void)
    return FSettings.PAL ? RETRO_REGION_PAL : RETRO_REGION_NTSC;
 }
 
-EXPORT void * retro_get_memory_data(unsigned id)
+EXPORT void *retro_get_memory_data(unsigned id)
 {
    if (id != RETRO_MEMORY_SAVE_RAM)
       return NULL;
@@ -613,7 +613,7 @@ EXPORT void * retro_get_memory_data(unsigned id)
    return 0;
 }
 
-EXPORT unsigned retro_get_memory_size(unsigned id)
+EXPORT size_t retro_get_memory_size(unsigned id)
 {
    if (id != RETRO_MEMORY_SAVE_RAM)
       return 0;
