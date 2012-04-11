@@ -521,12 +521,15 @@ EXPORT void retro_run(void)
    FCEUI_Emulate(&gfx, &sound, &ssize);
 
    gfx = XBuf;
-   for ( y = 0; y < 240; y++)
+   for (y = 0; y < 240; y++)
       for ( x = 0; x < 256; x++, gfx++)
          video_out[y * 256 + x] = palette[*gfx];
 
    video_cb(video_out, 256, 240, 512);
    update_input();
+
+   for (y = 0; y < ssize; y++)
+      sound[y] = (sound[y] << 16) | (sound[y] & 0xffff);
 
    audio_batch_cb((const int16_t*)sound, ssize);
 }
