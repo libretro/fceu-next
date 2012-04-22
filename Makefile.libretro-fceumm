@@ -47,7 +47,7 @@ else ifeq ($(platform), wii)
    PLATFORM_DEFINES := -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float
    CFLAGS += -DHAVE_ASPRINTF
 else
-   TARGET := libretro.dll
+   TARGET := retro.dll
    CC = gcc
    SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=libretro-fceumm/link.T
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
