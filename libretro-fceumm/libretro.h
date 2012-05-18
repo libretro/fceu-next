@@ -6,8 +6,20 @@
 
 #ifdef __cplusplus
 extern "C" {
+#elif defined(_MSC_VER)
+#define false 0
+#define true 1
+typedef unsigned char bool;
 #else
 #include <stdbool.h>
+#endif
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
 #endif
 
 #define RETRO_API_VERSION         1

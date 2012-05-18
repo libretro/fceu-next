@@ -1,25 +1,10 @@
 #include <stdio.h>
 #include <stdint.h>
-#ifndef _MSC_VER
-#include <stdbool.h>
-#else
-#define TRUE 1
-#define FALSE 0
-typedef unsigned char bool;
-#endif
 #include <stdlib.h>
 #include <string.h>
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
-#endif
-
-#define LIBRETRO_CORE 1
-
-#if defined(_MSC_VER) && defined(LIBRETRO_CORE)
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
 #endif
 
 #include "libretro.h"
@@ -345,44 +330,44 @@ struct st_palettes palettes[] = {
    }
 };
 
-EXPORT unsigned retro_api_version(void)
+unsigned retro_api_version(void)
 {
    return RETRO_API_VERSION;
 }
 
-EXPORT void retro_set_video_refresh(retro_video_refresh_t cb)
+void retro_set_video_refresh(retro_video_refresh_t cb)
 {
    video_cb = cb;
 }
 
-EXPORT void retro_set_audio_sample(retro_audio_sample_t cb)
+void retro_set_audio_sample(retro_audio_sample_t cb)
 { }
 
-EXPORT void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb)
+void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb)
 {
    audio_batch_cb = cb;
 }
 
-EXPORT void retro_set_input_poll(retro_input_poll_t cb)
+void retro_set_input_poll(retro_input_poll_t cb)
 {
    poll_cb = cb;
 }
 
-EXPORT void retro_set_input_state(retro_input_state_t cb)
+void retro_set_input_state(retro_input_state_t cb)
 {
    input_cb = cb;
 }
 
-EXPORT void retro_set_controller_port_device(unsigned a, unsigned b)
+void retro_set_controller_port_device(unsigned a, unsigned b)
 {}
 
 
-EXPORT void retro_set_environment(retro_environment_t cb)
+void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
 }
 
-EXPORT void retro_get_system_info(struct retro_system_info *info)
+void retro_get_system_info(struct retro_system_info *info)
 {
    info->need_fullpath = false;
    info->valid_extensions = "fds|FDS|zip|ZIP|nes|NES|unif|UNIF";
@@ -391,7 +376,7 @@ EXPORT void retro_get_system_info(struct retro_system_info *info)
    info->block_extract = false;
 }
 
-EXPORT void retro_get_system_av_info(struct retro_system_av_info *info)
+void retro_get_system_av_info(struct retro_system_av_info *info)
 {
    info->geometry.base_width = 256;
    info->geometry.base_height = 240;
@@ -405,7 +390,7 @@ EXPORT void retro_get_system_av_info(struct retro_system_av_info *info)
    info->timing.sample_rate = 32040.5;
 }
 
-EXPORT void retro_init(void)
+void retro_init(void)
 {
    PowerNES();
 }
@@ -460,10 +445,10 @@ static void fceu_init(const char * full_path)
    FCEUD_SoundToggle();
 }
 
-EXPORT void retro_deinit (void)
+void retro_deinit (void)
 { }
 
-EXPORT void retro_reset(void)
+void retro_reset(void)
 {
    ResetNES();
 }
@@ -511,7 +496,7 @@ static void update_input(void)
 #endif
 }
 
-EXPORT void retro_run(void)
+void retro_run(void)
 {
    unsigned y, x;
    uint8_t *gfx;
@@ -536,7 +521,7 @@ EXPORT void retro_run(void)
 
 static unsigned serialize_size = 0;
 
-EXPORT size_t retro_serialize_size(void)
+size_t retro_serialize_size(void)
 {
    if (serialize_size == 0)
    {
@@ -552,7 +537,7 @@ EXPORT size_t retro_serialize_size(void)
    return serialize_size;
 }
 
-EXPORT bool retro_serialize(void *data, size_t size)
+bool retro_serialize(void *data, size_t size)
 {
    if (size != retro_serialize_size())
       return FALSE;
@@ -562,7 +547,7 @@ EXPORT bool retro_serialize(void *data, size_t size)
    return TRUE;
 }
 
-EXPORT bool retro_unserialize(const void * data, size_t size)
+bool retro_unserialize(const void * data, size_t size)
 {
    if (size != retro_serialize_size())
       return FALSE;
@@ -572,20 +557,20 @@ EXPORT bool retro_unserialize(const void * data, size_t size)
    return TRUE;
 }
 
-EXPORT void retro_cheat_reset(void)
+void retro_cheat_reset(void)
 {}
 
-EXPORT void retro_cheat_set(unsigned a, bool b, const char* c)
+void retro_cheat_set(unsigned a, bool b, const char* c)
 { }
 
-EXPORT bool retro_load_game(const struct retro_game_info *game)
+bool retro_load_game(const struct retro_game_info *game)
 {
    fceu_init(game->path);
 
    return TRUE;
 }
 
-EXPORT bool retro_load_game_special(
+bool retro_load_game_special(
   unsigned game_type,
   const struct retro_game_info *info, size_t num_info
 )
@@ -593,17 +578,17 @@ EXPORT bool retro_load_game_special(
    return false;
 }
 
-EXPORT void retro_unload_game(void)
+void retro_unload_game(void)
 {
    FCEUI_CloseGame();
 }
 
-EXPORT unsigned retro_get_region(void)
+unsigned retro_get_region(void)
 {
    return FSettings.PAL ? RETRO_REGION_PAL : RETRO_REGION_NTSC;
 }
 
-EXPORT void *retro_get_memory_data(unsigned id)
+void *retro_get_memory_data(unsigned id)
 {
    if (id != RETRO_MEMORY_SAVE_RAM)
       return NULL;
@@ -616,7 +601,7 @@ EXPORT void *retro_get_memory_data(unsigned id)
    return 0;
 }
 
-EXPORT size_t retro_get_memory_size(unsigned id)
+size_t retro_get_memory_size(unsigned id)
 {
    if (id != RETRO_MEMORY_SAVE_RAM)
       return 0;
