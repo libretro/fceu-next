@@ -369,7 +369,7 @@ void retro_set_environment(retro_environment_t cb)
 
 void retro_get_system_info(struct retro_system_info *info)
 {
-   info->need_fullpath = false;
+   info->need_fullpath = true;
    info->valid_extensions = "fds|FDS|zip|ZIP|nes|NES|unif|UNIF";
    info->library_version = "SVN r88";
    info->library_name = "FCEUmm";
