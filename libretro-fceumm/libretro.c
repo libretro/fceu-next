@@ -371,7 +371,7 @@ void retro_get_system_info(struct retro_system_info *info)
 {
    info->need_fullpath = true;
    info->valid_extensions = "fds|FDS|zip|ZIP|nes|NES|unif|UNIF";
-   info->library_version = "SVN r88";
+   info->library_version = "r88 (SVN)";
    info->library_name = "FCEUmm";
    info->block_extract = false;
 }
