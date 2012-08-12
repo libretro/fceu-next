@@ -47,8 +47,8 @@ else ifeq ($(platform), xenon)
    CFLAGS += -DHAVE_ASPRINTF
 else ifeq ($(platform), wii)
    TARGET := libretro_wii.a
-   CC = powerpc-eabi-gcc
-   AR = powerpc-eabi-ar
+   CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc
+   AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    PLATFORM_DEFINES := -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float
    CFLAGS += -DHAVE_ASPRINTF
 else
