@@ -373,6 +373,7 @@ void retro_get_system_info(struct retro_system_info *info)
    info->valid_extensions = "fds|FDS|zip|ZIP|nes|NES|unif|UNIF";
    info->library_version = "r88 (SVN)";
    info->library_name = "FCEUmm";
+   info->nonblock_state = false;
    info->block_extract = false;
 }
 
