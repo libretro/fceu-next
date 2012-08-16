@@ -61,6 +61,9 @@ void FCEUI_SetDirOverride(int which, const char *n)
 #ifndef HAVE_ASPRINTF
 static int asprintf(char **strp, const char *fmt, ...)
 {
+#ifdef _XBOX1
+   return 1;
+#else
 	va_list ap;
 	int ret;
 
@@ -70,6 +73,7 @@ static int asprintf(char **strp, const char *fmt, ...)
 	ret=vsnprintf(*strp,2048,fmt,ap);
 	va_end(ap);
 	return(ret);
+#endif
 }
 #endif
 
