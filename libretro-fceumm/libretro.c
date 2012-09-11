@@ -503,6 +503,8 @@ void retro_run(void)
    static uint16_t video_out[256 * 240];
    int32 ssize = 0;
 
+   update_input();
+
    FCEUI_Emulate(&gfx, &sound, &ssize);
 
    gfx = XBuf;
@@ -511,7 +513,6 @@ void retro_run(void)
          video_out[y * 256 + x] = palette[*gfx];
 
    video_cb(video_out, 256, 240, 512);
-   update_input();
 
    for (y = 0; y < ssize; y++)
       sound[y] = (sound[y] << 16) | (sound[y] & 0xffff);
