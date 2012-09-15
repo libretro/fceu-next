@@ -832,9 +832,9 @@ static void RDoTriangleNoisePCMLQ(void)
         //used to added <<(16+2) when the noise table
         //values were half.
      if(PAL)
-       noiseacc+=PALNoiseFreqTable[PSG[0xE]&0xF]<<(16+2);
+       noiseacc+=PALNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
 	 else
-	   noiseacc+=NTSCNoiseFreqTable[PSG[0xE]&0xF]<<(16+2);
+	   noiseacc+=NTSCNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
      nreg=(nreg<<1)+(((nreg>>nshift)^(nreg>>14))&1);
      nreg&=0x7fff;
      noiseout=amptab[(nreg>>0xe)&1];
@@ -876,9 +876,9 @@ static void RDoTriangleNoisePCMLQ(void)
          //used to be added <<(16+2) when the noise table
          //values were half.
       if(PAL)
-        noiseacc+=PALNoiseFreqTable[PSG[0xE]&0xF]<<(16+2);
+        noiseacc+=PALNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
 	  else
-	    noiseacc+=NTSCNoiseFreqTable[PSG[0xE]&0xF]<<(16+2);
+	    noiseacc+=NTSCNoiseFreqTable[PSG[0xE]&0xF]<<(16+1);
       nreg=(nreg<<1)+(((nreg>>nshift)^(nreg>>14))&1);
       nreg&=0x7fff;
       noiseout=amptab[(nreg>>0xe)&1];
@@ -927,9 +927,9 @@ static void RDoNoise(void)
    {
     uint8 feedback;
     if(PAL)
-      wlcount[3]=PALNoiseFreqTable[PSG[0xE]&0xF]<<1;
+      wlcount[3]=PALNoiseFreqTable[PSG[0xE]&0xF];
 	else
-      wlcount[3]=NTSCNoiseFreqTable[PSG[0xE]&0xF]<<1;
+      wlcount[3]=NTSCNoiseFreqTable[PSG[0xE]&0xF];
     feedback=((nreg>>8)&1)^((nreg>>14)&1);
     nreg=(nreg<<1)+feedback;
     nreg&=0x7fff;
@@ -945,9 +945,9 @@ static void RDoNoise(void)
    {
     uint8 feedback;
 	if(PAL)
-      wlcount[3]=PALNoiseFreqTable[PSG[0xE]&0xF]<<1;
+      wlcount[3]=PALNoiseFreqTable[PSG[0xE]&0xF];
 	else
-      wlcount[3]=NTSCNoiseFreqTable[PSG[0xE]&0xF]<<1;
+      wlcount[3]=NTSCNoiseFreqTable[PSG[0xE]&0xF];
     feedback=((nreg>>13)&1)^((nreg>>14)&1);
     nreg=(nreg<<1)+feedback;
     nreg&=0x7fff;
