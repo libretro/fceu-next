@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <zlib.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "netplay.h"
 #include "fceu.h"
 #include "general.h"
@@ -35,6 +35,10 @@
 #include "cheat.h"
 #include "input.h"
 #include "endian.h"
+
+#ifndef __LIBRETRO__
+#define NETPLAY_ENABLED
+#endif
 
 int FCEUnetplay=0;
 
@@ -109,6 +113,7 @@ void FCEUI_NetplayText(uint8 *text)
 
 int FCEUNET_SendFile(uint8 cmd, char *fn)
 {
+#ifdef NETPLAY_ENABLED
  uint32 len;
  uLongf clen;
  char *buf, *cbuf;
@@ -146,12 +151,13 @@ int FCEUNET_SendFile(uint8 cmd, char *fn)
  }
  #endif
  free(cbuf);
-
+#endif
  return(1);
 }
 
 static FILE *FetchFile(uint32 remlen)
 {
+#ifdef NETPLAY_ENABLED
         uint32 clen = remlen;
                char *cbuf;
         uLongf len;
@@ -201,6 +207,7 @@ static FILE *FetchFile(uint32 remlen)
          return(fp);
         }
         free(fn);
+#endif
         return(0);
 }
 

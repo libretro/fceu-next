@@ -18,12 +18,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
+#ifndef _FCEU_STATE_H_
+#define _FCEU_STATE_H_
+
+#include "memory.h"
 
 void FCEUSS_Save(char *);
 int FCEUSS_Load(char *);
-int FCEUSS_SaveFP(FILE *);
-int FCEUSS_LoadFP(FILE *);
+int FCEUSS_SaveFP(MEM_TYPE *);
+int FCEUSS_LoadFP(MEM_TYPE *);
 
 extern int CurrentState;
 void FCEUSS_CheckStates(void);
@@ -41,3 +44,4 @@ void AddExState(void *v, uint32 s, int type, char *desc);
 
 void FCEU_DrawSaveStates(uint8 *XBuf);
 
+#endif

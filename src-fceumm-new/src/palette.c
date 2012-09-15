@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "fceu.h"
 #include "general.h"
 #include "driver.h"

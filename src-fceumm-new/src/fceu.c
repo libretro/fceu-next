@@ -23,14 +23,14 @@
 #include  <stdlib.h>
 #include  <stdarg.h>
 
-#include  "types.h"
+#include  "fceu-types.h"
 #include  "x6502.h"
 #include  "fceu.h"
 #include  "ppu.h"
 #include  "sound.h"
 #include  "netplay.h"
 #include  "general.h"
-#include  "endian.h"
+#include  "fceu-endian.h"
 #include  "memory.h"
 
 #include  "cart.h"

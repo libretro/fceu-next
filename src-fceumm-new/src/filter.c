@@ -1,6 +1,6 @@
 #include <math.h>
 #include <stdio.h>
-#include "types.h"
+#include "fceu-types.h"
 
 #include "sound.h"
 #include "x6502.h"

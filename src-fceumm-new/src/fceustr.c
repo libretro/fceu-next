@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "fceustr.h"
 
 

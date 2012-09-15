@@ -869,7 +869,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\..\src-fceumm\myendian.c">
+    <ClCompile Include="..\..\..\src-fceumm\fceu-endian.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
     </ClCompile>
@@ -938,7 +938,7 @@
     <ClInclude Include="..\src-fceumm\mappers\vrc7tone.h" />
     <ClInclude Include="..\src-fceumm\md5.h" />
     <ClInclude Include="..\src-fceumm\memory.h" />
-    <ClInclude Include="..\src-fceumm\myendian.h" />
+    <ClInclude Include="..\src-fceumm\fceu-endian.h" />
     <ClInclude Include="..\src-fceumm\ops.h" />
     <ClInclude Include="..\src-fceumm\palette.h" />
     <ClInclude Include="..\src-fceumm\ppu.h" />
@@ -948,7 +948,7 @@
     <ClInclude Include="..\src-fceumm\sound_hq_.h" />
     <ClInclude Include="..\src-fceumm\sound_lq_.h" />
     <ClInclude Include="..\src-fceumm\state.h" />
-    <ClInclude Include="..\src-fceumm\types.h" />
+    <ClInclude Include="..\src-fceumm\fceu-types.h" />
     <ClInclude Include="..\src-fceumm\unif.h" />
     <ClInclude Include="..\src-fceumm\vsuni.h" />
     <ClInclude Include="..\src-fceumm\x6502.h" />

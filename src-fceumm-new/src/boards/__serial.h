@@ -2,8 +2,23 @@
 #define __SERIAL_H
 
 #include <stdio.h>
+
+#ifdef _WIN32 && !defined(_XBOX)
 #include <windows.h>
-#include "../types.h"
+#else
+#define BOOL int
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+#endif
+
+#include "../fceu-types.h"
 
 void SendCmd(uint8 *cmd, int size);
 int ReadResp(uint8 *resp, int size);

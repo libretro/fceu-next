@@ -1,7 +1,7 @@
 /* Quick conversion stuff for MAME->FCE Ultra */
 
 #include <stdio.h>
-#include "../types.h"
+#include "../fceu-types.h"
 #include "../palette.h"
 #include "palettes.h"
 

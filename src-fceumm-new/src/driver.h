@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-#include "types.h"
+#include "fceu-types.h"
 #include "git.h"
 #include "debug.h"
 

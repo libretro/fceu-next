@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "fceu.h"
 
 #include "general.h"

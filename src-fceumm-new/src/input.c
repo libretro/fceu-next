@@ -20,7 +20,7 @@
  */
 #include <string.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "x6502.h"
 
 #include "fceu.h"

@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "x6502.h"
 #include "fceu.h"
 #include "cart.h"
@@ -47,7 +47,11 @@ static uint8 *trainerpoo=0;
 static uint8 *ROM=NULL;
 static uint8 *VROM=NULL;
 
+#ifdef __LIBRETRO__
+CartInfo iNESCart;
+#else
 static CartInfo iNESCart;
+#endif
 
 uint8 iNESMirroring;
 uint16 iNESCHRBankList[8];

@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../types.h"
+#include "../../fceu-types.h"
 #include "config.h"
 
 static int FReadString(FILE *fp, char *str, int n)

@@ -50,7 +50,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=src\endian.c
+FileName=src\fceu-endian.c
 CompileCpp=0
 Folder=
 Compile=1
@@ -720,7 +720,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit99]
-FileName=src\endian.h
+FileName=src\fceu-endian.h
 CompileCpp=0
 Folder=_Headers
 Compile=1
@@ -2008,7 +2008,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit120]
-FileName=src\types.h
+FileName=src\fceu-types.h
 CompileCpp=0
 Folder=_Headers
 Compile=1

@@ -21,12 +21,16 @@
 /*  TODO: Add (better) file io error checking */
 /*  TODO: Change save state file format. */
 
+#ifdef __LIBRETRO__
+#define STATE_LIBRETRO
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "x6502.h"
 #include "fceu.h"
 #include "sound.h"
@@ -39,7 +43,6 @@
 #include "ppu.h"
 #include "netplay.h"
 #include "video.h"
-
 
 static void (*SPreSave)(void);
 static void (*SPostSave)(void);
@@ -83,7 +86,7 @@ SFORMAT SFCPUC[]={
  { 0 }
 };
 
-static int SubWrite(FILE *st, SFORMAT *sf)
+static int SubWrite(MEM_TYPE *st, SFORMAT *sf)
 {
  uint32 acc=0;
 
@@ -126,7 +129,7 @@ static int SubWrite(FILE *st, SFORMAT *sf)
  return(acc);
 }
 
-static int WriteStateChunk(FILE *st, int type, SFORMAT *sf)
+static int WriteStateChunk(MEM_TYPE *st, int type, SFORMAT *sf)
 {
  int bsize;
 
@@ -162,7 +165,7 @@ static SFORMAT *CheckS(SFORMAT *sf, uint32 tsize, char *desc)
  return(0);
 }
 
-static int ReadStateChunk(FILE *st, SFORMAT *sf, int size)
+static int ReadStateChunk(MEM_TYPE *st, SFORMAT *sf, int size)
 {
  SFORMAT *tmp;
  int temp;
@@ -192,7 +195,7 @@ static int ReadStateChunk(FILE *st, SFORMAT *sf, int size)
  return 1;
 }
 
-static int ReadStateChunks(FILE *st, int32 totalsize)
+static int ReadStateChunks(MEM_TYPE *st, int32 totalsize)
 {
  int t;
  uint32 size;
@@ -230,7 +233,7 @@ static int ReadStateChunks(FILE *st, int32 totalsize)
 int CurrentState=0;
 extern int geniestage;
 
-int FCEUSS_SaveFP(FILE *st)
+int FCEUSS_SaveFP(MEM_TYPE *st)
 {
   static uint32 totalsize;
   static uint8 header[16]="FCS";
@@ -257,7 +260,7 @@ int FCEUSS_SaveFP(FILE *st)
 
 void FCEUSS_Save(char *fname)
 {
-  FILE *st=NULL;
+  MEM_TYPE *st=NULL;
   char *fn;
 
   if(geniestage==1)
@@ -266,6 +269,9 @@ void FCEUSS_Save(char *fname)
    return;
   }
 
+#ifdef HAVE_MEMSTREAM
+  st = fopen(fname, 1);
+#else
   if(fname)
    st=FCEUD_UTF8fopen(fname, "wb");
   else
@@ -279,6 +285,7 @@ void FCEUSS_Save(char *fname)
    FCEU_DispMessage("State %d save error.",CurrentState);
    return;
   }
+#endif
 
   FCEUSS_SaveFP(st);
 
@@ -287,7 +294,7 @@ void FCEUSS_Save(char *fname)
   FCEU_DispMessage("State %d saved.",CurrentState);
 }
 
-int FCEUSS_LoadFP(FILE *st)
+int FCEUSS_LoadFP(MEM_TYPE *st)
 {
   int x;
   uint8 header[16];
@@ -316,9 +323,12 @@ int FCEUSS_LoadFP(FILE *st)
 
 int FCEUSS_Load(char *fname)
 {
-  FILE *st;
+  MEM_TYPE *st;
   char *fn;
 
+#ifdef HAVE_MEMSTREAM
+  st = fopen(fname, 0);
+#else
   if(geniestage==1)
   {
    FCEU_DispMessage("Cannot load FCS in GG screen.");
@@ -339,6 +349,7 @@ int FCEUSS_Load(char *fname)
    SaveStateStatus[CurrentState]=0;
    return(0);
   }
+#endif
 
   if(FCEUSS_LoadFP(st))
   {
@@ -359,7 +370,7 @@ int FCEUSS_Load(char *fname)
 
 void FCEUSS_CheckStates(void)
 {
-  FILE *st=NULL;
+  MEM_TYPE *st=NULL;
   char *fn;
   int ssel;
 
@@ -430,7 +441,7 @@ void FCEUI_LoadState(char *fname)
   if(FCEUnetplay)
   {
    char *fn=FCEU_MakeFName(FCEUMKF_NPTEMP,0,0);
-   FILE *fp;
+   MEM_TYPE *fp;
 
    if((fp=fopen(fn,"wb")))
    {

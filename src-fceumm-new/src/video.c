@@ -24,7 +24,7 @@
 #include <stdarg.h>
 #include <zlib.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "video.h"
 #include "fceu.h"
 #include "general.h"
@@ -39,6 +39,10 @@
 
 uint8 *XBuf=NULL;
 static uint8 *xbsave=NULL;
+
+#ifndef __LIBRETRO__
+#define SNAPSHOTS_ENABLED
+#endif
 
 void FCEU_KillVirtualVideo(void)
 {
@@ -195,6 +199,7 @@ static int WritePNGChunk(FILE *fp, uint32 size, char *type, uint8 *data)
 
 int SaveSnapshot(void)
 {
+#ifdef SNAPSHOTS_ENABLED
  static unsigned int lastu=0;
 
  char *fn=0;
@@ -294,6 +299,7 @@ int SaveSnapshot(void)
   free(compmem);
  if(pp)
   fclose(pp);
+#endif
  return(0);
 }
 #ifdef SHOWFPS

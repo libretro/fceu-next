@@ -27,8 +27,9 @@ endif
 ifeq ($(platform), unix)
    TARGET := libretro.so
    fpic := -fPIC
-   SHARED := -shared -Wl,--version-script=libretro-fceumm/link.T
+   SHARED := -shared -Wl,--version-script=src/drivers/libretro/link.T
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
+   ZLIB_DIR := ./src/zlib
 else ifeq ($(platform), osx)
    TARGET := libretro.dylib
    fpic := -fPIC
@@ -73,6 +74,7 @@ else
    CC = gcc
    SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=src/drivers/libretro/link.T
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
+   ZLIB_DIR := ./src/zlib
 endif
 
 ifeq ($(DEBUG), 1)
@@ -84,21 +86,21 @@ endif
 LIBRETRO_DIR := ./src/drivers/libretro
 FCEU_DIR := ./src
 
-FCEU_SRC_DIRS := $(LIBRETRO_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers
+FCEU_SRC_DIRS := $(LIBRETRO_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(ZLIB_DIR)
 
 FCEU_CSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.c))
 FCEU_COBJ := $(FCEU_CSRCS:.c=.o)
 
 OBJS := $(FCEU_COBJ)
 
-FCEU_DEFINES := -D__LIBRETRO__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DINLINE=inline -DPSS_STYLE=1 $(PLATFORM_DEFINES)
+FCEU_DEFINES := -D__LIBRETRO__ -DSOUND_QUALITY=0 -DPATH_MAX=1024 -DINLINE=inline -DPSS_STYLE=1 -DFCEU_VERSION_NUMERIC=9813 $(PLATFORM_DEFINES)
 
 ifeq ($(platform), sncps3)
 CODE_DEFINES =
 WARNING_DEFINES =
 else
 CODE_DEFINES = -std=gnu99
-WARNING_DEFINES = -Wno-write-strings
+WARNING_DEFINES = -Wno-write-strings -Wl,--unresolved-symbols=report-all
 endif
 
 CFLAGS += $(CODE_DEFINES) $(fpic) $(WARNING_DEFINES) $(FCEU_DEFINES) $(ENDIANNESS_DEFINES)
@@ -121,7 +123,7 @@ else ifeq ($(platform), ngc)
 else ifeq ($(platform), wii)
 	$(AR) rcs $@ $(OBJS)
 else
-	$(CC) -o $@ $(SHARED) $(OBJS) $(LDFLAGS) $(LIBS)
+	$(CC) -o $@ $(SHARED) $(OBJS) $(CFLAGS) $(LDFLAGS) $(LIBS)
 endif
 
 %.o: %.c

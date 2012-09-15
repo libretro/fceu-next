@@ -23,7 +23,7 @@
 #include "hq2x.h"
 #include "hq3x.h"
 
-#include "../../types.h"
+#include "../../fceu-types.h"
 
 static uint32 CBM[3];
 static uint32 *palettetranslate=0;

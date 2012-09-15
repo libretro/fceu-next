@@ -1,3 +1,7 @@
+#ifdef __LIBRETRO__
+#define GENERAL_LIBRETRO
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -9,21 +13,21 @@
 
 #include "libretro.h"
 
-#include "../src-fceumm/fceu.h"
-#include "../src-fceumm/myendian.h"
-#include "../src-fceumm/input.h"
-#include "../src-fceumm/state.h"
-#include "../src-fceumm/ppu.h"
-#include "../src-fceumm/cart.h"
-#include "../src-fceumm/x6502.h"
-#include "../src-fceumm/git.h"
-#include "../src-fceumm/palette.h"
-#include "../src-fceumm/sound.h"
-#include "../src-fceumm/file.h"
-#include "../src-fceumm/cheat.h"
-#include "../src-fceumm/ines.h"
-#include "../src-fceumm/unif.h"
-#include "../src-fceumm/fds.h"
+#include "fceu.h"
+#include "fceu-endian.h"
+#include "input.h"
+#include "state.h"
+#include "ppu.h"
+#include "cart.h"
+#include "x6502.h"
+#include "git.h"
+#include "palette.h"
+#include "sound.h"
+#include "file.h"
+#include "cheat.h"
+#include "ines.h"
+#include "unif.h"
+#include "fds.h"
 
 #include <string.h>
 #include "memstream.h"
@@ -42,6 +46,10 @@ static int32 *sound = 0;
 static uint32 JSReturn[2];
 static uint32 current_palette = 0;
 
+int PPUViewScanline=0;
+int PPUViewer=0;
+int UpdatePPUView=0;
+
 /* extern forward decls.*/
 extern FCEUGI *FCEUGameInfo;
 extern uint8 *XBuf;
@@ -53,6 +61,11 @@ extern CartInfo UNIFCart;
 const char * GetKeyboard(void)
 {
    return "";
+}
+
+int FCEUD_SendData(void *data, uint32 len)
+{
+   return 1;
 }
 
 void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b)
@@ -68,11 +81,16 @@ bool FCEUD_ShouldDrawInputAids (void)
    return 1;
 }
 
-void FCEUD_PrintError(const char *c)
+void FCEUD_PrintError(char *c)
 { }
 
-void FCEUD_Message(const char *text)
+void FCEUD_Message(char *s)
 { }
+
+void FCEUD_NetworkClose(void)
+{ }
+
+void FCEUD_GetPalette(uint8 i,uint8 *r, uint8 *g, uint8 *b) { }
 
 void FCEUD_SoundToggle (void)
 {
@@ -81,6 +99,11 @@ void FCEUD_SoundToggle (void)
 
 void FCEUD_VideoChanged (void)
 { }
+
+FILE *FCEUD_UTF8fopen(const char *n, const char *m)
+{
+   return fopen(n, m);
+}
 
 #define MAX_PAH 1024
 
@@ -505,7 +528,7 @@ void retro_run(void)
 
    update_input();
 
-   FCEUI_Emulate(&gfx, &sound, &ssize);
+   FCEUI_Emulate(&gfx, &sound, &ssize, 0);
 
    gfx = XBuf;
    for (y = 0; y < 240; y++)
@@ -530,7 +553,7 @@ size_t retro_serialize_size(void)
       uint8_t *buffer = (uint8_t*)malloc(1000000);
       memstream_set_buffer(buffer, 1000000);
 
-      FCEUSS_Save();
+      FCEUSS_Save("");
       serialize_size = memstream_get_last_size();
       free(buffer);
    }
@@ -544,7 +567,7 @@ bool retro_serialize(void *data, size_t size)
       return FALSE;
 
    memstream_set_buffer((uint8_t*)data, size);
-   FCEUSS_Save();
+   FCEUSS_Save("");
    return TRUE;
 }
 
@@ -554,7 +577,7 @@ bool retro_unserialize(const void * data, size_t size)
       return FALSE;
 
    memstream_set_buffer((uint8_t*)data, size);
-   FCEUSS_Load();
+   FCEUSS_Load("");
    return TRUE;
 }
 

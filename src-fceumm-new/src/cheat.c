@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "x6502.h"
 #include "cheat.h"
 #include "fceu.h"

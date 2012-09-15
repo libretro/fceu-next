@@ -27,14 +27,14 @@
 #include <string.h>
 
 
-#include  "types.h"
+#include  "fceu-types.h"
 #include  "fceu.h"
 #include  "cart.h"
 #include  "unif.h"
 #include  "ines.h"
 #include  "general.h"
 #include  "state.h"
-#include  "endian.h"
+#include  "fceu-endian.h"
 #include  "file.h"
 #include  "memory.h"
 #include  "input.h"
@@ -56,7 +56,11 @@ typedef struct {
   int (*init)(FCEUFILE *fp);
 } BFMAPPING;
 
+#ifdef __LIBRETRO__
+CartInfo UNIFCart;
+#else
 static CartInfo UNIFCart;
+#endif
 
 static int vramo;
 static int mirrortodo;

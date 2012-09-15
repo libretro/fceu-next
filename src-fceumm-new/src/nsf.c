@@ -23,7 +23,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "x6502.h"
 #include "fceu.h"
 #include "video.h"

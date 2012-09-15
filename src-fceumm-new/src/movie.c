@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "input.h"
 #include "fceu.h"
 #include "driver.h"

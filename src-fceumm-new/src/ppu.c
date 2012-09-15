@@ -23,14 +23,14 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 
-#include        "types.h"
+#include        "fceu-types.h"
 #include        "x6502.h"
 #include        "fceu.h"
 #include	"ppu.h"
 #include	"nsf.h"
 #include        "sound.h"
 #include        "general.h"
-#include        "endian.h"
+#include        "fceu-endian.h"
 #include        "memory.h"
 #include        "ppuview.h"
 

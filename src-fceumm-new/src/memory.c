@@ -20,7 +20,7 @@
 
 #include <stdlib.h>
 
-#include "types.h"
+#include "fceu-types.h"
 #include "fceu.h"
 #include "memory.h"
 #include "general.h"

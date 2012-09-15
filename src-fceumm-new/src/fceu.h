@@ -1,5 +1,7 @@
 #ifndef _FCEUH
 
+#include "fceu-types.h"
+
 extern int fceuindbg;
 void ResetGameLoaded(void);
 

@@ -26,12 +26,16 @@
 #include "zlib.h"
 #include "unzip.h"
 
-#include "types.h"
+#include "fceu-types.h"
 #include "file.h"
-#include "endian.h"
+#include "fceu-endian.h"
 #include "memory.h"
 #include "driver.h"
 #include "general.h"
+
+#ifndef __LIBRETRO__
+#define SUPPORTS_UNZIP_AND_GZIP
+#endif
 
 typedef struct {
      uint8 *data;
@@ -150,6 +154,7 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
   }
   fread(tmp->data,1,tmp->size,(FILE *)tz);
  }
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  else if(type==1)
  {
   /* Bleck.  The gzip file format has the size of the uncompressed data,
@@ -178,12 +183,14 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
   }
   unzReadCurrentFile(tz,tmp->data,ufo.uncompressed_size);
  }
+#endif
 
  doret:
  if(type==0)
  {
   fclose((FILE *)tz);
  }
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  else if(type==1)
  {
   gzclose(tz);
@@ -193,6 +200,7 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
   unzCloseCurrentFile(tz);
   unzClose(tz);
  }
+#endif
  return tmp;
 }
 
@@ -213,6 +221,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
  fceufp=(FCEUFILE *)malloc(sizeof(FCEUFILE));
 
  {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
   unzFile tz;
   if((tz=unzOpen(path)))  // If it's not a zip file, use regular file handlers.
         // Assuming file type by extension usually works,
@@ -316,6 +325,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
    close(fd);
   }
 
+#endif
  }
 
   if((t=FCEUD_UTF8fopen(path,mode)))
@@ -342,6 +352,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
 
 int FCEU_fclose(FCEUFILE *fp)
 {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type==1)
  {
   gzclose(fp->fp);
@@ -354,6 +365,7 @@ int FCEU_fclose(FCEUFILE *fp)
   fp->fp=0;
  }
  else
+#endif
  {
   fclose((FILE *)fp->fp);
  }
@@ -364,6 +376,7 @@ int FCEU_fclose(FCEUFILE *fp)
 
 uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
 {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type==1)
  {
   return gzread(fp->fp,ptr,size*nmemb);
@@ -391,6 +404,7 @@ uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
   }
  }
  else
+#endif
  {
  return fread(ptr,size,nmemb,(FILE *)fp->fp);
  }
@@ -398,6 +412,7 @@ uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
 
 uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
 {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type==1)
  {
   return gzwrite(fp->fp,ptr,size*nmemb);
@@ -407,11 +422,13 @@ uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
   return 0;
  }
  else
+#endif
   return fwrite(ptr,size,nmemb,(FILE *)fp->fp);
 }
 
 int FCEU_fseek(FCEUFILE *fp, long offset, int whence)
 {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type==1)
  {
   return( (gzseek(fp->fp,offset,whence)>0)?0:-1);
@@ -434,11 +451,13 @@ int FCEU_fseek(FCEUFILE *fp, long offset, int whence)
   return 0;
  }
  else
+#endif
   return fseek((FILE *)fp->fp,offset,whence);
 }
 
 uint64 FCEU_ftell(FCEUFILE *fp)
 {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type==1)
  {
   return gztell(fp->fp);
@@ -448,11 +467,13 @@ uint64 FCEU_ftell(FCEUFILE *fp)
   return (((MEMWRAP *)(fp->fp))->location);
  }
  else
+#endif
   return ftell((FILE *)fp->fp);
 }
 
 void FCEU_rewind(FCEUFILE *fp)
 {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type==1)
  {
   gzrewind(fp->fp);
@@ -462,6 +483,7 @@ void FCEU_rewind(FCEUFILE *fp)
   ((MEMWRAP *)(fp->fp))->location=0;
  }
  else
+#endif
   /* Rewind */
   fseek(fp->fp,0,SEEK_SET);
 }
@@ -470,6 +492,7 @@ int FCEU_read16le(uint16 *val, FCEUFILE *fp)
 {
  uint8 t[2];
 
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type>=1)
  {
   if(fp->type>=2)
@@ -486,6 +509,7 @@ int FCEU_read16le(uint16 *val, FCEUFILE *fp)
   return(1);
  }
  else
+#endif
  {
   if(fread(t,1,2,(FILE *)fp->fp)!=2) return(0);
  }
@@ -495,6 +519,7 @@ int FCEU_read16le(uint16 *val, FCEUFILE *fp)
 
 int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp)
 {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type>=1)
  {
   uint8 t[4];
@@ -524,6 +549,7 @@ int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp)
   return 1;
  }
  else
+#endif
  {
   return read32le(Bufo,(FILE *)fp->fp);
  }
@@ -531,6 +557,7 @@ int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp)
 
 int FCEU_fgetc(FCEUFILE *fp)
 {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type==1)
   return gzgetc(fp->fp);
  else if(fp->type>=2)
@@ -542,11 +569,13 @@ int FCEU_fgetc(FCEUFILE *fp)
   return EOF;
  }
  else
+#endif
   return fgetc((FILE *)fp->fp);
 }
 
 uint64 FCEU_fgetsize(FCEUFILE *fp)
 {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type==1)
  {
   int x,t;
@@ -559,6 +588,7 @@ uint64 FCEU_fgetsize(FCEUFILE *fp)
  else if(fp->type>=2)
   return ((MEMWRAP*)(fp->fp))->size;
  else
+#endif
  {
   long t,r;
   t=ftell((FILE *)fp->fp);
@@ -571,7 +601,9 @@ uint64 FCEU_fgetsize(FCEUFILE *fp)
 
 int FCEU_fisarchive(FCEUFILE *fp)
 {
+#ifdef SUPPORTS_UNZIP_AND_GZIP
  if(fp->type==2)
   return 1;
+#endif
  return 0;
 }

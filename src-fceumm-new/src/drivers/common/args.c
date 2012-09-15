@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../types.h"
+#include "../../fceu-types.h"
 #include "args.h"
 
 void ParseEA(int x, int argc, char *argv[], ARGPSTRUCT *argsps)
