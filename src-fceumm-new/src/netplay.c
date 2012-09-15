@@ -25,7 +25,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#ifndef __LIBRETRO__
 #include <zlib.h>
+#endif
 
 #include "fceu-types.h"
 #include "netplay.h"
@@ -34,7 +36,7 @@
 #include "state.h"
 #include "cheat.h"
 #include "input.h"
-#include "endian.h"
+#include "fceu-endian.h"
 
 #ifndef __LIBRETRO__
 #define NETPLAY_ENABLED

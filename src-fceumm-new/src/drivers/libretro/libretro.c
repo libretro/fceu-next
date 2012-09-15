@@ -48,7 +48,6 @@ static uint32 current_palette = 0;
 
 int PPUViewScanline=0;
 int PPUViewer=0;
-int UpdatePPUView=0;
 
 /* extern forward decls.*/
 extern FCEUGI *FCEUGameInfo;
@@ -57,6 +56,8 @@ extern CartInfo iNESCart;
 extern CartInfo UNIFCart;
 
 /* emulator-specific callback functions */
+
+void UpdatePPUView(int refreshchr) { }
 
 const char * GetKeyboard(void)
 {
@@ -105,7 +106,7 @@ FILE *FCEUD_UTF8fopen(const char *n, const char *m)
    return fopen(n, m);
 }
 
-#define MAX_PAH 1024
+#define MAX_PATH 1024
 
 /*palette for FCEU*/
 #define MAXPAL 13

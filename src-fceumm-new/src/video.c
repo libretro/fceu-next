@@ -22,7 +22,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#ifndef __LIBRETRO__
 #include <zlib.h>
+#endif
 
 #include "fceu-types.h"
 #include "video.h"

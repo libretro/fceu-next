@@ -34,7 +34,7 @@
 #include "x6502.h"
 #include "fceu.h"
 #include "sound.h"
-#include "endian.h"
+#include "fceu-endian.h"
 #include "fds.h"
 #include "general.h"
 #include "state.h"

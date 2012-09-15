@@ -23,8 +23,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifndef __LIBRETRO__
 #include "zlib.h"
 #include "unzip.h"
+#endif
 
 #include "fceu-types.h"
 #include "file.h"
