@@ -27,7 +27,7 @@ endif
 ifeq ($(platform), unix)
    TARGET := libretro.so
    fpic := -fPIC
-   SHARED := -shared -Wl,--version-script=src/drivers/libretro/link.T
+   SHARED := -shared -Wl,--version-script=src/drivers/libretro/link.T -Wl,-no-undefined
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
    ZLIB_DIR := ./src/zlib
 else ifeq ($(platform), osx)
@@ -100,7 +100,7 @@ CODE_DEFINES =
 WARNING_DEFINES =
 else
 CODE_DEFINES = -std=gnu99
-WARNING_DEFINES = -Wno-write-strings -Wl,--unresolved-symbols=report-all
+WARNING_DEFINES = -Wno-write-strings
 endif
 
 CFLAGS += $(CODE_DEFINES) $(fpic) $(WARNING_DEFINES) $(FCEU_DEFINES) $(ENDIANNESS_DEFINES)

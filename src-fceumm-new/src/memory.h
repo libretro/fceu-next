@@ -35,13 +35,13 @@
 #define HAVE_MEMSTREAM
 #define MEM_TYPE memstream_t
 
-#define fwrite(ptr, size, nmemb, stream) memstream_write(stream, ptr, nmemb)
-#define fclose(fp) memstream_close(fp)
-#define fgetc(stream) memstream_getc(stream)
-#define fputc(c, stream) memstream_putc(stream, c)
-#define ftell(a) memstream_pos(a)
-#define fread(ptr, size, nmemb, stream) memstream_read(stream, ptr, nmemb)
-#define fseek(stream, offset, whence) memstream_seek(stream, offset, whence)
+#define fwrite(ptr, size, nmemb, stream) memstream_write((stream), (ptr), (nmemb))
+#define fclose(fp) memstream_close((fp))
+#define fgetc(stream) memstream_getc((stream))
+#define fputc(c, stream) memstream_putc((stream), (c))
+#define ftell(a) memstream_pos((a))
+#define fread(ptr, size, nmemb, stream) memstream_read((stream), (ptr), (nmemb))
+#define fseek(stream, offset, whence) memstream_seek((stream), (offset), (whence))
 #else
 #define MEM_TYPE FILE
 #endif

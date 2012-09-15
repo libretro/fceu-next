@@ -236,9 +236,13 @@ extern int geniestage;
 int FCEUSS_SaveFP(MEM_TYPE *st)
 {
   static uint32 totalsize;
-  static uint8 header[16]="FCS";
+  uint8 header[16] = {0};
 
-  memset(header+4,0,13);
+  header[0] = 'F';
+  header[1] = 'C';
+  header[2] = 'S';
+  header[3] = 0xFF;
+
   header[3]=0xFF;
   FCEU_en32lsb(header + 8, FCEU_VERSION_NUMERIC);
   fwrite(header,1,16,st);
@@ -270,7 +274,7 @@ void FCEUSS_Save(char *fname)
   }
 
 #ifdef HAVE_MEMSTREAM
-  st = fopen(fname, 1);
+  st = memstream_open(1);
 #else
   if(fname)
    st=FCEUD_UTF8fopen(fname, "wb");
@@ -327,7 +331,7 @@ int FCEUSS_Load(char *fname)
   char *fn;
 
 #ifdef HAVE_MEMSTREAM
-  st = fopen(fname, 0);
+  st = memstream_open(0);
 #else
   if(geniestage==1)
   {
