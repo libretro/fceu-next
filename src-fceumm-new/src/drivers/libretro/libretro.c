@@ -421,14 +421,8 @@ void retro_init(void)
 
 static void emulator_set_input(void)
 {
-   // ?!?!?!?! Why does this matter?!
-#if defined(__CELLOS_LV2__) || defined(_XBOX) || defined(GEKKO) // <-- big endian
    FCEUI_SetInput(0, SI_GAMEPAD, &JSReturn[0], 0);
    FCEUI_SetInput(1, SI_GAMEPAD, &JSReturn[0], 0);
-#else
-   FCEUI_SetInput(0, SI_GAMEPAD, &JSReturn[0], 0);
-   FCEUI_SetInput(1, SI_GAMEPAD, &JSReturn[1], 0);
-#endif
 }
 
 static void emulator_set_custom_palette (void)
@@ -506,18 +500,12 @@ static void update_input(void)
    poll_cb();
 
    for ( i = 0; i < 8; i++)
-   {
       pad[0] |= input_cb(0, RETRO_DEVICE_JOYPAD, 0, bindmap[i].retro) ? bindmap[i].nes : 0;
-      pad[1] |= input_cb(1, RETRO_DEVICE_JOYPAD, 0, bindmap[i].retro) ? bindmap[i].nes : 0;
-   }
 
-   // This shouldn't matter. Why? Something very weird is going on.
-#if defined(__CELLOS_LV2__) || defined(_XBOX360) || defined(GEKKO) // <-- big endian
+   for ( i = 0; i < 8; i++)
+      pad[1] |= input_cb(1, RETRO_DEVICE_JOYPAD, 0, bindmap[i].retro) ? bindmap[i].nes : 0;
+
    JSReturn[0] = pad[0] | (pad[1] << 8);
-#else
-   JSReturn[0] = pad[0];
-   JSReturn[1] = pad[1];
-#endif
 }
 
 void retro_run(void)
