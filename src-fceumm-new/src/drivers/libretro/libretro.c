@@ -69,12 +69,28 @@ int FCEUD_SendData(void *data, uint32 len)
    return 1;
 }
 
+#ifdef FRONTEND_SUPPORTS_RGB565
+#define RED_SHIFT 11
+#define GREEN_SHIFT 5
+#define BLUE_SHIFT 0
+#define RED_EXPAND 3
+#define GREEN_EXPAND 2
+#define BLUE_EXPAND 3
+#else
+#define RED_SHIFT 10
+#define GREEN_SHIFT 5
+#define BLUE_SHIFT 0
+#define RED_EXPAND 3
+#define GREEN_EXPAND 3
+#define BLUE_EXPAND 3
+#endif
+
 void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b)
 {
-   r >>= 3;
-   g >>= 3;
-   b >>= 3;
-   palette[index] = (r << 10) | (g << 5) | (b << 0);
+   r >>= RED_EXPAND;
+   g >>= GREEN_EXPAND;
+   b >>= BLUE_EXPAND;
+   palette[index] = (r << RED_SHIFT) | (g << GREEN_SHIFT) | (b << BLUE_SHIFT);
 }
 
 bool FCEUD_ShouldDrawInputAids (void)
@@ -416,6 +432,11 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 
 void retro_init(void)
 {
+#ifdef FRONTEND_SUPPORTS_RGB565
+   enum retro_pixel_format rgb565 = RETRO_PIXEL_FORMAT_RGB565;
+   if(environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &rgb565))
+      fprintf(stderr, "Frontend supports RGB565 - will use that instead of XRGB1555.\n");
+#endif
    PowerNES();
 }
 
@@ -553,21 +574,21 @@ size_t retro_serialize_size(void)
 bool retro_serialize(void *data, size_t size)
 {
    if (size != retro_serialize_size())
-      return FALSE;
+      return false;
 
    memstream_set_buffer((uint8_t*)data, size);
    FCEUSS_Save("");
-   return TRUE;
+   return true;
 }
 
 bool retro_unserialize(const void * data, size_t size)
 {
    if (size != retro_serialize_size())
-      return FALSE;
+      return false;
 
    memstream_set_buffer((uint8_t*)data, size);
    FCEUSS_Load("");
-   return TRUE;
+   return true;
 }
 
 void retro_cheat_reset(void)
@@ -580,7 +601,7 @@ bool retro_load_game(const struct retro_game_info *game)
 {
    fceu_init(game->path);
 
-   return TRUE;
+   return true;
 }
 
 bool retro_load_game_special(

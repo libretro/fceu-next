@@ -1,4 +1,5 @@
 DEBUG = 0
+FRONTEND_SUPPORTS_RGB565 = 1
 
 ifeq ($(platform),)
 platform = unix
@@ -105,6 +106,10 @@ endif
 
 CFLAGS += $(CODE_DEFINES) $(fpic) $(WARNING_DEFINES) $(FCEU_DEFINES) $(ENDIANNESS_DEFINES)
 LDFLAGS += -lm
+
+ifeq ($(FRONTEND_SUPPORTS_RGB565), 1)
+CFLAGS += -DFRONTEND_SUPPORTS_RGB565
+endif
 
 INCDIRS := -I$(LIBRETRO_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers
 LIBS :=
