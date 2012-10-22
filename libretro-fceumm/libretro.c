@@ -55,12 +55,28 @@ const char * GetKeyboard(void)
    return "";
 }
 
+#ifdef FRONTEND_SUPPORTS_RGB565
+#define RED_SHIFT 11
+#define GREEN_SHIFT 5
+#define BLUE_SHIFT 0
+#define RED_EXPAND 3
+#define GREEN_EXPAND 2
+#define BLUE_EXPAND 3
+#else
+#define RED_SHIFT 10
+#define GREEN_SHIFT 5
+#define BLUE_SHIFT 0
+#define RED_EXPAND 3
+#define GREEN_EXPAND 3
+#define BLUE_EXPAND 3
+#endif
+
 void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, unsigned char b)
 {
-   r >>= 3;
-   g >>= 3;
-   b >>= 3;
-   palette[index] = (r << 10) | (g << 5) | (b << 0);
+   r >>= RED_EXPAND;
+   g >>= GREEN_EXPAND;
+   b >>= BLUE_EXPAND;
+   palette[index] = (r << RED_SHIFT) | (g << GREEN_SHIFT) | (b << BLUE_SHIFT);
 }
 
 bool FCEUD_ShouldDrawInputAids (void)
