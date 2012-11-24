@@ -482,6 +482,7 @@ void FCEU_ResetVidSys(void)
 
 FCEUS FSettings;
 
+#ifndef __LIBRETRO__
 void FCEU_printf(char *format, ...)
 {
  char temp[2048];
@@ -512,6 +513,7 @@ void FCEU_PrintError(char *format, ...)
 
  va_end(ap);
 }
+#endif
 
 void FCEUI_SetRenderedLines(int ntscf, int ntscl, int palf, int pall)
 {

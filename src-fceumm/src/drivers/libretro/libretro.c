@@ -411,7 +411,7 @@ void retro_get_system_info(struct retro_system_info *info)
 {
    info->need_fullpath = true;
    info->valid_extensions = "fds|FDS|zip|ZIP|nes|NES|unif|UNIF";
-   info->library_version = "r88 (SVN)";
+   info->library_version = "r106 (SVN)";
    info->library_name = "FCEUmm";
    info->block_extract = false;
 }
@@ -646,4 +646,32 @@ size_t retro_get_memory_size(unsigned id)
       return UNIFCart.SaveGameLen[0];
 
    return 0;
+}
+
+void FCEU_printf(char *format, ...)
+{
+ char temp[2048];
+
+ va_list ap;
+
+ va_start(ap,format);
+ vsprintf(temp,format,ap);
+ FCEUD_Message(temp);
+
+ fprintf(stderr, "%s\n", temp);
+
+ va_end(ap);
+}
+
+void FCEU_PrintError(char *format, ...)
+{
+ char temp[2048];
+
+ va_list ap;
+
+ va_start(ap,format);
+ vsprintf(temp,format,ap);
+ fprintf(stderr, "ERROR: %s\n", temp);
+
+ va_end(ap);
 }
