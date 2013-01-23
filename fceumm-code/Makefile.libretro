@@ -106,7 +106,7 @@ endif
 CFLAGS += $(CODE_DEFINES) $(fpic) $(WARNING_DEFINES) $(FCEU_DEFINES) $(ENDIANNESS_DEFINES)
 LDFLAGS += -lm
 
-INCDIRS := -I$(LIBRETRO_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers
+INCDIRS := -I$(LIBRETRO_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers -I$(FCEU_DIR)/zlib
 LIBS :=
 
 $(TARGET): $(OBJS)
