@@ -443,9 +443,9 @@ static int fread32le(uint32 *Bufo, MEM_TYPE *fp)
 	if (fread(&buf, 1, 4, fp) < 4)
 		return 0;
  #ifdef LSB_FIRST
-	*(uint32*)Bufo = buf;
+	Bufo = buf;
  #else
-	*(uint32*)Bufo = ((buf & 0xFF) << 24) | ((buf & 0xFF00) << 8) | ((buf & 0xFF0000) >> 8) | ((buf & 0xFF000000) >> 24);
+	Bufo = ((buf & 0xFF) << 24) | ((buf & 0xFF00) << 8) | ((buf & 0xFF0000) >> 8) | ((buf & 0xFF000000) >> 24);
  #endif
 	return 1;
 }
