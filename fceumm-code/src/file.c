@@ -437,6 +437,19 @@ int FCEU_read16le(uint16 *val, FCEUFILE *fp) {
 	return(1);
 }
 
+static int fread32le(uint32 *Bufo, MEM_TYPE *fp) 
+{
+	uint32 buf;
+	if (fread(&buf, 1, 4, fp) < 4)
+		return 0;
+ #ifdef LSB_FIRST
+	*Bufo = buf;
+ #else
+	*Bufo = ((buf & 0xFF) << 24) | ((buf & 0xFF00) << 8) | ((buf & 0xFF0000) >> 8) | ((buf & 0xFF000000) >> 24);
+ #endif
+	return 1;
+}
+
 int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp) {
 #ifdef SUPPORTS_UNZIP_AND_GZIP
 	if (fp->type >= 1) {
@@ -467,7 +480,7 @@ int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp) {
 	} else
 #endif
 	{
-		return read32le(Bufo, (FILE*)fp->fp);
+		return fread32le(Bufo, (FILE*)fp->fp);
 	}
 }
 
