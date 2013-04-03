@@ -36,6 +36,7 @@ else ifeq ($(platform), osx)
    SHARED := -dynamiclib
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
    CFLAGS += -DHAVE_ASPRINTF
+   ZLIB_DIR := ./src/zlib
 else ifeq ($(platform), qnx)
    TARGET := fceumm_libretro.so
    fpic := -fPIC
