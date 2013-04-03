@@ -47,6 +47,13 @@ else ifeq ($(platform), qnx)
 	CC = qcc -Vgcc_ntoarmv7le
 	AR = qcc -Vgcc_ntoarmv7le
 	PLATFORM_DEFINES := -D__BLACKBERRY_QNX__ -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=softfp
+else ifeq ($(platform), ios)
+   TARGET := fceumm_libretro.dylib
+   fpic := -fPIC
+   SHARED := -dynamiclib
+   ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
+   CFLAGS += -DHAVE_ASPRINTF -DIOS
+   ZLIB_DIR := ./src/zlib
 else ifeq ($(platform), ps3)
    TARGET := fceumm_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
