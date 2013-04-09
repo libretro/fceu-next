@@ -134,6 +134,7 @@ struct st_palettes {
 	unsigned int data[64];
 };
 
+
 struct st_palettes palettes[] = {
    { "asqrealc", "AspiringSquire's Real palette",
       { 0x6c6c6c, 0x00268e, 0x0000a8, 0x400094,
@@ -406,6 +407,13 @@ void retro_set_controller_port_device(unsigned a, unsigned b)
 void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
+
+   static const struct retro_variable vars[] = {
+      { "nes_palette", "Color Palette; asqrealc|loopy|quor|chris|matt|pasofami|crashman|mess|zaphod-cv|zaphod-smb|vs-drmar|vs-cv|vs-smb" },
+      { NULL, NULL },
+   };
+
+   cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
 }
 
 void retro_get_system_info(struct retro_system_info *info)
@@ -449,25 +457,25 @@ static void emulator_set_input(void)
 
 static void emulator_set_custom_palette (void)
 {
-   if (current_palette == 0 )
+
+   if (current_palette == 0)
    {
       FCEU_ResetPalette();	/* Do palette reset*/
+      return;
    }
-   else
-   {
-      /* Now setup this palette*/
-      uint8 i,r,g,b;
 
-      for ( i = 0; i < 64; i++ )
-      {
-         r = palettes[current_palette-1].data[i] >> 16;
-	 g = ( palettes[current_palette-1].data[i] & 0xff00 ) >> 8;
-	 b = ( palettes[current_palette-1].data[i] & 0xff );
-	 FCEUD_SetPalette( i, r, g, b);
-	 FCEUD_SetPalette( i+64, r, g, b);
-	 FCEUD_SetPalette( i+128, r, g, b);
-	 FCEUD_SetPalette( i+192, r, g, b);
-      }
+   /* Setup this palette*/
+   uint8 i,r,g,b;
+
+   for ( i = 0; i < 64; i++ )
+   {
+      r = palettes[current_palette-1].data[i] >> 16;
+      g = ( palettes[current_palette-1].data[i] & 0xff00 ) >> 8;
+      b = ( palettes[current_palette-1].data[i] & 0xff );
+      FCEUD_SetPalette( i, r, g, b);
+      FCEUD_SetPalette( i+64, r, g, b);
+      FCEUD_SetPalette( i+128, r, g, b);
+      FCEUD_SetPalette( i+192, r, g, b);
    }
 }
 
@@ -486,7 +494,8 @@ static void fceu_init(const char * full_path)
 }
 
 void retro_deinit (void)
-{ }
+{
+}
 
 void retro_reset(void)
 {
@@ -530,6 +539,50 @@ static void update_input(void)
    JSReturn[0] = pad[0] | (pad[1] << 8);
 }
 
+static void check_variables(void)
+{
+   struct retro_variable var = {0};
+
+   var.key = "nes_palette";
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+   {
+      unsigned orig_value = current_palette;
+
+      if (strcmp(var.value, "asqreal") == 0)
+         current_palette = 0;
+      else if (strcmp(var.value, "loopy") == 0)
+         current_palette = 1;
+      else if (strcmp(var.value, "quor") == 0)
+         current_palette = 2;
+      else if (strcmp(var.value, "chris") == 0)
+         current_palette = 3;
+      else if (strcmp(var.value, "matt") == 0)
+         current_palette = 4;
+      else if (strcmp(var.value, "matt") == 0)
+         current_palette = 5;
+      else if (strcmp(var.value, "pasofami") == 0)
+         current_palette = 6;
+      else if (strcmp(var.value, "crashman") == 0)
+         current_palette = 7;
+      else if (strcmp(var.value, "mess") == 0)
+         current_palette = 8;
+      else if (strcmp(var.value, "zaphod-cv") == 0)
+         current_palette = 9;
+      else if (strcmp(var.value, "zaphod-smb") == 0)
+         current_palette = 10;
+      else if (strcmp(var.value, "vs-drmar") == 0)
+         current_palette = 11;
+      else if (strcmp(var.value, "vs-cv") == 0)
+         current_palette = 12;
+      else if (strcmp(var.value, "vs-smb") == 0)
+         current_palette = 13;
+
+      if (current_palette != orig_value)
+         emulator_set_custom_palette();
+   }
+}
+
 void retro_run(void)
 {
    unsigned y, x;
@@ -552,6 +605,10 @@ void retro_run(void)
       sound[y] = (sound[y] << 16) | (sound[y] & 0xffff);
 
    audio_batch_cb((const int16_t*)sound, ssize);
+
+   bool updated = false;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+      check_variables();
 }
 
 static unsigned serialize_size = 0;
@@ -601,6 +658,7 @@ void retro_cheat_set(unsigned a, bool b, const char* c)
 bool retro_load_game(const struct retro_game_info *game)
 {
    fceu_init(game->path);
+   check_variables();
 
    return true;
 }
