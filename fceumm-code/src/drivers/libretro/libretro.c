@@ -1,7 +1,3 @@
-#ifdef __LIBRETRO__
-#define GENERAL_LIBRETRO
-#endif
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -406,13 +402,12 @@ void retro_set_controller_port_device(unsigned a, unsigned b)
 
 void retro_set_environment(retro_environment_t cb)
 {
-   environ_cb = cb;
-
    static const struct retro_variable vars[] = {
       { "nes_palette", "Color Palette; asqrealc|loopy|quor|chris|matt|pasofami|crashman|mess|zaphod-cv|zaphod-smb|vs-drmar|vs-cv|vs-smb" },
       { NULL, NULL },
    };
 
+   environ_cb = cb;
    cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
 }
 
@@ -457,6 +452,7 @@ static void emulator_set_input(void)
 
 static void emulator_set_custom_palette (void)
 {
+   uint8 i,r,g,b;
 
    if (current_palette == 0)
    {
@@ -465,7 +461,6 @@ static void emulator_set_custom_palette (void)
    }
 
    /* Setup this palette*/
-   uint8 i,r,g,b;
 
    for ( i = 0; i < 64; i++ )
    {
@@ -589,6 +584,7 @@ void retro_run(void)
    uint8_t *gfx;
    static uint16_t video_out[256 * 240];
    int32 ssize = 0;
+   bool updated = false;
 
    update_input();
 
@@ -606,7 +602,6 @@ void retro_run(void)
 
    audio_batch_cb((const int16_t*)sound, ssize);
 
-   bool updated = false;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
       check_variables();
 }
