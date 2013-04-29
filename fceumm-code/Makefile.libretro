@@ -56,6 +56,8 @@ else ifeq ($(platform), ios)
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
    CFLAGS += -DHAVE_ASPRINTF -DIOS
    ZLIB_DIR := ./src/zlib
+   CC = clang -arch armv7 -isysroot $(IOSSDK)
+   CFLAGS += -DIOS
 else ifeq ($(platform), ps3)
    TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
