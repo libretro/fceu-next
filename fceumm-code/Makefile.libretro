@@ -103,6 +103,7 @@ else ifneq (,$(findstring armv,$(platform)))
    ENDIANNESS_DEFINES = -DLSB_FIRST -DLOCAL_LE=1
    fpic := -fPIC
    CC = gcc
+   ZLIB_DIR := ./src/zlib
 ifneq (,$(findstring cortexa8,$(platform)))
    PLATFORM_DEFINES += -marm -mcpu=cortex-a8
 else ifneq (,$(findstring cortexa9,$(platform)))
