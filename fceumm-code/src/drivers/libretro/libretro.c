@@ -540,7 +540,7 @@ static void check_variables(void)
 
    var.key = "nes_palette";
 
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       unsigned orig_value = current_palette;
 
