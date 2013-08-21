@@ -34,6 +34,7 @@ static retro_input_poll_t poll_cb = NULL;
 static retro_input_state_t input_cb = NULL;
 static retro_audio_sample_batch_t audio_batch_cb = NULL;
 static retro_environment_t environ_cb = NULL;
+static bool use_overscan;
 
 /* emulator-specific variables */
 
@@ -422,10 +423,13 @@ void retro_get_system_info(struct retro_system_info *info)
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-   info->geometry.base_width = 256;
-   info->geometry.base_height = 240;
-   info->geometry.max_width = 256;
-   info->geometry.max_height = 240;
+   unsigned width = use_overscan ? 256 : (256 - 16);
+   unsigned height = use_overscan ? 240 : (240 - 16);
+   info->geometry.base_width = width;
+   info->geometry.base_height = height;
+   info->geometry.max_width = width;
+   info->geometry.max_height = height;
+   info->geometry.aspect_ratio = 4.0 / 3.0;
    info->timing.sample_rate = 32050.0;
    if (FSettings.PAL)
       info->timing.fps = 838977920.0/16777215.0;
@@ -590,12 +594,22 @@ void retro_run(void)
 
    FCEUI_Emulate(&gfx, &sound, &ssize, 0);
 
-   gfx = XBuf;
-   for (y = 0; y < 240; y++)
-      for ( x = 0; x < 256; x++, gfx++)
-         video_out[y * 256 + x] = palette[*gfx];
-
-   video_cb(video_out, 256, 240, 512);
+   if (use_overscan)
+   {
+      gfx = XBuf;
+      for (y = 0; y < 240; y++)
+         for ( x = 0; x < 256; x++, gfx++)
+            video_out[y * 256 + x] = palette[*gfx];
+      video_cb(video_out, 256, 240, 512);
+   }
+   else
+   {
+      gfx = XBuf + 8 + 256 * 8;
+      for (y = 0; y < 240 - 16; y++, gfx += 16)
+         for ( x = 0; x < 256 - 16; x++, gfx++)
+            video_out[y * (256 - 16) + x] = palette[*gfx];
+      video_cb(video_out, 256 - 16, 240 - 16, 512 - 32);
+   }
 
    for (y = 0; y < ssize; y++)
       sound[y] = (sound[y] << 16) | (sound[y] & 0xffff);
@@ -654,6 +668,9 @@ bool retro_load_game(const struct retro_game_info *game)
 {
    fceu_init(game->path);
    check_variables();
+
+   if (!environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &use_overscan))
+      use_overscan = true;
 
    return true;
 }
