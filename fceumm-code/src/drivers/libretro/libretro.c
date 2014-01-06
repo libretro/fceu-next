@@ -480,6 +480,12 @@ static void emulator_set_custom_palette (void)
 
 static bool fceu_init(const char * full_path)
 {
+   char* dir=NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir)
+   {
+      FCEUI_SetBaseDirectory(dir);
+   }
+
    FCEUI_Initialize();
 
    FCEUI_SetSoundVolume(256);
