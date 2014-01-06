@@ -478,7 +478,7 @@ static void emulator_set_custom_palette (void)
    }
 }
 
-static void fceu_init(const char * full_path)
+static bool fceu_init(const char * full_path)
 {
    FCEUI_Initialize();
 
@@ -486,10 +486,12 @@ static void fceu_init(const char * full_path)
    FCEUI_Sound(32050);
 
    FCEUGameInfo = FCEUI_LoadGame(full_path);
+   if (!FCEUGameInfo) return false;
    emulator_set_input();
    emulator_set_custom_palette();
 
    FCEUD_SoundToggle();
+   return true;
 }
 
 void retro_deinit (void)
@@ -668,7 +670,7 @@ void retro_cheat_set(unsigned a, bool b, const char* c)
 
 bool retro_load_game(const struct retro_game_info *game)
 {
-   fceu_init(game->path);
+   if (!fceu_init(game->path)) return false;
    check_variables();
 
    if (!environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &use_overscan))
