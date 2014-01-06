@@ -67,6 +67,7 @@ void FCEUI_SetDirOverride(int which, char *n) {
 }
 
 #ifndef HAVE_ASPRINTF
+#ifndef __LIBRETRO__
 static int asprintf(char **strp, const char *fmt, ...) {
 	va_list ap;
 	int ret;
@@ -74,15 +75,19 @@ static int asprintf(char **strp, const char *fmt, ...) {
 	va_start(ap, fmt);
 	if (!(*strp = malloc(2048)))
 		return(0);
-#ifndef __LIBRETRO__
 	ret = vsnprintf(*strp, 2048, fmt, ap);
-#endif
 	va_end(ap);
 	return(ret);
 }
 #endif
+#endif
 
 char *FCEU_MakeFName(int type, int id1, char *cd1) {
+#ifdef __LIBRETRO__
+	char* ret=malloc(1);
+	*ret='\0';
+	return ret;
+#else
 	char *ret = 0;
 	struct stat tmpstat;
 
@@ -165,6 +170,7 @@ char *FCEU_MakeFName(int type, int id1, char *cd1) {
 		break;
 	}
 	return(ret);
+#endif
 }
 
 void GetFileBase(const char *f) {
