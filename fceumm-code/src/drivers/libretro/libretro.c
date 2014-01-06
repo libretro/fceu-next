@@ -494,6 +494,8 @@ static void fceu_init(const char * full_path)
 
 void retro_deinit (void)
 {
+   FCEUI_CloseGame();
+   FCEUI_Kill();
 }
 
 void retro_reset(void)
