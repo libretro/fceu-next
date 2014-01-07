@@ -74,9 +74,7 @@ static int asprintf(char **strp, const char *fmt, ...) {
 	va_start(ap, fmt);
 	if (!(*strp = malloc(2048)))
 		return(0);
-#ifndef __LIBRETRO__
 	ret = vsnprintf(*strp, 2048, fmt, ap);
-#endif
 	va_end(ap);
 	return(ret);
 }
@@ -87,6 +85,7 @@ char *FCEU_MakeFName(int type, int id1, char *cd1) {
 	struct stat tmpstat;
 
 	switch (type) {
+#ifndef __LIBRETRO__
 	case FCEUMKF_NPTEMP: asprintf(&ret, "%s"PSS "m590plqd94fo.tmp", BaseDirectory); break;
 	case FCEUMKF_MOVIE:
 		if (odirs[FCEUIOD_STATE])
@@ -155,6 +154,7 @@ char *FCEU_MakeFName(int type, int id1, char *cd1) {
 		break;
 	case FCEUMKF_IPS:  asprintf(&ret, "%s"PSS "%s%s.ips", FileBaseDirectory, FileBase, FileExt);
 		break;
+#endif
 	case FCEUMKF_GGROM: asprintf(&ret, "%s"PSS "gg.rom", BaseDirectory); break;
 	case FCEUMKF_FDSROM: asprintf(&ret, "%s"PSS "disksys.rom", BaseDirectory); break;
 	case FCEUMKF_PALETTE:
@@ -163,6 +163,9 @@ char *FCEU_MakeFName(int type, int id1, char *cd1) {
 		else
 			asprintf(&ret, "%s"PSS "gameinfo"PSS "%s.pal", BaseDirectory, FileBase);
 		break;
+	default:
+		ret=malloc(1);
+		*ret='\0';
 	}
 	return(ret);
 }
