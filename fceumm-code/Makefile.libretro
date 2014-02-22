@@ -138,6 +138,8 @@ endif
 
 ifeq ($(DEBUG), 1)
 	CFLAGS += -O0 -g
+else ifeq ($(platform), psp1)
+	CFLAGS += -O2
 else
 	CFLAGS += -O3 -DNDEBUG
 endif
