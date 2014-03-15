@@ -17,6 +17,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+#ifndef _SOUND_H
+#define _SOUND_H
 
 typedef struct {
 	void (*Fill)(int Count);	/* Low quality ext sound. */
@@ -60,3 +62,5 @@ void FCEUSND_SaveState(void);
 void FCEUSND_LoadState(int version);
 
 void FASTAPASS(1) FCEU_SoundCPUHook(int);
+
+#endif
