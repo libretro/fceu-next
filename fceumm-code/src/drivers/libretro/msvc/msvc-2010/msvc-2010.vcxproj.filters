@@ -81,9 +81,6 @@
     <ClCompile Include="..\..\..\src-fceumm\mycrc32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src-fceumm\myendian.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src-fceumm\palette.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -660,6 +657,9 @@
     <ClCompile Include="..\..\..\src-fceumm\boards\vrc7.c">
       <Filter>Source Files\boards</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src-fceumm\fceu-endian.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libretro-fceumm\memstream.h">
@@ -746,9 +746,6 @@
     <ClInclude Include="..\src-fceumm\memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src-fceumm\myendian.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src-fceumm\ops.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -776,9 +773,6 @@
     <ClInclude Include="..\src-fceumm\state.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src-fceumm\types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src-fceumm\unif.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -786,6 +780,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src-fceumm\x6502.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src-fceumm\fceu-endian.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src-fceumm\fceu-types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

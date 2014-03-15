@@ -13,8 +13,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0CE28350-1810-43E8-BB42-EC5C562C1C66}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>msvc2010</RootNamespace>
-    <ProjectName>fceu-next</ProjectName>
+    <RootNamespace>msvc-2010</RootNamespace>
+    <ProjectName>msvc-2010</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -40,11 +40,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>libretro</TargetName>
+    <TargetName>msvc-2010</TargetName>
+    <OutDir>$(SolutionDir)msvc-2010\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>libretro</TargetName>
+    <TargetName>msvc-2010</TargetName>
+    <OutDir>$(SolutionDir)msvc-2010\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
