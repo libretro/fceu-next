@@ -1,5 +1,6 @@
 DEBUG = 0
 EXTERNAL_ZLIB = 0
+WANT_GRIFFIN = 0
 
 ifeq ($(platform),)
 platform = unix
@@ -76,7 +77,7 @@ else ifeq ($(platform), psp1)
 	CC = psp-gcc$(EXE_EXT)
 	CXX = psp-g++$(EXE_EXT)
 	AR = psp-ar$(EXE_EXT)
-   PLATFORM_DEFINES := -DPSP -G0 -LSB_FIRST -DHAVE_ASPRINTF
+   PLATFORM_DEFINES := -DPSP -G0 -DLSB_FIRST -DHAVE_ASPRINTF
 	STATIC_LINKING = 1
 else ifeq ($(platform), psl1ght)
    TARGET := $(TARGET_NAME)_libretro_psl1ght.a
@@ -138,8 +139,6 @@ endif
 
 ifeq ($(DEBUG), 1)
 	CFLAGS += -O0 -g
-else ifeq ($(platform), psp1)
-	CFLAGS += -O2
 else
 	CFLAGS += -O3 -DNDEBUG
 endif
@@ -152,9 +151,15 @@ endif
 LIBRETRO_DIR := ./src/drivers/libretro
 FCEU_DIR := ./src
 
-FCEU_SRC_DIRS := $(LIBRETRO_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(ZLIB_DIR)
+ifeq ($(WANT_GRIFFIN), 1)
+	FCEU_SRC_DIRS := $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(ZLIB_DIR)
+	FCEU_CSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.c))
+	FCEU_CSRCS += $(LIBRETRO_DIR)/griffin.c $(FCEU_DIR)/ines.c $(FCEU_DIR)/unif.c
+else
+	FCEU_SRC_DIRS := $(LIBRETRO_DIR) $(FCEU_DIR) $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(ZLIB_DIR)
+	FCEU_CSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.c))
+endif
 
-FCEU_CSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.c))
 FCEU_COBJ := $(FCEU_CSRCS:.c=.o)
 
 OBJS := $(FCEU_COBJ)
@@ -173,9 +178,15 @@ LDFLAGS += -lm
 INCDIRS := -I$(LIBRETRO_DIR) -I$(FCEU_DIR) -I$(FCEU_DIR)/input -I$(FCEU_DIR)/boards -I$(FCEU_DIR)/mappers
 LIBS :=
 
+ifeq ($(platform), psp1)
+	INCDIRS += -I$(shell psp-config --pspsdk-path)/include
+endif
+
 ifeq ($(EXTERNAL_ZLIB), 0)
 	INCDIRS += -I$(FCEU_DIR)/zlib
 endif
+
+all: $(TARGET)
 
 $(TARGET): $(OBJS)
 ifeq ($(STATIC_LINKING), 1)
