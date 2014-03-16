@@ -38,7 +38,13 @@ static bool use_overscan;
 
 /* emulator-specific variables */
 
-static uint16_t palette[256];
+#ifdef PSP
+#include "pspgu.h"
+static __attribute__((aligned(16))) uint16_t retro_palette[256];
+#else
+static uint16_t retro_palette[256];
+#endif
+
 
 static int32 *sound = 0;
 static uint32 JSReturn[2];
@@ -67,7 +73,14 @@ int FCEUD_SendData(void *data, uint32 len)
    return 1;
 }
 
-#ifdef FRONTEND_SUPPORTS_RGB565
+#if defined (PSP)
+#define RED_SHIFT 0
+#define GREEN_SHIFT 5
+#define BLUE_SHIFT 11
+#define RED_EXPAND 3
+#define GREEN_EXPAND 2
+#define BLUE_EXPAND 3
+#elif defined (FRONTEND_SUPPORTS_RGB565)
 #define RED_SHIFT 11
 #define GREEN_SHIFT 5
 #define BLUE_SHIFT 0
@@ -88,7 +101,7 @@ void FCEUD_SetPalette(unsigned char index, unsigned char r, unsigned char g, uns
    r >>= RED_EXPAND;
    g >>= GREEN_EXPAND;
    b >>= BLUE_EXPAND;
-   palette[index] = (r << RED_SHIFT) | (g << GREEN_SHIFT) | (b << BLUE_SHIFT);
+   retro_palette[index] = (r << RED_SHIFT) | (g << GREEN_SHIFT) | (b << BLUE_SHIFT);
 }
 
 bool FCEUD_ShouldDrawInputAids (void)
@@ -592,6 +605,58 @@ static void check_variables(void)
    }
 }
 
+#ifdef PSP
+void retro_run(void)
+{
+   unsigned y, x;
+   uint8_t *gfx;
+   int32 ssize = 0;
+   bool updated = false;
+
+   update_input();
+
+   FCEUI_Emulate(&gfx, &sound, &ssize, 0);   
+
+   static unsigned int __attribute__((aligned(16))) d_list[32];
+   void* const texture_vram_p = (void*) (0x44200000 - (256 * 256)); // max VRAM address - frame size
+
+   sceKernelDcacheWritebackRange(retro_palette,256 * 2);
+   sceKernelDcacheWritebackRange(XBuf, 256*240 );
+
+   sceGuStart(GU_DIRECT, d_list);
+
+   // sceGuCopyImage doesnt seem to work correctly with GU_PSM_T8
+   // so we use GU_PSM_4444 ( 2 Bytes per pixel ) instead
+   // with half the values for pitch / width / x offset
+   if (use_overscan)
+      sceGuCopyImage(GU_PSM_4444, 0, 0, 128, 240, 128, XBuf, 0, 0, 128, texture_vram_p);
+   else
+      sceGuCopyImage(GU_PSM_4444, 4, 4, 120, 224, 128, XBuf, 0, 0, 128, texture_vram_p);
+
+   sceGuTexSync();
+   sceGuTexImage(0, 256, 256, 256, texture_vram_p);
+   sceGuTexMode(GU_PSM_T8, 0, 0, GU_FALSE);
+   sceGuTexFunc(GU_TFX_REPLACE, GU_TCC_RGB);
+   sceGuDisable(GU_BLEND);
+   sceGuClutMode(GU_PSM_5650, 0, 0xFF, 0);
+   sceGuClutLoad(32, retro_palette);
+
+   sceGuFinish();
+
+   if (use_overscan)
+      video_cb(texture_vram_p, 256, 240, 256);
+   else
+      video_cb(texture_vram_p, 256 - 16, 240 - 16, 256);
+
+   for (y = 0; y < ssize; y++)
+      sound[y] = (sound[y] << 16) | (sound[y] & 0xffff);
+
+   audio_batch_cb((const int16_t*)sound, ssize);
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+      check_variables();
+}
+#else
 void retro_run(void)
 {
    unsigned y, x;
@@ -609,7 +674,7 @@ void retro_run(void)
       gfx = XBuf;
       for (y = 0; y < 240; y++)
          for ( x = 0; x < 256; x++, gfx++)
-            video_out[y * 256 + x] = palette[*gfx];
+            video_out[y * 256 + x] = retro_palette[*gfx];
       video_cb(video_out, 256, 240, 512);
    }
    else
@@ -617,7 +682,7 @@ void retro_run(void)
       gfx = XBuf + 8 + 256 * 8;
       for (y = 0; y < 240 - 16; y++, gfx += 16)
          for ( x = 0; x < 256 - 16; x++, gfx++)
-            video_out[y * (256 - 16) + x] = palette[*gfx];
+            video_out[y * (256 - 16) + x] = retro_palette[*gfx];
       video_cb(video_out, 256 - 16, 240 - 16, 512 - 32);
    }
 
@@ -629,7 +694,7 @@ void retro_run(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
       check_variables();
 }
-
+#endif
 static unsigned serialize_size = 0;
 
 size_t retro_serialize_size(void)
