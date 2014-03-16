@@ -1,4 +1,5 @@
 #ifndef __FCEU_DRAWING_H_
+#define __FCEU_DRAWING_H_
 
 void DrawTextLineBG(uint8 *dest) {
 	int x, y;
