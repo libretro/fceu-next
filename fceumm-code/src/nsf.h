@@ -1,3 +1,6 @@
+#ifndef __FCEU_NSF_H_
+#define __FCEU_NSF_H_
+
 /* FCE Ultra - NES/Famicom Emulator
  *
  * Copyright notice for this file:
@@ -45,3 +48,5 @@ void DrawNSF(uint8 *XBuf);
 void NSFDealloc(void);
 void NSFDodo(void);
 void DoNSFFrame(void);
+
+#endif

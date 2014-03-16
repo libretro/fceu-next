@@ -1,3 +1,6 @@
+#ifndef __FCEU_NETPLAY_H_
+#define __FCEU_NETPLAY_H_
+
 int InitNetplay(void);
 void NetplayUpdate(uint8 *joyp);
 extern int FCEUnetplay;
@@ -21,3 +24,5 @@ extern int FCEUnetplay;
 
 int FCEUNET_SendCommand(uint8, uint32);
 int FCEUNET_SendFile(uint8 cmd, char *);
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef __FCEU_DEBUG_H_
+#define __FCEU_DEBUG_H_
+
 void FCEUI_DumpMem(const char *fname, uint32 start, uint32 end);
 void FCEUI_DumpVid(const char *fname, uint32 start, uint32 end);
 void FCEUI_LoadMem(const char *fname, uint32 start, int hl);
@@ -22,4 +25,6 @@ int FCEUI_SetBreakPoint(uint32 w, int type, unsigned int A1, unsigned int A2,
 						void (*Handler)(X6502 *, int type, unsigned int A));
 int FCEUI_AddBreakPoint(int type, unsigned int A1, unsigned int A2,
 						void (*Handler)(X6502 *, int type, unsigned int A));
+#endif
+
 #endif

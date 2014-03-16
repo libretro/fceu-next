@@ -1,3 +1,6 @@
+#ifndef __FCEU_FCOEFFS_H_
+#define __FCEU_FCOEFFS_H_
+
 #define SQ2NCOEFFS 1024
 
 static int32 sq2coeffs[SQ2NCOEFFS];
@@ -1587,3 +1590,6 @@ static int32 C44100PAL[NCOEFFS / 2] =
 /*240*/, 65536 * 16 * 0.02024878178965319
 /*241*/, 65536 * 16 * 0.020277449712345474
 };
+
+
+#endif

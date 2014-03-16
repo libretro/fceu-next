@@ -1,3 +1,6 @@
+#ifndef __FCEU_SOUND_H_
+#define __FCEU_SOUND_H_
+
 /* FCE Ultra - NES/Famicom Emulator
  *
  * Copyright notice for this file:
@@ -60,3 +63,5 @@ void FCEUSND_SaveState(void);
 void FCEUSND_LoadState(int version);
 
 void FASTAPASS(1) FCEU_SoundCPUHook(int);
+
+#endif

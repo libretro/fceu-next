@@ -1,5 +1,5 @@
-#ifndef FCEU_ENDIAN_H_
-#define FCEU_ENDIAN_H_
+#ifndef __FCEU_ENDIAN_H_
+#define __FCEU_ENDIAN_H_
 
 #include "memory.h"
 
