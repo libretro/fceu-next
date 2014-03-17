@@ -1,6 +1,3 @@
-#ifndef __FCEU_SOUND_H_
-#define __FCEU_SOUND_H_
-
 /* FCE Ultra - NES/Famicom Emulator
  *
  * Copyright notice for this file:
@@ -20,6 +17,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+#ifndef _SOUND_H
+#define _SOUND_H
 
 typedef struct {
 	void (*Fill)(int Count);	/* Low quality ext sound. */
