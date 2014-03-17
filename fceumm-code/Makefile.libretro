@@ -145,6 +145,7 @@ endif
 
 ifeq ($(EXTERNAL_ZLIB), 1)
 	ZLIB_DIR := 
+	CFLAGS += -DHAVE_EXTERNAL_ZLIB
 	LDFLAGS += -lz
 endif
 
@@ -152,6 +153,7 @@ LIBRETRO_DIR := ./src/drivers/libretro
 FCEU_DIR := ./src
 
 ifeq ($(WANT_GRIFFIN), 1)
+	CFLAGS += -DWANT_GRIFFIN
 	FCEU_SRC_DIRS := $(FCEU_DIR)/boards $(FCEU_DIR)/input $(FCEU_DIR)/mappers $(ZLIB_DIR)
 	FCEU_CSRCS := $(foreach dir,$(FCEU_SRC_DIRS),$(wildcard $(dir)/*.c))
 	FCEU_CSRCS += $(LIBRETRO_DIR)/griffin.c $(FCEU_DIR)/ines.c $(FCEU_DIR)/unif.c

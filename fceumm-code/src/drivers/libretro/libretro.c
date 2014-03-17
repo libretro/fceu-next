@@ -605,18 +605,24 @@ static void check_variables(void)
    }
 }
 
-#ifdef PSP
 void retro_run(void)
 {
-   unsigned y, x;
+   unsigned y, x, width, height, pitch;
    uint8_t *gfx;
-   int32 ssize = 0;
-   bool updated = false;
+   int32 ssize;
+   bool updated;
+#ifndef PSP
+   static uint16_t video_out[256 * 240];
+#endif
+
+   ssize = 0;
+   updated = false;
 
    update_input();
 
    FCEUI_Emulate(&gfx, &sound, &ssize, 0);   
 
+#ifdef PSP
    static unsigned int __attribute__((aligned(16))) d_list[32];
    void* const texture_vram_p = (void*) (0x44200000 - (256 * 256)); // max VRAM address - frame size
 
@@ -642,59 +648,50 @@ void retro_run(void)
    sceGuClutLoad(32, retro_palette);
 
    sceGuFinish();
-
-   if (use_overscan)
-      video_cb(texture_vram_p, 256, 240, 256);
-   else
-      video_cb(texture_vram_p, 256 - 16, 240 - 16, 256);
-
-   for (y = 0; y < ssize; y++)
-      sound[y] = (sound[y] << 16) | (sound[y] & 0xffff);
-
-   audio_batch_cb((const int16_t*)sound, ssize);
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
-      check_variables();
-}
-#else
-void retro_run(void)
-{
-   unsigned y, x;
-   uint8_t *gfx;
-   static uint16_t video_out[256 * 240];
-   int32 ssize = 0;
-   bool updated = false;
-
-   update_input();
-
-   FCEUI_Emulate(&gfx, &sound, &ssize, 0);
-
-   if (use_overscan)
-   {
-      gfx = XBuf;
-      for (y = 0; y < 240; y++)
-         for ( x = 0; x < 256; x++, gfx++)
-            video_out[y * 256 + x] = retro_palette[*gfx];
-      video_cb(video_out, 256, 240, 512);
-   }
-   else
-   {
-      gfx = XBuf + 8 + 256 * 8;
-      for (y = 0; y < 240 - 16; y++, gfx += 16)
-         for ( x = 0; x < 256 - 16; x++, gfx++)
-            video_out[y * (256 - 16) + x] = retro_palette[*gfx];
-      video_cb(video_out, 256 - 16, 240 - 16, 512 - 32);
-   }
-
-   for (y = 0; y < ssize; y++)
-      sound[y] = (sound[y] << 16) | (sound[y] & 0xffff);
-
-   audio_batch_cb((const int16_t*)sound, ssize);
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
-      check_variables();
-}
 #endif
+
+   if (use_overscan)
+   {
+      width = 256;
+      height = 240;
+#ifdef PSP
+      pitch = 256;
+      video_cb(texture_vram_p, width, height, pitch);
+#else
+      pitch = 512;
+      gfx = XBuf;
+      for (y = 0; y < height; y++)
+         for ( x = 0; x < width; x++, gfx++)
+            video_out[y * width + x] = retro_palette[*gfx];
+      video_cb(video_out, width, height, pitch);
+#endif
+   }
+   else
+   {
+      width = 256 - 16;
+      height = 240 - 16;
+#ifdef PSP
+      pitch = 256;
+      video_cb(texture_vram_p, width, height, pitch);
+#else
+      pitch = 512 - 32;
+      gfx = XBuf + 8 + 256 * 8;
+      for (y = 0; y < height; y++, gfx += 16)
+         for ( x = 0; x < width; x++, gfx++)
+            video_out[y * width + x] = retro_palette[*gfx];
+      video_cb(video_out, width, height, pitch);
+#endif
+   }
+
+   for (y = 0; y < ssize; y++)
+      sound[y] = (sound[y] << 16) | (sound[y] & 0xffff);
+
+   audio_batch_cb((const int16_t*)sound, ssize);
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+      check_variables();
+}
+
 static unsigned serialize_size = 0;
 
 size_t retro_serialize_size(void)

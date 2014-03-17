@@ -1,3 +1,5 @@
+#ifdef WANT_GRIFFIN
+
 #include "drivers/libretro/libretro.c"
 #include "drivers/libretro/memstream.c"
 
@@ -29,3 +31,5 @@
 
 //#include "ines.c"
 //#include "unif.c"
+
+#endif
