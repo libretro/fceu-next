@@ -1,5 +1,5 @@
-#ifndef _MD5_H
-#define _MD5_H
+#ifndef __FCEU_MD5_H
+#define __FCEU_MD5_H
 
 struct md5_context {
 	uint32 total[2];

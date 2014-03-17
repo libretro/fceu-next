@@ -1,3 +1,6 @@
+#ifndef __FCEU_DRAWING_H_
+#define __FCEU_DRAWING_H_
+
 void DrawTextLineBG(uint8 *dest) {
 	int x, y;
 	static int otable[7] = { 81, 49, 30, 17, 8, 3, 0 };
@@ -220,3 +223,4 @@ void FCEU_DrawNumberRow(uint8 *XBuf, int *nstatus, int cur) {
 		}
 }
 
+#endif

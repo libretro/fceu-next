@@ -1,3 +1,6 @@
+#ifndef __INPUT_H_
+#define __INPUT_H_
+
 typedef struct {
 	uint8 FP_FASTAPASS(1) (*Read)(int w);
 	void FP_FASTAPASS(1) (*Write)(uint8 v);
@@ -24,3 +27,4 @@ extern void (*InputScanlineHook)(uint8 *bg, uint8 *spr, uint32 linets, int final
 
 void FCEU_DoSimpleCommand(int cmd);
 
+#endif

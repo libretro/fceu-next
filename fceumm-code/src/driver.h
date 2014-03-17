@@ -1,3 +1,7 @@
+#ifndef __FCEU_DRIVER_H_
+#define __FCEU_DRIVER_H_
+
+
 #include <stdio.h>
 
 #ifdef  __cplusplus
@@ -247,3 +251,4 @@ int FCEUI_DatachSet(const uint8 *rcode);
 }
 #endif
 
+#endif

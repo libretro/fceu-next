@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef __FCEU_TYPES
-#define __FCEU_TYPES
+#ifndef __FCEU_TYPES_H_
+#define __FCEU_TYPES_H_
 
 #ifdef __LIBRETRO__
 #include <stdint.h>
@@ -38,8 +38,8 @@ typedef uint32_t uint32;
 #ifdef __GNUC__
 typedef unsigned long long uint64;
 typedef long long int64;
-	#define INLINE inline
-	#define GINLINE inline
+   #define INLINE inline
+   #define GINLINE inline
 #elif MSVC
 typedef __int64 int64;
 typedef unsigned __int64 uint64;

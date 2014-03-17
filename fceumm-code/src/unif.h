@@ -1,3 +1,6 @@
+#ifndef __FCEU_UNIF_H_
+#define __FCEU_UNIF_H_
+
 /* FCE Ultra - NES/Famicom Emulator
  *
  * Copyright notice for this file:
@@ -149,3 +152,5 @@ void MapperCopyFami_Init(CartInfo *info);
 
 extern uint8 *UNIFchrrama;	// Meh.  So I can stop CHR RAM
 							// bank switcherooing with certain boards...
+
+#endif

@@ -654,7 +654,7 @@ static BMAPPINGLocal bmap[] = {
 	{"",					0, NULL}
 };
 
-int iNESLoad(const uint8 *name, FCEUFILE *fp) {
+int iNESLoad(const char *name, FCEUFILE *fp) {
 	struct md5_context md5;
    char* mappername;
 	uint32 mappertest;

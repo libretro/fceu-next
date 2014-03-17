@@ -18,7 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _X6502H
+#ifndef __FCEU_X6502_H_
+#define __FCEU_X6502_H_
 
 #include "x6502struct.h"
 
@@ -72,5 +73,5 @@ void FASTAPASS(2) X6502_DMW(uint32 A, uint8 V);
 void FASTAPASS(1) X6502_IRQBegin(int w);
 void FASTAPASS(1) X6502_IRQEnd(int w);
 
-#define _X6502H
+
 #endif
