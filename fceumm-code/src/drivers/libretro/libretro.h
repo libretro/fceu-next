@@ -1104,8 +1104,8 @@ void retro_unload_game(void);
 unsigned retro_get_region(void);
 
 // Gets region of memory.
-void *retro_get_memory_data(unsigned id);
-size_t retro_get_memory_size(unsigned id);
+void *retro_get_memory_data(unsigned type);
+size_t retro_get_memory_size(unsigned type);
 
 #ifdef __cplusplus
 }
